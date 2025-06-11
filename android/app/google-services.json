@@ -1,0 +1,76 @@
+{
+  "project_info": {
+    "project_number": "782611379779",
+    "project_id": "digital-assets-462502",
+    "storage_bucket": "digital-assets-462502.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:782611379779:android:77e4162890d60b58be06f6",
+        "android_client_info": {
+          "package_name": "com.example.digital_asset_flutter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "782611379779-t4l0oio7blqli1spnmatgtmesffkf4m7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGW0jf903Ngz7eLobGvM_6J0ubftTfRPc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "782611379779-t4l0oio7blqli1spnmatgtmesffkf4m7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:782611379779:android:e05801572748898bbe06f6",
+        "android_client_info": {
+          "package_name": "com.example.new_digital_assets"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "782611379779-idvl103beba8tfdhf723bm7nsf3vq3df.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.new_digital_assets",
+            "certificate_hash": "7281925c63e943abcb0f64c8f36c6d2a7aeb0f02"
+          }
+        },
+        {
+          "client_id": "782611379779-t4l0oio7blqli1spnmatgtmesffkf4m7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGW0jf903Ngz7eLobGvM_6J0ubftTfRPc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "782611379779-t4l0oio7blqli1spnmatgtmesffkf4m7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
