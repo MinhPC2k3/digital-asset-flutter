@@ -1,9 +1,14 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'homepage.dart';
+import 'dart_ffi.dart';
 
-import 'login_screen.dart';
+import 'features/auth/presentation/homepage.dart';
+
+import 'features/auth/presentation/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,6 +43,24 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       home: LoginScreen(),
+      // home: Center(
+      //   child: FutureBuilder<String>(
+      //     future: GoBridge.computeShareKey(
+      //       "SessionID",
+      //       "12345",
+      //       Uint8List.fromList(utf8.encode("12345")),
+      //     ),
+      //     builder: (context, snapshot) {
+      //       if (snapshot.connectionState == ConnectionState.waiting) {
+      //         return CircularProgressIndicator();
+      //       } else if (snapshot.hasError) {
+      //         return Text('Lỗi: ${snapshot.error}');
+      //       } else {
+      //         return Text(snapshot.data ?? "Không có dữ liệu");
+      //       }
+      //     },
+      //   ),
+      // ),
     );
   }
 }
