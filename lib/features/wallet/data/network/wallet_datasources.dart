@@ -74,13 +74,16 @@ class WalletRepositoryImpl implements WalletRepository {
       final Map<String, dynamic> decoded = json.decode(res.body);
 
       final dynamic dataList = decoded['data'];
-      final List<dynamic> listWallets = dataList['wallets'];
-      print("List: ${listWallets}");
-      final wallets =
-          listWallets
-              .map((item) => WalletDto.fromJson(item).toDomain())
-              .toList();
-      return Result.success(wallets);
+      if (dataList['wallets'] != null) {
+        final List<dynamic> listWallets = dataList['wallets'];
+        print("List: ${listWallets}");
+        final wallets =
+            listWallets
+                .map((item) => WalletDto.fromJson(item).toDomain())
+                .toList();
+        return Result.success(wallets);
+      }
+      return Result.success([]);
     } else {
       final json = jsonDecode(res.body);
       final state = json['state'] ?? {};
