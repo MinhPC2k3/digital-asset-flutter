@@ -9,6 +9,7 @@ import 'package:digital_asset_flutter/features/wallet/domain/usecases/wallet_use
 
 import '../../../core/network/result.dart';
 import '../../wallet/domain/entities/wallet.dart';
+import '../../wallet/presentation/swap.dart';
 import '../../wallet/presentation/wallet_selector.dart';
 import 'transaction_review.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +36,7 @@ class HomePage extends StatelessWidget {
       isScrollControlled: true,
       builder:
           (context) =>
-              WalletSelectorModal(user: user, wallerUsecases: walletUsecase),
+              WalletSelectorModal(user: user, walletUsecases: walletUsecase),
     );
   }
 
@@ -48,26 +49,20 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Future<void> _initialize() async {
-    Result<List<Wallet>> listWallets = await walletUsecase.getUserWallet(
-      user.id,
+  void _showSwapScreen(BuildContext context) {
+    // showModalBottomSheet(
+    //   context: context,
+    //   backgroundColor: Colors.transparent,
+    //   isScrollControlled: true,
+    //   builder: (context) => const SwapScreen(),
+    // );
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SwapScreen(),
+        fullscreenDialog: true,
+      ),
     );
-    if (listWallets.isSuccess) {
-      final wallets =
-          listWallets
-              .data; // Or listWallets.getOrNull() depending on your Result type
-
-      for (final wallet in wallets!) {
-        print('Wallet id: ${wallet.id}');
-        print('Wallet name: ${wallet.walletName}');
-        print('Address: ${wallet.address}');
-        print('Network: ${wallet.networkName}');
-        print('Status: ${wallet.status}');
-        print('-----');
-      }
-    } else {
-      print('Failed to load wallets: ${listWallets.error}');
-    }
   }
 
   @override
@@ -95,7 +90,6 @@ class HomePage extends StatelessWidget {
                           GestureDetector(
                             onTap: () async {
                               _showWalletSelector(context, user);
-                              await _initialize();
                             },
                             child: Row(
                               children: [
@@ -332,7 +326,12 @@ class HomePage extends StatelessWidget {
                             Icons.arrow_downward,
                             'Receive',
                           ),
-                          _buildActionButton(context, Icons.swap_horiz, 'Swap'),
+                          _buildActionButton(
+                            context,
+                            Icons.swap_horiz,
+                            'Swap',
+                            onTap: () => _showSwapScreen(context),
+                          ),
                           _buildActionButton(context, Icons.add, 'Buy'),
                           _buildActionButton(context, Icons.menu, 'More'),
                         ],
@@ -912,7 +911,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
           children: [
             // Header
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(15),
               child: Row(
                 children: [
                   GestureDetector(
@@ -920,7 +919,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                     child: Icon(
                       Icons.arrow_back,
                       color: Colors.orange,
-                      size: 24,
+                      size: 22,
                     ),
                   ),
                   Expanded(
@@ -930,32 +929,32 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                           'Send',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 18,
+                            fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 2),
                         const Text(
                           'Main Wallet',
-                          style: TextStyle(color: Colors.grey, fontSize: 14),
+                          style: TextStyle(color: Colors.grey, fontSize: 12),
                         ),
                       ],
                     ),
                   ),
                   // Refresh icon
                   Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
                       color: Colors.orange.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Icon(Icons.refresh, color: Colors.orange, size: 20),
+                    child: Icon(Icons.refresh, color: Colors.orange, size: 18),
                   ),
                 ],
               ),
             ),
 
-            const Spacer(),
+            // const Spacer(),
 
             // Amount Display
             Column(
@@ -964,35 +963,35 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                   'd$amount',
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 40,
+                    fontSize: 30,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 const Text(
                   '0 ETH',
-                  style: TextStyle(color: Colors.grey, fontSize: 15),
+                  style: TextStyle(color: Colors.grey, fontSize: 13),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 14),
                 const Text(
                   'd636,062 Available',
-                  style: TextStyle(color: Colors.grey, fontSize: 14),
+                  style: TextStyle(color: Colors.grey, fontSize: 12),
                 ),
               ],
             ),
 
-            const SizedBox(height: 40),
+            const SizedBox(height: 30),
 
             // Use Max Button
             Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
+              margin: const EdgeInsets.symmetric(horizontal: 18),
               child: ElevatedButton(
                 onPressed: _onUseMaxPressed,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.brown,
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 16,
+                    horizontal: 25,
+                    vertical: 10,
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -1002,18 +1001,18 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                   'Use Max',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 16,
+                    fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
             ),
 
-            const Spacer(),
+            // const Spacer(),
 
             // Number Pad
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(18),
               child: Column(
                 children: [
                   // Row 1
@@ -1047,11 +1046,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        width: 100,
-                        height: 60,
-                        margin: EdgeInsets.all(5),
-                      ),
+                      Expanded(child: Container()),
                       _buildNumberButton('0'),
                       _buildBackspaceButton(),
                     ],
@@ -1063,7 +1058,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
             // Continue Button
             Container(
               width: double.infinity,
-              margin: const EdgeInsets.all(20),
+              margin: const EdgeInsets.all(18),
               child: ElevatedButton(
                 onPressed:
                     amount != '0' ? () => _showReviewScreen(context) : null,
@@ -1079,7 +1074,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                   'Continue',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -1092,45 +1087,44 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
   }
 
   Widget _buildNumberButton(String number) {
-    return GestureDetector(
-      onTap: () => _onNumberPressed(number),
-      child: Container(
-        width: 100,
-        height: 60,
-        margin: EdgeInsets.all(5),
-        decoration: BoxDecoration(
-          color: Colors.grey[800],
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Center(
-          child: Text(
-            number,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.w500,
+    return Expanded(
+        child: GestureDetector(
+          onTap: () => _onNumberPressed(number),
+          child: Container(
+            height: 30,
+            margin: EdgeInsets.all(3),
+            decoration: BoxDecoration(
+              color: Colors.grey[800],
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Center(
+              child: Text(
+                number,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 
   Widget _buildBackspaceButton() {
-    return GestureDetector(
+    return Expanded(child: GestureDetector(
       onTap: _onBackspacePressed,
       child: Container(
-        width: 100,
-        height: 60,
-        margin: EdgeInsets.all(5),
+        height: 30,
+        margin: EdgeInsets.all(3),
         decoration: BoxDecoration(
           color: Colors.grey[800],
           borderRadius: BorderRadius.circular(10),
         ),
         child: Center(
-          child: Icon(Icons.backspace_outlined, color: Colors.white, size: 24),
+          child: Icon(Icons.backspace_outlined, color: Colors.white, size: 20),
         ),
       ),
-    );
+    ));
   }
 }
