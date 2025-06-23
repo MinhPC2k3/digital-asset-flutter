@@ -1,16 +1,15 @@
+import 'package:digital_asset_flutter/features/wallet/domain/entities/wallet.dart';
 import 'package:digital_asset_flutter/features/wallet/domain/usecases/wallet_usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+
+import '../../auth/domain/entities/user.dart';
 
 class CreateWalletScreen extends StatefulWidget {
-  const CreateWalletScreen({
-    Key? key,
-    required this.wallerUsecases,
-    required this.userId,
-  }) : super(key: key);
+  const CreateWalletScreen({Key? key, required this.wallerUsecases}) : super(key: key);
 
   final WallerUsecases wallerUsecases;
-  final String userId;
 
   @override
   _CreateWalletScreenState createState() => _CreateWalletScreenState();
@@ -40,8 +39,7 @@ class _CreateWalletScreenState extends State<CreateWalletScreen> {
     });
   }
 
-  bool get _isFormValid =>
-      _walletNameController.text.isNotEmpty && _pinController.text.length == 6;
+  bool get _isFormValid => _walletNameController.text.isNotEmpty && _pinController.text.length == 6;
 
   @override
   Widget build(BuildContext context) {
@@ -50,10 +48,7 @@ class _CreateWalletScreenState extends State<CreateWalletScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF1E1E1E),
         elevation: 0,
-        title: const Text(
-          'Create New Wallet',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text('Create New Wallet', style: TextStyle(color: Colors.white)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.amber),
           onPressed: () => Navigator.pop(context),
@@ -67,11 +62,7 @@ class _CreateWalletScreenState extends State<CreateWalletScreen> {
             children: [
               const Text(
                 'Wallet Name',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               TextField(
@@ -86,44 +77,23 @@ class _CreateWalletScreenState extends State<CreateWalletScreen> {
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide.none,
                   ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 16,
-                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 ),
                 onChanged: (_) => setState(() {}),
               ),
               const SizedBox(height: 24),
               const Text(
                 'Select Network',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              _buildNetworkOption(
-                'Bitcoin',
-                'BTC Network',
-                Icons.currency_bitcoin,
-                Colors.amber,
-              ),
+              _buildNetworkOption('Bitcoin', 'BTC Network', Icons.currency_bitcoin, Colors.amber),
               const SizedBox(height: 8),
-              _buildNetworkOption(
-                'Ethereum',
-                'ETH Network',
-                Icons.currency_exchange,
-                Colors.white,
-              ),
+              _buildNetworkOption('Ethereum', 'ETH Network', Icons.currency_exchange, Colors.white),
               const SizedBox(height: 24),
               const Text(
                 'Security PIN (6 digits)',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               _buildPinInput(),
@@ -141,22 +111,27 @@ class _CreateWalletScreenState extends State<CreateWalletScreen> {
                                 backgroundColor: Colors.green,
                               ),
                             );
-                            await widget.wallerUsecases.createWallet(
-                              widget.userId,
+                            var createdWallet = await widget.wallerUsecases.createWallet(
+                              Provider.of<UserProvider>(context, listen: false).user!.id,
                               _walletNameController.text,
                               _selectedNetwork.toLowerCase(),
                               _pinController.text,
                             );
-                            Navigator.pop(context);
+                            if (!createdWallet.isSuccess){
+                              ScaffoldMessenger.of(
+                                context,
+                              ).showSnackBar(SnackBar(content: Text('Error: ${createdWallet.error!.message}')));
+                            }else {
+                              Provider.of<WalletProvider>(context,listen: false).setWallet(createdWallet.data!);
+                              Navigator.pop(context);
+                            }
                           }
                           : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.amber,
                     disabledBackgroundColor: Colors.amber.withOpacity(0.3),
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
                   child: const Text(
                     'Create Wallet',
@@ -175,12 +150,7 @@ class _CreateWalletScreenState extends State<CreateWalletScreen> {
     );
   }
 
-  Widget _buildNetworkOption(
-    String name,
-    String subtitle,
-    IconData icon,
-    Color iconColor,
-  ) {
+  Widget _buildNetworkOption(String name, String subtitle, IconData icon, Color iconColor) {
     final isSelected = _selectedNetwork == name;
     return GestureDetector(
       onTap: () => setState(() => _selectedNetwork = name),
@@ -189,10 +159,7 @@ class _CreateWalletScreenState extends State<CreateWalletScreen> {
         decoration: BoxDecoration(
           color: const Color(0xFF2A2A2A),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: isSelected ? Colors.amber : Colors.transparent,
-            width: 2,
-          ),
+          border: Border.all(color: isSelected ? Colors.amber : Colors.transparent, width: 2),
         ),
         child: Row(
           children: [
@@ -200,8 +167,7 @@ class _CreateWalletScreenState extends State<CreateWalletScreen> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color:
-                    isSelected ? Colors.amber.withOpacity(0.2) : Colors.black26,
+                color: isSelected ? Colors.amber.withOpacity(0.2) : Colors.black26,
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: iconColor),
@@ -218,10 +184,7 @@ class _CreateWalletScreenState extends State<CreateWalletScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Text(
-                  subtitle,
-                  style: TextStyle(color: Colors.grey[500], fontSize: 14),
-                ),
+                Text(subtitle, style: TextStyle(color: Colors.grey[500], fontSize: 14)),
               ],
             ),
             const Spacer(),
@@ -271,10 +234,7 @@ class _CreateWalletScreenState extends State<CreateWalletScreen> {
                   margin: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color:
-                        _pinFilledStatus[index]
-                            ? Colors.amber
-                            : Colors.grey.withOpacity(0.3),
+                    color: _pinFilledStatus[index] ? Colors.amber : Colors.grey.withOpacity(0.3),
                   ),
                 ),
               ),

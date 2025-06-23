@@ -10,7 +10,7 @@ class MainActivity : FlutterActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-
+        val mpcClient = Gomobile.newMPCMobileClient()
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             CHANNEL
@@ -20,12 +20,45 @@ class MainActivity : FlutterActivity() {
                     val sessionId = call.argument<String>("sessionId") ?: ""
                     val accountKey = call.argument<String>("accountKey") ?: ""
                     val clientSecret = call.argument<ByteArray>("clientSecret")
-                    val mpcClient = Gomobile.newMPCMobileClient()
                     val message = mpcClient.computeShareKey(
                         sessionId,
                         accountKey,
                         clientSecret
                     ) // gọi đúng instance
+                    result.success(message)
+                }
+
+                "prepareSign" -> {
+                    val sessionId = call.argument<String>("sessionId") ?: ""
+                    val rawMsg = call.argument<ByteArray>("rawMsg")
+                    val message = mpcClient.prepareSign(
+                        sessionId,
+                        rawMsg
+                    )
+                    result.success(message)
+                }
+
+                "invokeSign" -> {
+                    val sessionId = call.argument<String>("sessionId") ?: ""
+                    val round1Sum = call.argument<ByteArray>("round1Sum")
+                    val clientSecret = call.argument<ByteArray>("clientSecret")
+                    val message = mpcClient.invokeSign(
+                        sessionId,
+                        round1Sum,
+                        clientSecret
+                    )
+                    result.success(message)
+                }
+
+                "combineSignature" -> {
+                    val sessionId = call.argument<String>("sessionId") ?: ""
+                    val round2Sum = call.argument<ByteArray>("round2Sum")
+                    val rx = call.argument<ByteArray>("rx")
+                    val message = mpcClient.combineSignature(
+                        sessionId,
+                        round2Sum,
+                        rx
+                    )
                     result.success(message)
                 }
 

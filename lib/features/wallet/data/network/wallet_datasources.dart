@@ -6,8 +6,8 @@ import 'package:digital_asset_flutter/features/wallet/data/DTO/wallet_dto.dart';
 import 'package:digital_asset_flutter/features/wallet/domain/entities/wallet.dart';
 import 'package:digital_asset_flutter/features/wallet/domain/repositories/wallet_repository.dart';
 import 'package:http/http.dart' as http;
-import 'package:uuid/uuid.dart';
 import 'dart:typed_data';
+import 'package:uuid/uuid.dart';
 
 class WalletRepositoryImpl implements WalletRepository {
   final http.Client client;

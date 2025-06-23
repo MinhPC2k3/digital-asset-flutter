@@ -3,6 +3,7 @@ import 'package:digital_asset_flutter/features/auth/domain/entities/user.dart';
 import 'package:digital_asset_flutter/features/wallet/domain/entities/wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 import 'create_wallet.dart';
 import '../data/network/wallet_datasources.dart';
@@ -10,13 +11,8 @@ import '../domain/usecases/wallet_usecase.dart';
 
 // Wallet Selector Modal
 class WalletSelectorModal extends StatefulWidget {
-  const WalletSelectorModal({
-    super.key,
-    required this.walletUsecases,
-    required this.user,
-  });
+  const WalletSelectorModal({super.key, required this.walletUsecases});
 
-  final User user;
   final WallerUsecases walletUsecases;
 
   @override
@@ -31,12 +27,12 @@ class WalletSelectorModalState extends State<WalletSelectorModal> {
   @override
   void initState() {
     super.initState();
-    _fetchData = _initialize();
+    _fetchData = _initialize(Provider.of<UserProvider>(context,listen: false).user!.id);
   }
 
-  Future<Result<List<Wallet>>> _initialize() async {
+  Future<Result<List<Wallet>>> _initialize(String userId) async {
     Result<List<Wallet>> listWallets = await widget.walletUsecases
-        .getUserWallet(widget.user.id);
+        .getUserWallet(userId);
     return listWallets;
   }
 
@@ -220,7 +216,6 @@ class WalletSelectorModalState extends State<WalletSelectorModal> {
                                 MaterialPageRoute(
                                   builder:
                                       (context) => CreateWalletScreen(
-                                        userId: widget.user.id,
                                         wallerUsecases: widget.walletUsecases,
                                       ),
                                   fullscreenDialog: true,
