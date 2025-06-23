@@ -1,19 +1,27 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:digital_asset_flutter/core/constants/route.dart';
+import 'package:digital_asset_flutter/features/auth/domain/entities/user.dart';
+import 'package:digital_asset_flutter/features/wallet/domain/entities/wallet.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'dart_ffi.dart';
-
-import 'features/auth/presentation/homepage.dart';
-
+import 'package:provider/provider.dart';
 import 'features/auth/presentation/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => WalletProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -25,43 +33,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
+      onGenerateRoute: CustomRouter.generateRoute,
+      initialRoute: Routes.auth,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       home: LoginScreen(),
-      // home: Center(
-      //   child: FutureBuilder<String>(
-      //     future: GoBridge.computeShareKey(
-      //       "SessionID",
-      //       "12345",
-      //       Uint8List.fromList(utf8.encode("12345")),
-      //     ),
-      //     builder: (context, snapshot) {
-      //       if (snapshot.connectionState == ConnectionState.waiting) {
-      //         return CircularProgressIndicator();
-      //       } else if (snapshot.hasError) {
-      //         return Text('Lỗi: ${snapshot.error}');
-      //       } else {
-      //         return Text(snapshot.data ?? "Không có dữ liệu");
-      //       }
-      //     },
-      //   ),
-      // ),
+
     );
   }
 }

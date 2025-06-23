@@ -1,24 +1,25 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:convert/convert.dart';
+import 'package:flutter/foundation.dart';
 
 class Wallet {
-  final String id; // UUID
-  final String walletId; // UUID
-  final String userId; // User email
-  final String networkId; // UUID
-  final String networkName; // e.g. Ethereum, Bitcoin
-  final String networkSymbol; // e.g. ETH, BTC
-  final String address; // Wallet address (from public key)
-  final String publicKey; // Public key
-  final DateTime? createdAt; // Wallet creation time
-  final DateTime? updatedAt; // Last update time
-  final String status; // Wallet status
-  final String accountKey; // Key used for share key phase
-  final String version; // Version of account key
-  final String walletName; // User-given name for the wallet
+   String id; // UUID
+   String walletId; // UUID
+   String userId; // User email
+   String networkId; // UUID
+   String networkName; // e.g. Ethereum, Bitcoin
+   String networkSymbol; // e.g. ETH, BTC
+   String address; // Wallet address (from public key)
+   String publicKey; // Public key
+   DateTime? createdAt; // Wallet creation time
+   DateTime? updatedAt; // Last update time
+   String status; // Wallet status
+   String accountKey; // Key used for share key phase
+   String version; // Version of account key
+   String walletName; // User-given name for the wallet
 
-  const Wallet({
+  Wallet({
     required this.id,
     required this.walletId,
     required this.userId,
@@ -62,5 +63,16 @@ class ShareKeyData {
     final hexStr = number.toRadixString(16);
     final evenLengthHex = hexStr.length.isOdd ? '0$hexStr' : hexStr;
     return Uint8List.fromList(hex.decode(evenLengthHex));
+  }
+}
+
+class WalletProvider with ChangeNotifier{
+  Wallet? _wallet;
+
+  Wallet? get wallet => _wallet;
+
+  void setWallet(Wallet wallet) {
+    _wallet = wallet;
+    notifyListeners();
   }
 }

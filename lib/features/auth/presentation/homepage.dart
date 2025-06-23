@@ -6,17 +6,18 @@ import 'package:digital_asset_flutter/features/auth/domain/usecases/user_usecase
 import 'package:digital_asset_flutter/features/wallet/presentation/create_wallet.dart';
 import 'package:digital_asset_flutter/features/wallet/data/network/wallet_datasources.dart';
 import 'package:digital_asset_flutter/features/wallet/domain/usecases/wallet_usecase.dart';
+import 'package:provider/provider.dart';
 
 import '../../../core/network/result.dart';
 import '../../wallet/domain/entities/wallet.dart';
 import '../../wallet/presentation/swap.dart';
 import '../../wallet/presentation/wallet_selector.dart';
-import 'transaction_review.dart';
+import '../../transaction/presentation/transaction_review.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class HomePage extends StatelessWidget {
-  HomePage({super.key, required this.user}) {
+  HomePage({super.key}) {
     repo = UserRepositoryImpl(http.Client());
     userUsecase = UserUsecases(userRepository: repo);
     walletRepo = WalletRepositoryImpl(http.Client());
@@ -25,22 +26,39 @@ class HomePage extends StatelessWidget {
 
   late final UserRepositoryImpl repo;
   late final UserUsecases userUsecase;
-  final User user;
   late final WalletRepositoryImpl walletRepo;
   late final WallerUsecases walletUsecase;
 
-  void _showWalletSelector(BuildContext context, User user) {
+  void _showWalletSelector(BuildContext context) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder:
           (context) =>
-              WalletSelectorModal(user: user, walletUsecases: walletUsecase),
+              WalletSelectorModal(walletUsecases: walletUsecase),
     );
   }
 
-  void _showSendScreen(BuildContext context) {
+  void _showSendScreen(BuildContext context) async{
+    final userProvider = Provider.of<UserProvider>(context,listen: false);
+    final wallets = await walletUsecase.getUserWallet(userProvider.user!.id);
+    if (!wallets.isSuccess){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(wallets.error!.toString()),
+        ),
+      );
+      return;
+    }
+    if (wallets.data!.isEmpty){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("You have to create wallet first"),
+        ),
+      );
+      return;
+    }
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -50,12 +68,6 @@ class HomePage extends StatelessWidget {
   }
 
   void _showSwapScreen(BuildContext context) {
-    // showModalBottomSheet(
-    //   context: context,
-    //   backgroundColor: Colors.transparent,
-    //   isScrollControlled: true,
-    //   builder: (context) => const SwapScreen(),
-    // );
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -89,7 +101,7 @@ class HomePage extends StatelessWidget {
                           // Make Main Wallet clickable
                           GestureDetector(
                             onTap: () async {
-                              _showWalletSelector(context, user);
+                              _showWalletSelector(context);
                             },
                             child: Row(
                               children: [
@@ -631,11 +643,12 @@ class HomePage extends StatelessWidget {
 class SendCryptoModal extends StatelessWidget {
   const SendCryptoModal({Key? key}) : super(key: key);
 
-  void _showSendAmountScreen(BuildContext context) {
+  void _showSendAmountScreen(BuildContext context, String receiverAddress) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const SendAmountScreen(),
+        builder:
+            (context) => SendAmountScreen(receiverAddress: receiverAddress),
         fullscreenDialog: true,
       ),
     );
@@ -697,29 +710,6 @@ class SendCryptoModal extends StatelessWidget {
               ],
             ),
           ),
-
-          // Search Bar
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: Colors.grey[800],
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.search, color: Colors.grey[400], size: 20),
-                const SizedBox(width: 12),
-                Text(
-                  'Search',
-                  style: TextStyle(color: Colors.grey[400], fontSize: 16),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 30),
-
           // Send Crypto Title and Description
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -738,6 +728,48 @@ class SendCryptoModal extends StatelessWidget {
                 const Text(
                   'Transfer your funds to another crypto wallet or exchange. You\'ll need their address.',
                   style: TextStyle(color: Colors.grey, fontSize: 16),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 30),
+          // Search Bar
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.grey[800],
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.search, color: Colors.grey[400], size: 20),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextField(
+                    controller: TextEditingController(),
+                    // Add controller if needed
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                    decoration: InputDecoration(
+                      hintText: 'Search',
+                      hintStyle: TextStyle(
+                        color: Colors.grey[400],
+                        fontSize: 16,
+                      ),
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    onChanged: (value) {
+                      // Handle search input
+                      print('Search query: $value');
+                    },
+                    onSubmitted: (value) {
+                      // Handle when user presses enter
+                      print('Search submitted: $value');
+                      _showSendAmountScreen(context, value);
+                    },
+                  ),
                 ),
               ],
             ),
@@ -775,7 +807,11 @@ class SendCryptoModal extends StatelessWidget {
 
           // Ethereum Item - Make it clickable
           GestureDetector(
-            onTap: () => _showSendAmountScreen(context),
+            onTap:
+                () => _showSendAmountScreen(
+                  context,
+                  "0x5cfd458d3ffce527976a80a238c3a6e3facc4eee",
+                ),
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 20),
               padding: const EdgeInsets.all(16),
@@ -857,7 +893,9 @@ class SendCryptoModal extends StatelessWidget {
 
 // Send Amount Screen
 class SendAmountScreen extends StatefulWidget {
-  const SendAmountScreen({super.key});
+  const SendAmountScreen({super.key, required this.receiverAddress});
+
+  final String receiverAddress;
 
   @override
   State<SendAmountScreen> createState() => _SendAmountScreenState();
@@ -892,11 +930,15 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
     });
   }
 
-  void _showReviewScreen(BuildContext context) {
+  void _showReviewScreen(BuildContext context, String receiverAddress) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => TransactionReviewScreen(amount: amount),
+        builder:
+            (context) => TransactionReviewScreen(
+              amount: amount,
+              receiverAddress: receiverAddress,
+            ),
         fullscreenDialog: true,
       ),
     );
@@ -1061,7 +1103,10 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
               margin: const EdgeInsets.all(18),
               child: ElevatedButton(
                 onPressed:
-                    amount != '0' ? () => _showReviewScreen(context) : null,
+                    amount != '0'
+                        ? () =>
+                            _showReviewScreen(context, widget.receiverAddress)
+                        : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
                       amount != '0' ? Colors.orange : Colors.grey[700],
@@ -1088,43 +1133,50 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
 
   Widget _buildNumberButton(String number) {
     return Expanded(
-        child: GestureDetector(
-          onTap: () => _onNumberPressed(number),
-          child: Container(
-            height: 30,
-            margin: EdgeInsets.all(3),
-            decoration: BoxDecoration(
-              color: Colors.grey[800],
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Center(
-              child: Text(
-                number,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
+      child: GestureDetector(
+        onTap: () => _onNumberPressed(number),
+        child: Container(
+          height: 30,
+          margin: EdgeInsets.all(3),
+          decoration: BoxDecoration(
+            color: Colors.grey[800],
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Center(
+            child: Text(
+              number,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 
   Widget _buildBackspaceButton() {
-    return Expanded(child: GestureDetector(
-      onTap: _onBackspacePressed,
-      child: Container(
-        height: 30,
-        margin: EdgeInsets.all(3),
-        decoration: BoxDecoration(
-          color: Colors.grey[800],
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Center(
-          child: Icon(Icons.backspace_outlined, color: Colors.white, size: 20),
+    return Expanded(
+      child: GestureDetector(
+        onTap: _onBackspacePressed,
+        child: Container(
+          height: 30,
+          margin: EdgeInsets.all(3),
+          decoration: BoxDecoration(
+            color: Colors.grey[800],
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Center(
+            child: Icon(
+              Icons.backspace_outlined,
+              color: Colors.white,
+              size: 20,
+            ),
+          ),
         ),
       ),
-    ));
+    );
   }
 }
