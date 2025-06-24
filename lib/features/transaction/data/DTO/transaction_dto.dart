@@ -32,6 +32,7 @@ class RawTransactionDTO {
   }
 
   Transaction toDomain(Transaction transaction) {
+    print("From address object ${ethereumTx}");
     transaction.rawEthereumTransaction.fromAddress = fromAddress;
     transaction.rawEthereumTransaction.chainId = chainId;
     transaction.rawEthereumTransaction.toAddress = toAddress;

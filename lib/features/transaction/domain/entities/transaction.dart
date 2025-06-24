@@ -34,6 +34,22 @@ class Transaction {
          txHash: '',
          ethereumTx: {},
        );
+
+  @override
+  String toString() {
+    return 'Transaction('
+        'userId: $userId, '
+        'walletId: $walletId, '
+        'assetId: $assetId, '
+        'amount: $amount, '
+        'receiverAddress: $receiverAddress, '
+        'blockchainType: $blockchainType, '
+        'networkName: $networkName, '
+        'metadata: ${metadata != null ? metadata.toString() : 'null'}, '
+        'rawEthereumTransaction: ${rawEthereumTransaction.toString()}, '
+        'transactionType: $transactionType'
+        ')';
+  }
 }
 
 class RawEthereumTransaction {
@@ -54,6 +70,11 @@ class RawEthereumTransaction {
     required this.txHash,
     required this.ethereumTx,
   });
+
+  @override
+  String toString() {
+    return 'RawEthereumTransaction(blockchainType: $blockchainType, networkName: $networkName, from: $fromAddress, to: $toAddress, chainId: $chainId, txHash: $txHash, ethereumTx: $ethereumTx)';
+  }
 }
 
 class SignInfo {
@@ -85,7 +106,6 @@ class SignInfo {
 
   factory SignInfo.fromJson(Map<String, dynamic> json) {
     var gamma1gJson = json['gamma1g'];
-    print("Object string: $gamma1gJson");
     return SignInfo(
       k1: json['k1'] ?? '',
       gamma1: json['gamma1'] ?? '',
@@ -119,5 +139,5 @@ class Signature {
   String s;
   String v;
 
-  Signature({required this.r,required this.s,required this.v});
+  Signature({required this.r, required this.s, required this.v});
 }

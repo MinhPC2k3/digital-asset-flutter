@@ -62,6 +62,20 @@ class MainActivity : FlutterActivity() {
                     result.success(message)
                 }
 
+                "getFingerprint" -> {
+                    val chainIdStr = call.argument<String>("chainIdStr") ?: ""
+                    val nonceStr = call.argument<String>("nonceStr") ?: ""
+                    val toStr = call.argument<String>("toStr") ?: ""
+                    val gasStr = call.argument<String>("gasStr") ?: ""
+                    val gasPriceStr = call.argument<String>("gasPriceStr") ?: ""
+                    val inputStr = call.argument<String>("inputStr") ?: ""
+                    val valueStr = call.argument<String>("valueStr") ?: ""
+                    val message = mpcClient.getFingerPrint(
+                        chainIdStr, nonceStr, toStr, valueStr, gasStr, gasPriceStr, inputStr
+                    )
+                    result.success(message)
+                }
+
                 else -> result.notImplemented()
             }
         }

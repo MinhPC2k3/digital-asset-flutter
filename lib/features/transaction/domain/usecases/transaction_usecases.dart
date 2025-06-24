@@ -7,46 +7,59 @@ import 'package:digital_asset_flutter/features/transaction/domain/entities/trans
 import 'package:digital_asset_flutter/features/transaction/domain/repositories/transaction_repository.dart';
 import 'package:digital_asset_flutter/core/helper/helper.dart';
 import 'package:uuid/uuid.dart';
-import 'package:web3dart/crypto.dart';
-
 import 'dart:typed_data';
 import 'package:web3dart/web3dart.dart';
-import 'package:rlp/rlp.dart';
+import 'package:web3dart/crypto.dart';
 import 'package:convert/convert.dart';
+import 'package:rlp/rlp.dart';
 
 Future<String> createTransactionFingerprint({
   required int chainId,
   required int nonce,
-  required EthereumAddress to,
+  required to,
   required BigInt value,
   required BigInt gasPrice,
+  required BigInt gas,
   required Uint8List data,
 }) async {
   // Create the unsigned transaction
   final tx = Transaction(
-    to: to,
     nonce: nonce,
-    value: EtherAmount.inWei(value),
     gasPrice: EtherAmount.inWei(gasPrice),
     maxGas: 60000,
     data: data,
   );
-
+  print(
+    "from finger print nonce: $nonce, gas: ${gas.toString()},gasPrice: ${gasPrice.toString()},value: ${value.toString()},chainId: ${BigInt.from(chainId)},to: ${to.toString()}",
+  );
   // Use EIP-155 to hash the transaction for signing
   final rlpEncoded = Rlp.encode([
-    Rlp.encode(nonce),
-    Rlp.encode(gasPrice),
-    Rlp.encode(BigInt.from(60000)),
+    hexToInt('0x5'),
+    hexToInt('0x3b9aca00'),
+    hexToInt('0x5208'),
     to.addressBytes,
-    Rlp.encode(value),
+    hexToInt('0x2386f26fc10000'),
     data,
-    Rlp.encode(BigInt.from(chainId)), // v (EIP-155)
-    Uint8List(0), // r
-    Uint8List(0), // s
+    hexToInt('0x4d2'),
+    0, // r
+    0, // s
   ]);
 
-  final fingerprint = keccak256(rlpEncoded);
-  return base64Encode(fingerprint);
+  // Hash it using keccak256
+  final transactionHash = keccak256(rlpEncoded);
+  return base64Encode(transactionHash);
+}
+
+Uint8List encodeBigInt(BigInt number) {
+  if (number == BigInt.zero) return Uint8List(0);
+
+  var _number = number;
+  final result = <int>[];
+  while (_number > BigInt.zero) {
+    result.insert(0, (_number & BigInt.from(0xff)).toInt());
+    _number = _number >> 8;
+  }
+  return Uint8List.fromList(result);
 }
 
 class TransactionUsecase {
@@ -63,19 +76,32 @@ class TransactionUsecase {
     if (!rawTransaction.isSuccess) {
       return Result<transaction_model.SignInfo>.failure(rawTransaction.error);
     }
-    var fingerprint = await createTransactionFingerprint(
-      chainId: int.parse(rawTransaction.data!.rawEthereumTransaction.chainId),
-      nonce:
-          covertStringToBigInt(
-            rawTransaction.data!.rawEthereumTransaction.ethereumTx['nonce'],
-          ).toInt(),
-      to: EthereumAddress.fromHex(rawTransaction.data!.rawEthereumTransaction.toAddress),
-      value: covertStringToBigInt(rawTransaction.data!.rawEthereumTransaction.ethereumTx['value']),
-      gasPrice: covertStringToBigInt(
-        rawTransaction.data!.rawEthereumTransaction.ethereumTx['gasPrice'],
-      ),
-      data: Uint8List(0),
+    print("Transaction object after ${transaction.toString()}");
+    // var fingerprint = await createTransactionFingerprint(
+    //   chainId: int.parse(rawTransaction.data!.rawEthereumTransaction.chainId),
+    //   nonce:
+    //       covertStringToBigInt(
+    //         rawTransaction.data!.rawEthereumTransaction.ethereumTx['nonce'],
+    //       ).toInt(),
+    //   to: EthereumAddress.fromHex(rawTransaction.data!.rawEthereumTransaction.toAddress),
+    //   value: covertStringToBigInt(rawTransaction.data!.rawEthereumTransaction.ethereumTx['value']),
+    //   gasPrice: covertStringToBigInt(
+    //     rawTransaction.data!.rawEthereumTransaction.ethereumTx['gasPrice'],
+    //   ),
+    //   gas: covertStringToBigInt(rawTransaction.data!.rawEthereumTransaction.ethereumTx['gas']),
+    //   data: Uint8List(0),
+    // );
+    print("RawTx before finger print ${rawTransaction.data!.rawEthereumTransaction.ethereumTx}");
+    var fingerprint = await GoBridge.getFingerprint(
+      '1234',
+      rawTransaction.data!.rawEthereumTransaction.ethereumTx['nonce'],
+      rawTransaction.data!.rawEthereumTransaction.ethereumTx['to'],
+      rawTransaction.data!.rawEthereumTransaction.ethereumTx['value'],
+      rawTransaction.data!.rawEthereumTransaction.ethereumTx['gas'],
+      rawTransaction.data!.rawEthereumTransaction.ethereumTx['gasPrice'],
+      '0x',
     );
+
     var sessionId = Uuid().v4();
     print("Before sessionId $sessionId");
     print("Before fingerprint $fingerprint");
@@ -154,9 +180,13 @@ class TransactionUsecase {
     transaction.rawEthereumTransaction.ethereumTx.addAll({
       'r': toEthereumHex(bytesToBigInt(base64Decode(signatureResult.data!.r))),
       's': toEthereumHex(bytesToBigInt(base64Decode(signatureResult.data!.s))),
-      'v': toEthereumHex(bytesToBigInt(base64Decode(signatureResult.data!.v))+BigInt.from(1234*2+35)),
+      'v': toEthereumHex(
+        bytesToBigInt(base64Decode(signatureResult.data!.v)) + BigInt.from(1234 * 2 + 35),
+      ),
     });
-    print("v value from http: ${(bytesToBigInt(base64Decode(signatureResult.data!.v))+BigInt.from(1234*2+35)).toString()}");
+    print(
+      "v value from http: ${(bytesToBigInt(base64Decode(signatureResult.data!.v)) + BigInt.from(1234 * 2 + 35)).toString()}",
+    );
     print('byte to bigInt ${toEthereumHex(bytesToBigInt(base64Decode(signatureResult.data!.v)))}');
     print('bigInt value: ${bytesToBigInt(base64Decode(signatureResult.data!.v))}');
     var sendAssetRes = await _transactionRepository.sendNative(signInfo, transaction);
