@@ -108,6 +108,8 @@ class TransactionUsecase {
     transaction_model.SignInfo signInfo,
     String userPin,
   ) async {
+    print("transaction from ui ${transaction.rawEthereumTransaction.ethereumTx}");
+    print("transaction amount from ui ${transaction.amount}");
     var invokeSignString = await GoBridge.invokeSign(
       signInfo.sessionId,
       base64Decode(signInfo.sum),
@@ -150,11 +152,13 @@ class TransactionUsecase {
     transaction.rawEthereumTransaction.ethereumTx.remove('s');
     transaction.rawEthereumTransaction.ethereumTx.remove('v');
     transaction.rawEthereumTransaction.ethereumTx.addAll({
-      'r': bigIntToHex(bytesToBigInt(base64Decode(signatureResult.data!.r))),
-      's': bigIntToHex(bytesToBigInt(base64Decode(signatureResult.data!.s))),
-      'v': bigIntToHex(bytesToBigInt(base64Decode(signatureResult.data!.v))+BigInt.from(27)),
+      'r': toEthereumHex(bytesToBigInt(base64Decode(signatureResult.data!.r))),
+      's': toEthereumHex(bytesToBigInt(base64Decode(signatureResult.data!.s))),
+      'v': toEthereumHex(bytesToBigInt(base64Decode(signatureResult.data!.v))+BigInt.from(1234*2+35)),
     });
-    print('byte to bigInt ${bigIntToHex(bytesToBigInt(base64Decode(signatureResult.data!.r)))}');
+    print("v value from http: ${(bytesToBigInt(base64Decode(signatureResult.data!.v))+BigInt.from(1234*2+35)).toString()}");
+    print('byte to bigInt ${toEthereumHex(bytesToBigInt(base64Decode(signatureResult.data!.v)))}');
+    print('bigInt value: ${bytesToBigInt(base64Decode(signatureResult.data!.v))}');
     var sendAssetRes = await _transactionRepository.sendNative(signInfo, transaction);
     return sendAssetRes;
   }
@@ -191,24 +195,24 @@ BigInt bytesToBigInt(Uint8List bytes) {
   return result;
 }
 
-String bigIntToHex(BigInt value, {int? padToBytes}) {
-  final bytes = _bigIntToBytes(value);
+String toEthereumHex(BigInt bigInt) {
+  // Convert BigInt to hexadecimal string
+  String hex = bigInt.toRadixString(16);
 
-  // Only pad if padToBytes is provided
-  final padded = (padToBytes != null && bytes.length < padToBytes)
-      ? List.filled(padToBytes - bytes.length, 0) + bytes
-      : bytes;
+  // Remove any leading zeros (not necessary here, but good practice)
+  hex = hex.replaceFirst(RegExp(r'^0+'), '');
 
-  return '0x${hex.encode(padded)}';
+  // Ensure at least '0' is present
+  if (hex.isEmpty) {
+    hex = '0';
+  }
+
+  // Add '0x' prefix
+  return '0x$hex';
 }
 
-List<int> _bigIntToBytes(BigInt number) {
-  if (number == BigInt.zero) return [0];
-  final result = <int>[];
-  var temp = number;
-  while (temp > BigInt.zero) {
-    result.insert(0, (temp & BigInt.from(0xff)).toInt());
-    temp = temp >> 8;
-  }
-  return result;
+String ethToWeiString(String ethValueStr) {
+  final ethValue = double.parse(ethValueStr);
+  final wei = BigInt.from(ethValue * 1e18);
+  return wei.toString(); // return as decimal string
 }

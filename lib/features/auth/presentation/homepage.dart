@@ -810,7 +810,7 @@ class SendCryptoModal extends StatelessWidget {
             onTap:
                 () => _showSendAmountScreen(
                   context,
-                  "0x5cfd458d3ffce527976a80a238c3a6e3facc4eee",
+                  "0x2a6A36dEB1593dEb03b0cFd6d1fb2Cb20BC93E2C",
                 ),
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 20),
