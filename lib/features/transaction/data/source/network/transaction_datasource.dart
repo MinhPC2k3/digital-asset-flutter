@@ -27,7 +27,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
       },
       "data": {
         "wallet_id": transaction.walletId,
-        "amount": ethToWeiString(transaction.amount),
+        "amount": ethToWeiString('0.01'),
         "receiver_address": transaction.receiverAddress,
         "asset_id": "asset-eth-0001",
         "network_name": transaction.networkName,
@@ -85,7 +85,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
       headers: headers,
       body: jsonEncode(reqBody),
     );
-
+    print("Request prepare sign: ${reqBody}");
     print("Response: ${res.body}");
     if (res.statusCode == 200) {
       final Map<String, dynamic> decoded = json.decode(res.body);
@@ -218,6 +218,11 @@ class TransactionRepositoryImpl implements TransactionRepository {
   @override
   Future<Result<String>> sendNative(SignInfo signInfo, Transaction transaction) async {
     String url = ApiEndpoints.sendAsset;
+    transaction.rawEthereumTransaction.ethereumTx.addAll({
+      'chainId' : "0x4d2",
+      'maxPriorityFeePerGas': null,
+      'maxFeePerGas':null
+    });
     print("Doing send native....$url");
     print("Transaction type ${transaction.transactionType}");
     Map<String, String> headers = {"Content-type": "application/json"};
@@ -235,7 +240,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
         "signed_transaction": {
           "ethereumTx": transaction.rawEthereumTransaction.ethereumTx,
         },
-        "amount": ethToWeiString(transaction.amount),
+        "amount": ethToWeiString('0.01'),
       },
     };
     print("Request: ${jsonEncode(reqBody)}");

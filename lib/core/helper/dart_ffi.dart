@@ -49,4 +49,25 @@ class GoBridge {
     });
     return result ?? '';
   }
+
+  static Future<String> getFingerprint(
+      String chainIdStr,
+      String nonceStr,
+      String toStr,
+      String valueStr,
+      String gasStr,
+      String gasPriceStr,
+      String inputStr,
+      ) async {
+    final result = await _channel.invokeMethod<String>('getFingerprint', {
+      'chainIdStr': chainIdStr,
+      'nonceStr': nonceStr,
+      'toStr': toStr,
+      'valueStr': valueStr,
+      'gasStr': gasStr,
+      'gasPriceStr': gasPriceStr,
+      'inputStr': inputStr,
+    });
+    return result ?? '';
+  }
 }

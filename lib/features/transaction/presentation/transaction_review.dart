@@ -309,7 +309,7 @@ class TransactionReviewScreen extends StatelessWidget {
                               walletId:
                                   Provider.of<WalletProvider>(context, listen: false).wallet!.id,
                               assetId: "asset-eth-0001",
-                              amount: '0.1',
+                              amount: '0.01',
                               receiverAddress: receiverAddress,
                               blockchainType: BlockchainType.BLOCKCHAIN_TYPE_ETHEREUM,
                               networkName: "ethereum",
