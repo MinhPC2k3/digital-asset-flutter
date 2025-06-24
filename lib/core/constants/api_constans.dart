@@ -1,5 +1,5 @@
 class ApiEndpoints {
-  static const String host = 'https://2fe6-210-245-49-42.ngrok-free.app';
+  static const String host = 'http://walletcore.ntkong.com:18080';
   static const String profileBaseUrl = '$host/v1/auth';
   static const String walletCoreBaseUrl = '$host/v1/wallets';
   static const String userBaseUrl = '$host/v1/users';

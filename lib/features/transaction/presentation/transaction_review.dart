@@ -309,7 +309,7 @@ class TransactionReviewScreen extends StatelessWidget {
                               walletId:
                                   Provider.of<WalletProvider>(context, listen: false).wallet!.id,
                               assetId: "asset-eth-0001",
-                              amount: amount,
+                              amount: '0.1',
                               receiverAddress: receiverAddress,
                               blockchainType: BlockchainType.BLOCKCHAIN_TYPE_ETHEREUM,
                               networkName: "ethereum",
@@ -328,6 +328,7 @@ class TransactionReviewScreen extends StatelessWidget {
                               );
                               return;
                             }
+
                             _showPinBottomModal(context, transaction, signResponse.data!);
 
                             // CustomRouter.navigateTo(context, Routes.home);

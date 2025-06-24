@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:digital_asset_flutter/core/constants/api_constans.dart';
 import 'package:digital_asset_flutter/features/transaction/data/DTO/transaction_dto.dart';
 import 'package:digital_asset_flutter/features/transaction/domain/repositories/transaction_repository.dart';
+import 'package:digital_asset_flutter/features/transaction/domain/usecases/transaction_usecases.dart';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
@@ -26,7 +27,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
       },
       "data": {
         "wallet_id": transaction.walletId,
-        "amount": transaction.amount,
+        "amount": ethToWeiString(transaction.amount),
         "receiver_address": transaction.receiverAddress,
         "asset_id": "asset-eth-0001",
         "network_name": transaction.networkName,
@@ -38,7 +39,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
       headers: headers,
       body: jsonEncode(reqBody),
     );
-
+    print("Response: ${reqBody}");
     print("Response: ${res.body}");
     if (res.statusCode == 200) {
       final Map<String, dynamic> decoded = json.decode(res.body);
@@ -234,7 +235,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
         "signed_transaction": {
           "ethereumTx": transaction.rawEthereumTransaction.ethereumTx,
         },
-        "amount": transaction.amount,
+        "amount": ethToWeiString(transaction.amount),
       },
     };
     print("Request: ${jsonEncode(reqBody)}");
