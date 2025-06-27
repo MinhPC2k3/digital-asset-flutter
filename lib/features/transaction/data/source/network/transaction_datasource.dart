@@ -27,7 +27,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
       },
       "data": {
         "wallet_id": transaction.walletId,
-        "amount": ethToWeiString('0.01'),
+        "amount": ethToWeiString(transaction.amount),
         "receiver_address": transaction.receiverAddress,
         "asset_id": "asset-eth-0001",
         "network_name": transaction.networkName,
@@ -240,7 +240,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
         "signed_transaction": {
           "ethereumTx": transaction.rawEthereumTransaction.ethereumTx,
         },
-        "amount": ethToWeiString('0.01'),
+        "amount": ethToWeiString(transaction.amount),
       },
     };
     print("Request: ${jsonEncode(reqBody)}");

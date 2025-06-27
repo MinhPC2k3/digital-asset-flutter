@@ -44,9 +44,9 @@ class LoginScreenState extends State<LoginScreen> {
     var listWallets = await getWallet(walletUsecase, user.data!.id);
     if (!mounted) return;
     var userWallet = listWallets.data!.isEmpty ? null : listWallets.data![0];
-
     if (userWallet != null) {
       Provider.of<WalletProvider>(context, listen: false).setWallet(userWallet);
+      await walletUsecase.getWalletAssetBalances(userWallet);
     }
     Navigator.push(
       context,

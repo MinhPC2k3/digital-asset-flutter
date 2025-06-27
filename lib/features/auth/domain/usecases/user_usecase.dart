@@ -6,8 +6,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import '../entities/user.dart' as user_model;
 
 class UserUsecases {
-  UserUsecases({required UserRepository userRepository})
-    : _userRepository = userRepository;
+  UserUsecases({required UserRepository userRepository}) : _userRepository = userRepository;
   final UserRepository _userRepository;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn(

@@ -27,12 +27,11 @@ class WalletSelectorModalState extends State<WalletSelectorModal> {
   @override
   void initState() {
     super.initState();
-    _fetchData = _initialize(Provider.of<UserProvider>(context,listen: false).user!.id);
+    _fetchData = _initialize(Provider.of<UserProvider>(context, listen: false).user!.id);
   }
 
   Future<Result<List<Wallet>>> _initialize(String userId) async {
-    Result<List<Wallet>> listWallets = await widget.walletUsecases
-        .getUserWallet(userId);
+    Result<List<Wallet>> listWallets = await widget.walletUsecases.getUserWallet(userId);
     return listWallets;
   }
 
@@ -91,11 +90,7 @@ class WalletSelectorModalState extends State<WalletSelectorModal> {
                         children: [
                           GestureDetector(
                             onTap: () => Navigator.pop(context),
-                            child: Icon(
-                              Icons.close,
-                              color: Colors.orange,
-                              size: 24,
-                            ),
+                            child: Icon(Icons.close, color: Colors.orange, size: 24),
                           ),
                           const Text(
                             'My Accounts',
@@ -156,14 +151,8 @@ class WalletSelectorModalState extends State<WalletSelectorModal> {
                               itemCount: snapshot.data!.data!.length,
                               itemBuilder: (context, index) {
                                 final wallet = snapshot.data!.data![index];
-
                                 return Padding(
-                                  padding: const EdgeInsets.fromLTRB(
-                                    20,
-                                    10,
-                                    20,
-                                    10,
-                                  ),
+                                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                                   child: _buildWalletItem(wallet, index),
                                 );
                               },
@@ -178,10 +167,7 @@ class WalletSelectorModalState extends State<WalletSelectorModal> {
                       alignment: Alignment.centerLeft,
                       child: Container(
                         margin: const EdgeInsets.only(left: 20, bottom: 20),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
                           color: Colors.orange,
                           borderRadius: BorderRadius.circular(16),
@@ -215,14 +201,12 @@ class WalletSelectorModalState extends State<WalletSelectorModal> {
                                 context,
                                 MaterialPageRoute(
                                   builder:
-                                      (context) => CreateWalletScreen(
-                                        wallerUsecases: widget.walletUsecases,
-                                      ),
+                                      (context) =>
+                                          CreateWalletScreen(wallerUsecases: widget.walletUsecases),
                                   fullscreenDialog: true,
                                 ),
                               );
-                              if (result != null &&
-                                  result is Map<String, String>) {
+                              if (result != null && result is Map<String, String>) {
                                 final walletName = result['walletName'];
                                 final networkId = result['networkId'];
 
@@ -242,9 +226,7 @@ class WalletSelectorModalState extends State<WalletSelectorModal> {
                               decoration: BoxDecoration(
                                 color: Colors.transparent,
                                 borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: Colors.orange.withOpacity(0.3),
-                                ),
+                                border: Border.all(color: Colors.orange.withOpacity(0.3)),
                               ),
                               child: Row(
                                 children: [
@@ -283,9 +265,7 @@ class WalletSelectorModalState extends State<WalletSelectorModal> {
                             decoration: BoxDecoration(
                               color: Colors.transparent,
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: Colors.orange.withOpacity(0.3),
-                              ),
+                              border: Border.all(color: Colors.orange.withOpacity(0.3)),
                             ),
                             child: Row(
                               children: [
@@ -295,11 +275,7 @@ class WalletSelectorModalState extends State<WalletSelectorModal> {
                                     color: Colors.orange.withOpacity(0.2),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
-                                  child: Icon(
-                                    Icons.security,
-                                    color: Colors.orange,
-                                    size: 20,
-                                  ),
+                                  child: Icon(Icons.security, color: Colors.orange, size: 20),
                                 ),
                                 const SizedBox(width: 16),
                                 const Text(
@@ -333,6 +309,7 @@ class WalletSelectorModalState extends State<WalletSelectorModal> {
       onTap: () {
         setState(() {
           _selectedWalletIndex = index;
+          Provider.of<WalletProvider>(context,listen: false).setWallet(wallet);
         });
       },
       child: Container(
@@ -341,10 +318,7 @@ class WalletSelectorModalState extends State<WalletSelectorModal> {
         decoration: BoxDecoration(
           color: Colors.transparent,
           borderRadius: BorderRadius.circular(12),
-          border:
-              isSelected
-                  ? Border.all(color: const Color(0xFFFF9800), width: 1)
-                  : null,
+          border: isSelected ? Border.all(color: const Color(0xFFFF9800), width: 1) : null,
         ),
         child: Row(
           children: [
@@ -356,11 +330,7 @@ class WalletSelectorModalState extends State<WalletSelectorModal> {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Center(
-                child: Icon(
-                  Icons.account_balance_wallet,
-                  color: Color(0xFFFF9800),
-                  size: 20,
-                ),
+                child: Icon(Icons.account_balance_wallet, color: Color(0xFFFF9800), size: 20),
               ),
             ),
             const SizedBox(width: 12),
@@ -378,10 +348,7 @@ class WalletSelectorModalState extends State<WalletSelectorModal> {
                   ),
                   Text(
                     wallet.networkName,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.white.withOpacity(0.7),
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.white.withOpacity(0.7)),
                   ),
                 ],
               ),
@@ -390,10 +357,7 @@ class WalletSelectorModalState extends State<WalletSelectorModal> {
               Container(
                 width: 24,
                 height: 24,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFFF9800),
-                  shape: BoxShape.circle,
-                ),
+                decoration: const BoxDecoration(color: Color(0xFFFF9800), shape: BoxShape.circle),
                 child: const Icon(Icons.check, color: Colors.white, size: 16),
               ),
           ],

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:digital_asset_flutter/features/auth/data/source/network/user_datasources.dart';
@@ -16,7 +17,7 @@ import '../../transaction/presentation/transaction_review.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   HomePage({super.key}) {
     repo = UserRepositoryImpl(http.Client());
     userUsecase = UserUsecases(userRepository: repo);
@@ -34,29 +35,23 @@ class HomePage extends StatelessWidget {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder:
-          (context) =>
-              WalletSelectorModal(walletUsecases: walletUsecase),
+      builder: (context) => WalletSelectorModal(walletUsecases: walletUsecase),
     );
   }
 
-  void _showSendScreen(BuildContext context) async{
-    final userProvider = Provider.of<UserProvider>(context,listen: false);
+  void _showSendScreen(BuildContext context) async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
     final wallets = await walletUsecase.getUserWallet(userProvider.user!.id);
-    if (!wallets.isSuccess){
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(wallets.error!.toString()),
-        ),
-      );
+    if (!wallets.isSuccess) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(wallets.error!.toString())));
       return;
     }
-    if (wallets.data!.isEmpty){
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("You have to create wallet first"),
-        ),
-      );
+    if (wallets.data!.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("You have to create wallet first")));
       return;
     }
     showModalBottomSheet(
@@ -70,15 +65,82 @@ class HomePage extends StatelessWidget {
   void _showSwapScreen(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => const SwapScreen(),
-        fullscreenDialog: true,
+      MaterialPageRoute(builder: (context) => const SwapScreen(), fullscreenDialog: true),
+    );
+  }
+
+  Widget _buildActionButton(
+    BuildContext context,
+    IconData icon,
+    String label, {
+    VoidCallback? onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(30)),
+            child: Icon(icon, color: Colors.black, size: 24),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500),
+          ),
+        ],
       ),
     );
   }
 
+  Widget _buildBottomNavItem(IconData icon, String label, bool isActive) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(icon, color: isActive ? Colors.orange : Colors.grey, size: 24),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: TextStyle(
+            color: isActive ? Colors.orange : Colors.grey,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  State<StatefulWidget> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<WalletProvider>(context, listen: false).updateValuation(widget.walletUsecase);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final walletWithoutListenChange = Provider.of<WalletProvider>(context, listen: false).wallet;
+
+    List<AssetBalance> assetBalancesNotListenChange =
+        walletWithoutListenChange?.assetBalances == null ||
+                walletWithoutListenChange!.assetBalances!.isEmpty
+            ? [defaultAssetBalance()]
+            : walletWithoutListenChange.assetBalances!;
+
+    final walletWithListenChange = Provider.of<WalletProvider>(context, listen: true).wallet;
+
+    List<AssetBalance> assetBalancesListenChange =
+        walletWithListenChange?.assetBalances == null ||
+                walletWithListenChange!.assetBalances!.isEmpty
+            ? [defaultAssetBalance()]
+            : walletWithListenChange.assetBalances!;
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A1A),
       body: SafeArea(
@@ -101,7 +163,7 @@ class HomePage extends StatelessWidget {
                           // Make Main Wallet clickable
                           GestureDetector(
                             onTap: () async {
-                              _showWalletSelector(context);
+                              widget._showWalletSelector(context);
                             },
                             child: Row(
                               children: [
@@ -114,10 +176,7 @@ class HomePage extends StatelessWidget {
                                   ),
                                 ),
                                 const SizedBox(width: 8),
-                                Icon(
-                                  Icons.keyboard_arrow_down,
-                                  color: Colors.white,
-                                ),
+                                Icon(Icons.keyboard_arrow_down, color: Colors.white),
                               ],
                             ),
                           ),
@@ -129,11 +188,7 @@ class HomePage extends StatelessWidget {
                                   color: Colors.orange.withOpacity(0.2),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: Icon(
-                                  Icons.qr_code_scanner,
-                                  color: Colors.orange,
-                                  size: 20,
-                                ),
+                                child: Icon(Icons.qr_code_scanner, color: Colors.orange, size: 20),
                               ),
                               const SizedBox(width: 12),
                               GestureDetector(
@@ -143,14 +198,10 @@ class HomePage extends StatelessWidget {
                                     color: Colors.orange.withOpacity(0.2),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
-                                  child: Icon(
-                                    Icons.logout,
-                                    color: Colors.orange,
-                                    size: 20,
-                                  ),
+                                  child: Icon(Icons.logout, color: Colors.orange, size: 20),
                                 ),
                                 onTap: () async {
-                                  userUsecase.signOut();
+                                  widget.userUsecase.signOut();
                                   Navigator.pop(context);
                                 },
                               ),
@@ -171,11 +222,7 @@ class HomePage extends StatelessWidget {
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Icon(
-                              Icons.security,
-                              color: Colors.black,
-                              size: 16,
-                            ),
+                            child: Icon(Icons.security, color: Colors.black, size: 16),
                           ),
                           const SizedBox(width: 12),
                           const Text(
@@ -201,16 +248,11 @@ class HomePage extends StatelessWidget {
 
                     // Security Progress Bar
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 8,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                       child: LinearProgressIndicator(
                         value: 2 / 9,
                         backgroundColor: Colors.grey[800],
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          Colors.orange,
-                        ),
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
                         minHeight: 4,
                       ),
                     ),
@@ -224,9 +266,7 @@ class HomePage extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: Colors.brown.withOpacity(0.3),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Colors.orange.withOpacity(0.3),
-                        ),
+                        border: Border.all(color: Colors.orange.withOpacity(0.3)),
                       ),
                       child: Row(
                         children: [
@@ -273,10 +313,7 @@ class HomePage extends StatelessWidget {
                                 gradient: LinearGradient(
                                   begin: Alignment.topCenter,
                                   end: Alignment.bottomCenter,
-                                  colors: [
-                                    Colors.transparent,
-                                    Colors.black.withOpacity(0.7),
-                                  ],
+                                  colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
                                 ),
                               ),
                             ),
@@ -288,16 +325,13 @@ class HomePage extends StatelessWidget {
                               children: [
                                 const Text(
                                   'My Balance',
-                                  style: TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: 16,
-                                  ),
+                                  style: TextStyle(color: Colors.white70, fontSize: 16),
                                 ),
                                 const SizedBox(height: 8),
                                 Row(
                                   children: [
-                                    const Text(
-                                      'd643,383',
+                                    Text(
+                                      '\$${assetBalancesListenChange[0].balance}',
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 36,
@@ -305,11 +339,7 @@ class HomePage extends StatelessWidget {
                                       ),
                                     ),
                                     const Spacer(),
-                                    Icon(
-                                      Icons.visibility_off,
-                                      color: Colors.white70,
-                                      size: 20,
-                                    ),
+                                    Icon(Icons.visibility_off, color: Colors.white70, size: 20),
                                   ],
                                 ),
                               ],
@@ -327,25 +357,21 @@ class HomePage extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          _buildActionButton(
+                          widget._buildActionButton(
                             context,
                             Icons.arrow_upward,
                             'Send',
-                            onTap: () => _showSendScreen(context),
+                            onTap: () => widget._showSendScreen(context),
                           ),
-                          _buildActionButton(
-                            context,
-                            Icons.arrow_downward,
-                            'Receive',
-                          ),
-                          _buildActionButton(
+                          widget._buildActionButton(context, Icons.arrow_downward, 'Receive'),
+                          widget._buildActionButton(
                             context,
                             Icons.swap_horiz,
                             'Swap',
-                            onTap: () => _showSwapScreen(context),
+                            onTap: () => widget._showSwapScreen(context),
                           ),
-                          _buildActionButton(context, Icons.add, 'Buy'),
-                          _buildActionButton(context, Icons.menu, 'More'),
+                          widget._buildActionButton(context, Icons.add, 'Buy'),
+                          widget._buildActionButton(context, Icons.menu, 'More'),
                         ],
                       ),
                     ),
@@ -368,11 +394,7 @@ class HomePage extends StatelessWidget {
                               color: Colors.grey[800],
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Icon(
-                              Icons.credit_card,
-                              color: Colors.white,
-                              size: 24,
-                            ),
+                            child: Icon(Icons.credit_card, color: Colors.white, size: 24),
                           ),
                           const SizedBox(width: 16),
                           Expanded(
@@ -399,11 +421,7 @@ class HomePage extends StatelessWidget {
                                       ),
                                     ),
                                     const SizedBox(width: 4),
-                                    Icon(
-                                      Icons.arrow_forward_ios,
-                                      color: Colors.orange,
-                                      size: 12,
-                                    ),
+                                    Icon(Icons.arrow_forward_ios, color: Colors.orange, size: 12),
                                   ],
                                 ),
                               ],
@@ -411,11 +429,7 @@ class HomePage extends StatelessWidget {
                           ),
                           IconButton(
                             onPressed: () {},
-                            icon: Icon(
-                              Icons.close,
-                              color: Colors.grey,
-                              size: 20,
-                            ),
+                            icon: Icon(Icons.close, color: Colors.grey, size: 20),
                           ),
                         ],
                       ),
@@ -486,7 +500,7 @@ class HomePage extends StatelessWidget {
                               ),
                             ),
                           ),
-                          const SizedBox(width: 16),
+                          const SizedBox(width: 15),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -504,29 +518,24 @@ class HomePage extends StatelessWidget {
                                     const SizedBox(width: 8),
                                     const Text(
                                       'Ethereum',
-                                      style: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 14,
-                                      ),
+                                      style: TextStyle(color: Colors.grey, fontSize: 14),
                                     ),
                                   ],
                                 ),
                                 const SizedBox(height: 4),
                                 Row(
                                   children: [
-                                    const Text(
-                                      'd68,444,951',
-                                      style: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 14,
-                                      ),
+                                    Text(
+                                      assetBalancesListenChange[0]
+                                          .last24hChange
+                                          .toStringAsFixed(2)
+                                          .toString(),
+                                      style: TextStyle(color: Colors.grey, fontSize: 14),
                                     ),
                                     const SizedBox(width: 8),
-                                    Icon(
-                                      Icons.trending_up,
-                                      color: Colors.green,
-                                      size: 16,
-                                    ),
+                                    assetBalancesListenChange[0].last24hChange > 0
+                                        ? Icon(Icons.trending_up, color: Colors.green, size: 16)
+                                        : Icon(Icons.trending_down, color: Colors.red, size: 16),
                                   ],
                                 ),
                               ],
@@ -535,8 +544,8 @@ class HomePage extends StatelessWidget {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              const Text(
-                                'd643,383',
+                              Text(
+                                '\$${assetBalancesListenChange[0].balance}',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,
@@ -544,12 +553,9 @@ class HomePage extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(height: 4),
-                              const Text(
-                                '0.0094 ETH',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 14,
-                                ),
+                              Text(
+                                '${weiToEth(assetBalancesNotListenChange[0].assetBalance).toStringAsFixed(6)} ETH',
+                                style: TextStyle(color: Colors.grey, fontSize: 14),
                               ),
                             ],
                           ),
@@ -577,64 +583,13 @@ class HomePage extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _buildBottomNavItem(Icons.home, 'Home', true),
-            _buildBottomNavItem(Icons.history, 'History', false),
-            _buildBottomNavItem(Icons.settings, 'Settings', false),
-            _buildBottomNavItem(Icons.security, 'Security', false),
+            widget._buildBottomNavItem(Icons.home, 'Home', true),
+            widget._buildBottomNavItem(Icons.history, 'History', false),
+            widget._buildBottomNavItem(Icons.settings, 'Settings', false),
+            widget._buildBottomNavItem(Icons.security, 'Security', false),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildActionButton(
-    BuildContext context,
-    IconData icon,
-    String label, {
-    VoidCallback? onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(30),
-            ),
-            child: Icon(icon, color: Colors.black, size: 24),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBottomNavItem(IconData icon, String label, bool isActive) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(icon, color: isActive ? Colors.orange : Colors.grey, size: 24),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            color: isActive ? Colors.orange : Colors.grey,
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
     );
   }
 }
@@ -647,8 +602,7 @@ class SendCryptoModal extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder:
-            (context) => SendAmountScreen(receiverAddress: receiverAddress),
+        builder: (context) => SendAmountScreen(receiverAddress: receiverAddress),
         fullscreenDialog: true,
       ),
     );
@@ -656,6 +610,21 @@ class SendCryptoModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final walletWithoutListenChange = Provider.of<WalletProvider>(context, listen: false).wallet;
+
+    List<AssetBalance> assetBalancesNotListenChange =
+    walletWithoutListenChange?.assetBalances == null ||
+        walletWithoutListenChange!.assetBalances!.isEmpty
+        ? [defaultAssetBalance()]
+        : walletWithoutListenChange.assetBalances!;
+
+    final walletWithListenChange = Provider.of<WalletProvider>(context, listen: true).wallet;
+
+    List<AssetBalance> assetBalancesListenChange =
+    walletWithListenChange?.assetBalances == null ||
+        walletWithListenChange!.assetBalances!.isEmpty
+        ? [defaultAssetBalance()]
+        : walletWithListenChange.assetBalances!;
     return Container(
       height: MediaQuery.of(context).size.height * 0.9,
       decoration: const BoxDecoration(
@@ -699,10 +668,7 @@ class SendCryptoModal extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    const Text(
-                      'Main Wallet',
-                      style: TextStyle(color: Colors.grey, fontSize: 14),
-                    ),
+                    const Text('Main Wallet', style: TextStyle(color: Colors.grey, fontSize: 14)),
                   ],
                 ),
                 // Empty container to balance the layout
@@ -718,11 +684,7 @@ class SendCryptoModal extends StatelessWidget {
               children: [
                 const Text(
                   'Send crypto',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
                 const Text(
@@ -752,10 +714,7 @@ class SendCryptoModal extends StatelessWidget {
                     style: TextStyle(color: Colors.white, fontSize: 16),
                     decoration: InputDecoration(
                       hintText: 'Search',
-                      hintStyle: TextStyle(
-                        color: Colors.grey[400],
-                        fontSize: 16,
-                      ),
+                      hintStyle: TextStyle(color: Colors.grey[400], fontSize: 16),
                       border: InputBorder.none,
                       isDense: true,
                       contentPadding: EdgeInsets.zero,
@@ -783,21 +742,14 @@ class SendCryptoModal extends StatelessWidget {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
                   color: Colors.grey[800],
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: const Text(
                   'All',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
                 ),
               ),
             ),
@@ -808,10 +760,7 @@ class SendCryptoModal extends StatelessWidget {
           // Ethereum Item - Make it clickable
           GestureDetector(
             onTap:
-                () => _showSendAmountScreen(
-                  context,
-                  "0x2a6A36dEB1593dEb03b0cFd6d1fb2Cb20BC93E2C",
-                ),
+                () => _showSendAmountScreen(context, "0x2a6A36dEB1593dEb03b0cFd6d1fb2Cb20BC93E2C"),
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 20),
               padding: const EdgeInsets.all(16),
@@ -854,18 +803,15 @@ class SendCryptoModal extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 4),
-                        const Text(
-                          'ETH',
-                          style: TextStyle(color: Colors.grey, fontSize: 14),
-                        ),
+                        const Text('ETH', style: TextStyle(color: Colors.grey, fontSize: 14)),
                       ],
                     ),
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      const Text(
-                        'd633,261',
+                      Text(
+                        '\$${assetBalancesListenChange[0].balance}',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,
@@ -873,8 +819,8 @@ class SendCryptoModal extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      const Text(
-                        '0.0094 ETH',
+                      Text(
+                        '${weiToEth(assetBalancesNotListenChange[0].assetBalance).toStringAsFixed(6)} ETH',
                         style: TextStyle(color: Colors.grey, fontSize: 14),
                       ),
                     ],
@@ -924,9 +870,21 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
     });
   }
 
+  void _onDotPressed() {
+    setState(() {
+      amount = '$amount.';
+    });
+  }
+
   void _onUseMaxPressed() {
     setState(() {
-      amount = '636062'; // Max available amount
+      amount =
+          weiToEth(
+            Provider.of<WalletProvider>(
+              context,
+              listen: false,
+            ).wallet!.assetBalances![0].assetBalance,
+          ).toString(); // Max available amount
     });
   }
 
@@ -935,10 +893,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
       context,
       MaterialPageRoute(
         builder:
-            (context) => TransactionReviewScreen(
-              amount: amount,
-              receiverAddress: receiverAddress,
-            ),
+            (context) => TransactionReviewScreen(amount: amount, receiverAddress: receiverAddress),
         fullscreenDialog: true,
       ),
     );
@@ -946,6 +901,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: const Color(0xFF2A2A2A),
       body: SafeArea(
@@ -958,11 +914,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                 children: [
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
-                    child: Icon(
-                      Icons.arrow_back,
-                      color: Colors.orange,
-                      size: 22,
-                    ),
+                    child: Icon(Icons.arrow_back, color: Colors.orange, size: 22),
                   ),
                   Expanded(
                     child: Column(
@@ -1002,7 +954,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
             Column(
               children: [
                 Text(
-                  'd$amount',
+                  '${amount}ETH',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 30,
@@ -1010,13 +962,13 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                   ),
                 ),
                 const SizedBox(height: 6),
-                const Text(
-                  '0 ETH',
-                  style: TextStyle(color: Colors.grey, fontSize: 13),
-                ),
-                const SizedBox(height: 14),
-                const Text(
-                  'd636,062 Available',
+                // const Text(
+                //   '0 ETH',
+                //   style: TextStyle(color: Colors.grey, fontSize: 13),
+                // ),
+                // const SizedBox(height: 14),
+                Text(
+                  '${weiToEth(Provider.of<WalletProvider>(context,listen: false).wallet!.assetBalances![0].assetBalance).toStringAsFixed(6)} ETH',
                   style: TextStyle(color: Colors.grey, fontSize: 12),
                 ),
               ],
@@ -1031,21 +983,12 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                 onPressed: _onUseMaxPressed,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.brown,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 25,
-                    vertical: 10,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 child: const Text(
                   'Use Max',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
@@ -1087,11 +1030,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                   // Row 4
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(child: Container()),
-                      _buildNumberButton('0'),
-                      _buildBackspaceButton(),
-                    ],
+                    children: [_buildDotButton(), _buildNumberButton('0'), _buildBackspaceButton()],
                   ),
                 ],
               ),
@@ -1103,25 +1042,15 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
               margin: const EdgeInsets.all(18),
               child: ElevatedButton(
                 onPressed:
-                    amount != '0'
-                        ? () =>
-                            _showReviewScreen(context, widget.receiverAddress)
-                        : null,
+                    amount != '0' ? () => _showReviewScreen(context, widget.receiverAddress) : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      amount != '0' ? Colors.orange : Colors.grey[700],
+                  backgroundColor: amount != '0' ? Colors.orange : Colors.grey[700],
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 child: const Text(
                   'Continue',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
@@ -1168,11 +1097,31 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
             color: Colors.grey[800],
             borderRadius: BorderRadius.circular(10),
           ),
+          child: Center(child: Icon(Icons.backspace_outlined, color: Colors.white, size: 20)),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDotButton() {
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => _onDotPressed(),
+        child: Container(
+          height: 30,
+          margin: EdgeInsets.all(3),
+          decoration: BoxDecoration(
+            color: Colors.grey[800],
+            borderRadius: BorderRadius.circular(10),
+          ),
           child: Center(
-            child: Icon(
-              Icons.backspace_outlined,
-              color: Colors.white,
-              size: 20,
+            child: Text(
+              '.',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ),

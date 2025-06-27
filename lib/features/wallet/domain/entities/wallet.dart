@@ -1,23 +1,26 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:convert/convert.dart';
+import 'package:digital_asset_flutter/features/wallet/domain/usecases/wallet_usecase.dart';
 import 'package:flutter/foundation.dart';
 
 class Wallet {
-   String id; // UUID
-   String walletId; // UUID
-   String userId; // User email
-   String networkId; // UUID
-   String networkName; // e.g. Ethereum, Bitcoin
-   String networkSymbol; // e.g. ETH, BTC
-   String address; // Wallet address (from public key)
-   String publicKey; // Public key
-   DateTime? createdAt; // Wallet creation time
-   DateTime? updatedAt; // Last update time
-   String status; // Wallet status
-   String accountKey; // Key used for share key phase
-   String version; // Version of account key
-   String walletName; // User-given name for the wallet
+  String id; // UUID
+  String walletId; // UUID
+  String userId; // User email
+  String networkId; // UUID
+  String networkName; // e.g. Ethereum, Bitcoin
+  String networkSymbol; // e.g. ETH, BTC
+  String address; // Wallet address (from public key)
+  String publicKey; // Public key
+  DateTime? createdAt; // Wallet creation time
+  DateTime? updatedAt; // Last update time
+  String status; // Wallet status
+  String accountKey; // Key used for share key phase
+  String version; // Version of account key
+  String walletName; // User-given name for the wallet
+  List<AssetBalance>? assetBalances;
 
   Wallet({
     required this.id,
@@ -34,6 +37,7 @@ class Wallet {
     required this.accountKey,
     required this.version,
     required this.walletName,
+    required this.assetBalances,
   });
 }
 
@@ -43,20 +47,10 @@ class ShareKeyData {
   final String p12;
   final String p21;
 
-  ShareKeyData({
-    required this.id,
-    required this.p10,
-    required this.p12,
-    required this.p21,
-  });
+  ShareKeyData({required this.id, required this.p10, required this.p12, required this.p21});
 
   factory ShareKeyData.fromJson(Map<String, dynamic> json) {
-    return ShareKeyData(
-      id: json['id'],
-      p10: json['p10'],
-      p12: json['p12'],
-      p21: json['p21'],
-    );
+    return ShareKeyData(id: json['id'], p10: json['p10'], p12: json['p12'], p21: json['p21']);
   }
 
   static Uint8List _bigIntToBytes(BigInt number) {
@@ -66,7 +60,7 @@ class ShareKeyData {
   }
 }
 
-class WalletProvider with ChangeNotifier{
+class WalletProvider with ChangeNotifier {
   Wallet? _wallet;
 
   Wallet? get wallet => _wallet;
@@ -75,4 +69,72 @@ class WalletProvider with ChangeNotifier{
     _wallet = wallet;
     notifyListeners();
   }
+
+  void updateValuation(WallerUsecases walletUsecsae) {
+    Timer.periodic(Duration(seconds: 5), (_) async {
+      await walletUsecsae.updateValuation(_wallet!);
+      notifyListeners();
+    });
+  }
+}
+
+class AssetBalance {
+  String id;
+  String assetId;
+  String assetSymbol;
+  String walletId;
+  String balance;
+  String assetBalance;
+  String assetType;
+  double price;
+  String currency;
+  DateTime? updatedAt;
+  double last24hChange;
+
+  AssetBalance({
+    required this.id,
+    required this.assetId,
+    required this.assetSymbol,
+    required this.walletId,
+    required this.balance,
+    required this.assetType,
+    required this.currency,
+    required this.updatedAt,
+    required this.last24hChange,
+    required this.price,
+    required this.assetBalance,
+  });
+
+  @override
+  String toString() {
+    return 'AssetBalance('
+        'id: $id, '
+        'assetId: $assetId, '
+        'assetSymbol: $assetSymbol, '
+        'walletId: $walletId, '
+        'balance: $balance, '
+        'assetBalance: $assetBalance, '
+        'assetType: $assetType, '
+        'price: $price, '
+        'currency: $currency, '
+        'updatedAt: ${updatedAt?.toIso8601String()}, '
+        'last24hChange: $last24hChange'
+        ')';
+  }
+}
+
+AssetBalance defaultAssetBalance() {
+  return AssetBalance(
+    id: '',
+    assetId: '',
+    assetSymbol: '',
+    walletId: '',
+    balance: '0',
+    assetBalance: '0',
+    assetType: '',
+    price: 0.0,
+    currency: '',
+    updatedAt: null,
+    last24hChange: 0.0,
+  );
 }
