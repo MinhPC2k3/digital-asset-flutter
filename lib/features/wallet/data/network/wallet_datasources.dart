@@ -172,7 +172,7 @@ class WalletRepositoryImpl implements WalletRepository {
         '${ApiEndpoints.walletCoreBaseUrl}/$walletId/assets/${assetBalances.assetId}/valuation';
     Map<String, String> headers = {"Content-type": "application/json"};
     http.Response res = await client.get(Uri.parse(url), headers: headers);
-    print("Get valuation response ${res.body}");
+    // print("Get valuation response ${res.body}");
     if (res.statusCode == 200) {
       final Map<String, dynamic> decoded = json.decode(res.body);
 

@@ -1,4 +1,7 @@
 import 'package:digital_asset_flutter/core/network/result.dart';
+import 'package:digital_asset_flutter/features/asset/data/source/network/asset_datasource.dart';
+import 'package:digital_asset_flutter/features/asset/domain/entities/entities.dart';
+import 'package:digital_asset_flutter/features/asset/domain/repositories/asset_repositories.dart';
 import 'package:digital_asset_flutter/features/auth/presentation/homepage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -57,6 +60,10 @@ class LoginScreenState extends State<LoginScreen> {
       //           UsernameScreen(user: user),
       // ),
     );
+
+    var assetRepo = AssetRepositoriesImpl();
+    var assetInfoMap = await assetRepo.getListAssetByNetwork('ethereum');
+    Provider.of<AssetProvider>(context, listen: false).setAssetInfo(assetInfoMap!);
   }
 
   @override

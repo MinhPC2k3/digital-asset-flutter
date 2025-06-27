@@ -110,7 +110,7 @@ class WallerUsecases {
 
   Future<Result<String>> updateValuation(Wallet wallet) async {
     print("Update valuation after 5s interval");
-    if (wallet.assetBalances != null){
+    if (wallet.assetBalances != null) {
       for (int i = 0; i < wallet.assetBalances!.length; i++) {
         var assetBalance = await _walletRepository.getAssetValuation(
           wallet.id,
@@ -126,7 +126,7 @@ class WallerUsecases {
         }
         wallet.assetBalances![i] = assetBalance.data!;
         wallet.assetBalances![i].balance = (weiToEth(wallet.assetBalances![i].assetBalance) *
-            wallet.assetBalances![i].price)
+                wallet.assetBalances![i].price)
             .toStringAsFixed(2);
       }
     }
