@@ -103,17 +103,17 @@ class TransactionReviewScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'd$amount',
+                            '$amount ETH',
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const Text(
-                            '0.00738922 ETH',
-                            style: TextStyle(color: Colors.grey, fontSize: 16),
-                          ),
+                          // const Text(
+                          //   '0.00738922 ETH',
+                          //   style: TextStyle(color: Colors.grey, fontSize: 16),
+                          // ),
                         ],
                       ),
                     ],
@@ -309,7 +309,7 @@ class TransactionReviewScreen extends StatelessWidget {
                               walletId:
                                   Provider.of<WalletProvider>(context, listen: false).wallet!.id,
                               assetId: "asset-eth-0001",
-                              amount: '0.01',
+                              amount: amount,
                               receiverAddress: receiverAddress,
                               blockchainType: BlockchainType.BLOCKCHAIN_TYPE_ETHEREUM,
                               networkName: "ethereum",

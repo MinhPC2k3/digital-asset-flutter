@@ -1,3 +1,4 @@
+import 'package:digital_asset_flutter/core/constants/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:web3dart/web3dart.dart';
@@ -70,7 +71,7 @@ class _PinKeyboardModalState extends State<PinKeyboardModal> {
 
     // Handle PIN verification result
     if (mounted) {
-      Navigator.pop(context, true); // Return success
+      CustomRouter.navigateTo(context, Routes.home); // Return success
     }
   }
 

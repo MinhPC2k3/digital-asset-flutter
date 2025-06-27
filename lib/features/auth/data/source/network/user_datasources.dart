@@ -17,24 +17,20 @@ class UserRepositoryImpl implements UserRepository {
     String url = ApiEndpoints.login;
     Map<String, String> headers = {"Content-type": "application/json"};
     final Map<String, String> body = {'id_token': token};
+    print("Doing login $token");
     String reqBody = jsonEncode(body);
-    http.Response res = await client.post(
-      Uri.parse(url),
-      headers: headers,
-      body: reqBody,
-    );
+    http.Response res = await client.post(Uri.parse(url), headers: headers, body: reqBody);
     user_model.UserDTO userDTO = user_model.UserDTO.fromJson(
       jsonDecode(res.body) as Map<String, dynamic>,
     );
+    print("Request $body");
+    print("Response ${res.body}");
     if (res.statusCode == 200) {
       return Result.success(userDTO.toDomain());
     } else {
       final json = jsonDecode(res.body);
       return Result.failure(
-        ApiError(
-          statusCode: res.statusCode,
-          message: json['message'] ?? 'Lỗi không xác định',
-        ),
+        ApiError(statusCode: res.statusCode, message: json['message'] ?? 'Lỗi không xác định'),
       );
     }
   }
@@ -46,11 +42,7 @@ class UserRepositoryImpl implements UserRepository {
     final Map<String, String> body = {'id_token': token};
     String reqBody = jsonEncode(body);
 
-    http.Response res = await http.post(
-      Uri.parse(url),
-      headers: headers,
-      body: reqBody,
-    );
+    http.Response res = await http.post(Uri.parse(url), headers: headers, body: reqBody);
     user_model.UserDTO userDTO = user_model.UserDTO.fromJson(
       jsonDecode(res.body) as Map<String, dynamic>,
     );
@@ -59,10 +51,7 @@ class UserRepositoryImpl implements UserRepository {
     } else {
       final json = jsonDecode(res.body);
       return Result.failure(
-        ApiError(
-          statusCode: res.statusCode,
-          message: json['message'] ?? 'Lỗi không xác định',
-        ),
+        ApiError(statusCode: res.statusCode, message: json['message'] ?? 'Lỗi không xác định'),
       );
     }
   }
