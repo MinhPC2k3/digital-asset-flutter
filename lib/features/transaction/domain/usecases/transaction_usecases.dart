@@ -77,20 +77,6 @@ class TransactionUsecase {
       return Result<transaction_model.SignInfo>.failure(rawTransaction.error);
     }
     print("Transaction object after ${transaction.toString()}");
-    // var fingerprint = await createTransactionFingerprint(
-    //   chainId: int.parse(rawTransaction.data!.rawEthereumTransaction.chainId),
-    //   nonce:
-    //       covertStringToBigInt(
-    //         rawTransaction.data!.rawEthereumTransaction.ethereumTx['nonce'],
-    //       ).toInt(),
-    //   to: EthereumAddress.fromHex(rawTransaction.data!.rawEthereumTransaction.toAddress),
-    //   value: covertStringToBigInt(rawTransaction.data!.rawEthereumTransaction.ethereumTx['value']),
-    //   gasPrice: covertStringToBigInt(
-    //     rawTransaction.data!.rawEthereumTransaction.ethereumTx['gasPrice'],
-    //   ),
-    //   gas: covertStringToBigInt(rawTransaction.data!.rawEthereumTransaction.ethereumTx['gas']),
-    //   data: Uint8List(0),
-    // );
     print("RawTx before finger print ${rawTransaction.data!.rawEthereumTransaction.ethereumTx}");
     var fingerprint = await GoBridge.getFingerprint(
       '1234',
@@ -99,7 +85,7 @@ class TransactionUsecase {
       rawTransaction.data!.rawEthereumTransaction.ethereumTx['value'],
       rawTransaction.data!.rawEthereumTransaction.ethereumTx['gas'],
       rawTransaction.data!.rawEthereumTransaction.ethereumTx['gasPrice'],
-      '0x',
+      rawTransaction.data!.rawEthereumTransaction.ethereumTx['input'],
     );
 
     var sessionId = Uuid().v4();

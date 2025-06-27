@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:digital_asset_flutter/core/constants/route.dart';
+import 'package:digital_asset_flutter/features/asset/domain/entities/entities.dart';
 import 'package:digital_asset_flutter/features/auth/domain/entities/user.dart';
 import 'package:digital_asset_flutter/features/wallet/domain/entities/wallet.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => WalletProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => AssetProvider()),
       ],
       child: MyApp(),
     ),

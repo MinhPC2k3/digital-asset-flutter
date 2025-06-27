@@ -10,7 +10,7 @@ class Transaction {
   String assetId;
   String amount;
   String receiverAddress;
-  BlockchainType blockchainType;
+  BlockchainType? blockchainType;
   String networkName;
   Map<String, dynamic>? metadata;
   RawEthereumTransaction rawEthereumTransaction;

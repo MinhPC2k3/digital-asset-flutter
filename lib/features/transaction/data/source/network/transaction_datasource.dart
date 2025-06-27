@@ -27,9 +27,9 @@ class TransactionRepositoryImpl implements TransactionRepository {
       },
       "data": {
         "wallet_id": transaction.walletId,
-        "amount": ethToWeiString(transaction.amount),
+        "amount": transaction.amount,
         "receiver_address": transaction.receiverAddress,
-        "asset_id": "asset-eth-0001",
+        "asset_id": transaction.assetId,
         "network_name": transaction.networkName,
         "tx_type": transaction.transactionType.toString().split('.').last,
       },
@@ -39,7 +39,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
       headers: headers,
       body: jsonEncode(reqBody),
     );
-    print("Response: ${reqBody}");
+    print("Request buildRawTransaction: $reqBody");
     print("Response: ${res.body}");
     if (res.statusCode == 200) {
       final Map<String, dynamic> decoded = json.decode(res.body);
@@ -219,9 +219,9 @@ class TransactionRepositoryImpl implements TransactionRepository {
   Future<Result<String>> sendNative(SignInfo signInfo, Transaction transaction) async {
     String url = ApiEndpoints.sendAsset;
     transaction.rawEthereumTransaction.ethereumTx.addAll({
-      'chainId' : "0x4d2",
+      'chainId': "0x4d2",
       'maxPriorityFeePerGas': null,
-      'maxFeePerGas':null
+      'maxFeePerGas': null,
     });
     print("Doing send native....$url");
     print("Transaction type ${transaction.transactionType}");
@@ -235,12 +235,10 @@ class TransactionRepositoryImpl implements TransactionRepository {
         "wallet_id": transaction.walletId,
         "user_id": transaction.userId,
         "network_name": transaction.networkName,
-        "asset_id": "asset-eth-0001",
-        "tx_type": 'TX_TYPE_NATIVE_TRANSFER',
-        "signed_transaction": {
-          "ethereumTx": transaction.rawEthereumTransaction.ethereumTx,
-        },
-        "amount": ethToWeiString(transaction.amount),
+        "asset_id": transaction.assetId,
+        "tx_type":transaction.transactionType.toString().split('.').last,
+        "signed_transaction": {"ethereumTx": transaction.rawEthereumTransaction.ethereumTx},
+        "amount": transaction.amount,
       },
     };
     print("Request: ${jsonEncode(reqBody)}");

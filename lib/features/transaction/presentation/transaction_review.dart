@@ -1,4 +1,5 @@
 import 'package:digital_asset_flutter/core/helper/helper.dart';
+import 'package:digital_asset_flutter/features/asset/domain/entities/entities.dart';
 import 'package:digital_asset_flutter/features/auth/domain/entities/user.dart';
 import 'package:digital_asset_flutter/features/transaction/data/source/network/transaction_datasource.dart';
 import 'package:digital_asset_flutter/features/transaction/domain/entities/transaction.dart';
@@ -13,10 +14,16 @@ import 'package:provider/provider.dart';
 class TransactionReviewScreen extends StatelessWidget {
   final String amount;
   final String receiverAddress;
+  final AssetBalance assetBalance;
   late final TransactionUsecase transactionUsecase;
   late final TransactionRepository transactionRepository;
 
-  TransactionReviewScreen({super.key, required this.amount, required this.receiverAddress}) {
+  TransactionReviewScreen({
+    super.key,
+    required this.amount,
+    required this.receiverAddress,
+    required this.assetBalance,
+  }) {
     transactionRepository = TransactionRepositoryImpl(http.Client());
     transactionUsecase = TransactionUsecase(transactionRepository: transactionRepository);
   }
@@ -103,7 +110,7 @@ class TransactionReviewScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '$amount ETH',
+                            '$amount ${assetBalance.assetSymbol}',
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 24,
@@ -221,8 +228,8 @@ class TransactionReviewScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 4),
-                          const Text(
-                            '0.00017571 ETH',
+                          Text(
+                            '0.00017571 ${assetBalance.assetSymbol}',
                             style: TextStyle(color: Colors.grey, fontSize: 14),
                           ),
                         ],
@@ -308,13 +315,14 @@ class TransactionReviewScreen extends StatelessWidget {
                               userId: Provider.of<UserProvider>(context, listen: false).user!.id,
                               walletId:
                                   Provider.of<WalletProvider>(context, listen: false).wallet!.id,
-                              assetId: "asset-eth-0001",
+                              assetId: assetBalance.assetId,
                               amount: amount,
                               receiverAddress: receiverAddress,
-                              blockchainType: BlockchainType.BLOCKCHAIN_TYPE_ETHEREUM,
-                              networkName: "ethereum",
-                              transactionType: TransactionType.TX_TYPE_NATIVE_TRANSFER,
+                              blockchainType: null,
+                              networkName: Provider.of<AssetProvider>(context,listen: false).assetInfos![assetBalance.assetId]!.networkName,
+                              transactionType: null,
                             );
+                            transaction = addTransactionType(transaction);
                             var signResponse = await transactionUsecase.prepareSign(transaction);
 
                             if (!signResponse.isSuccess) {
