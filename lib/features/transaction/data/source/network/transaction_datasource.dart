@@ -236,7 +236,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
         "user_id": transaction.userId,
         "network_name": transaction.networkName,
         "asset_id": transaction.assetId,
-        "tx_type":transaction.transactionType.toString().split('.').last,
+        "tx_type": transaction.transactionType.toString().split('.').last,
         "signed_transaction": {"ethereumTx": transaction.rawEthereumTransaction.ethereumTx},
         "amount": transaction.amount,
       },
@@ -265,6 +265,33 @@ class TransactionRepositoryImpl implements TransactionRepository {
       print("Error when create wallet: $json");
       return Result.failure(
         ApiError(statusCode: res.statusCode, message: json['message'] ?? 'Lỗi không xác định'),
+      );
+    }
+  }
+
+  @override
+  Future<Result<List<TransactionHistoryData>>> getHistory(String walletAddress) async {
+    String url = '${ApiEndpoints.walletCoreBaseUrl}/$walletAddress/transactions';
+    Map<String, String> headers = {"Content-type": "application/json"};
+    http.Response res = await client.get(Uri.parse(url), headers: headers);
+    if (res.statusCode == 200) {
+      final Map<String, dynamic> decoded = json.decode(res.body);
+      print("Response ${decoded}");
+      final dynamic dataList = decoded['data'];
+      if (dataList['histories'] != null) {
+        final List<dynamic> listTxHistoryData = dataList['histories'];
+        print("List: ${listTxHistoryData.length}");
+        final txHistory =
+        listTxHistoryData.map((item) => TransactionHistoryData.fromJson(item)).toList();
+        print("Tx history length from datasource ${txHistory.length}");
+        return Result.success(txHistory);
+      }
+      return Result.success([]);
+    } else {
+      final json = jsonDecode(res.body);
+      final state = json['state'] ?? {};
+      return Result.failure(
+        ApiError(statusCode: res.statusCode, message: state['message'] ?? 'Lỗi không xác định'),
       );
     }
   }

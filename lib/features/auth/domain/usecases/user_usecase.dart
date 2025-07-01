@@ -60,14 +60,14 @@ class UserUsecases {
     user_model.User.empty();
   }
 
-  Future<Result<user_model.User>> login() async {
-    String tokenId = await signInWithGoogle();
-    if (tokenId == "") {
-      print("Error google here");
-      return Result.failure(
-        ApiError(statusCode: 400, message: "login with Google error"),
-      );
-    }
+  Future<Result<user_model.User>> login(String tokenId) async {
+    // String tokenId = await signInWithGoogle();
+    // if (tokenId == "") {
+    //   print("Error google here");
+    //   return Result.failure(
+    //     ApiError(statusCode: 400, message: "login with Google error"),
+    //   );
+    // }
     Result<user_model.User> user = await _userRepository.userLogin(tokenId);
     return user;
   }
@@ -75,9 +75,7 @@ class UserUsecases {
   Future<Result<user_model.User>> register() async {
     String tokenId = await signInWithGoogle();
     if (tokenId == "") {
-      return Result.failure(
-        ApiError(statusCode: 400, message: "login with Google error"),
-      );
+      return Result.failure(ApiError(statusCode: 400, message: "login with Google error"));
     }
     Result<user_model.User> user = await _userRepository.userRegister(tokenId);
     return user;

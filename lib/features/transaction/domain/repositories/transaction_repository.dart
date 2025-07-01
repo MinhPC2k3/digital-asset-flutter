@@ -11,4 +11,6 @@ abstract class TransactionRepository {
   Future<Result<Signature>> combineSignature(SignInfo signInfo, Transaction transaction);
 
   Future<Result<String>> sendNative(SignInfo signInfo, Transaction transaction);
+
+  Future<Result<List<TransactionHistoryData>>> getHistory(String walletAddress);
 }

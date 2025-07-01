@@ -1,18 +1,7 @@
-import 'package:digital_asset_flutter/core/network/result.dart';
-import 'package:digital_asset_flutter/features/asset/data/source/network/asset_datasource.dart';
-import 'package:digital_asset_flutter/features/asset/domain/entities/entities.dart';
-import 'package:digital_asset_flutter/features/asset/domain/repositories/asset_repositories.dart';
-import 'package:digital_asset_flutter/features/auth/presentation/homepage.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:digital_asset_flutter/features/auth/presentation/provider/user_provider.dart'
+    as user_model;
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import '../../wallet/data/network/wallet_datasources.dart';
-import '../../wallet/domain/entities/wallet.dart';
-import '../../wallet/domain/usecases/wallet_usecase.dart';
-import '../data/source/network/user_datasources.dart';
-import '../domain/usecases/user_usecase.dart';
-import '../domain/entities/user.dart' as user_model;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -22,52 +11,14 @@ class LoginScreen extends StatefulWidget {
 }
 
 class LoginScreenState extends State<LoginScreen> {
-  bool isLoading = false;
-  late final UserRepositoryImpl repo;
-  late final UserUsecases userUsecase;
-  late final WalletRepositoryImpl walletRepo;
-  late final WallerUsecases walletUsecase;
-
   @override
   void initState() {
     super.initState();
-    repo = UserRepositoryImpl(http.Client());
-    userUsecase = UserUsecases(userRepository: repo);
-    walletRepo = WalletRepositoryImpl(http.Client());
-    walletUsecase = WallerUsecases(walletRepository: walletRepo);
-  }
-
-  Future<Result<List<Wallet>>> getWallet(WallerUsecases walletUsecase, String userID) async {
-    Result<List<Wallet>> listWallets = await walletUsecase.getUserWallet(userID);
-    return listWallets;
-  }
-
-  void _loginSuccess(Result<user_model.User> user) async {
-    Provider.of<user_model.UserProvider>(context, listen: false).setUser(user.data!);
-    var listWallets = await getWallet(walletUsecase, user.data!.id);
-    if (!mounted) return;
-    var userWallet = listWallets.data!.isEmpty ? null : listWallets.data![0];
-    if (userWallet != null) {
-      Provider.of<WalletProvider>(context, listen: false).setWallet(userWallet);
-      await walletUsecase.getWalletAssetBalances(userWallet);
-    }
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => HomePage()),
-      // MaterialPageRoute(
-      //   builder:
-      //       (context) =>
-      //           UsernameScreen(user: user),
-      // ),
-    );
-
-    var assetRepo = AssetRepositoriesImpl();
-    var assetInfoMap = await assetRepo.getListAssetByNetwork('ethereum');
-    Provider.of<AssetProvider>(context, listen: false).setAssetInfo(assetInfoMap!);
   }
 
   @override
   Widget build(BuildContext context) {
+    var isLoading = context.watch<user_model.UserProvider>().isLoading;
     return Scaffold(
       backgroundColor: const Color(0xFF1A1B2E), // Dark navy background
       body: SafeArea(
@@ -137,17 +88,10 @@ class LoginScreenState extends State<LoginScreen> {
                             height: 56,
                             child: OutlinedButton.icon(
                               onPressed: () async {
-                                Result<user_model.User> user = await userUsecase.login();
-                                if (user.isSuccess) {
-                                  // ScaffoldMessenger.of(context).showSnackBar(
-                                  //   SnackBar(content: Text('Welcome ${user.email}')),
-                                  // );
-                                  _loginSuccess(user);
-                                } else {
-                                  ScaffoldMessenger.of(
-                                    context,
-                                  ).showSnackBar(SnackBar(content: Text(user.error!.toString())));
-                                }
+                                await Provider.of<user_model.UserProvider>(
+                                  context,
+                                  listen: false,
+                                ).userLogin(context);
                               },
                               icon: Image.network(
                                 'https://developers.google.com/identity/images/g-logo.png',
@@ -184,26 +128,10 @@ class LoginScreenState extends State<LoginScreen> {
                               ),
                               GestureDetector(
                                 onTap: () async {
-                                  Result<user_model.User> user = await userUsecase.register();
-
-                                  if (user.isSuccess) {
-                                    // ScaffoldMessenger.of(context).showSnackBar(
-                                    //   SnackBar(content: Text('Welcome ${user.email}')),
-                                    // );
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => HomePage()),
-                                      // MaterialPageRoute(
-                                      //   builder:
-                                      //       (context) =>
-                                      //           UsernameScreen(user: user),
-                                      // ),
-                                    );
-                                  } else {
-                                    ScaffoldMessenger.of(
-                                      context,
-                                    ).showSnackBar(SnackBar(content: Text(user.error!.toString())));
-                                  }
+                                  Provider.of<user_model.UserProvider>(
+                                    context,
+                                    listen: false,
+                                  ).userRegister(context);
                                 },
                                 child: const Text(
                                   'Sign up',
@@ -218,7 +146,6 @@ class LoginScreenState extends State<LoginScreen> {
                           ),
                         ],
                       ),
-
                       // Bottom spacer
                       const Expanded(child: SizedBox()),
                     ],

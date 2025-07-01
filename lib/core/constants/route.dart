@@ -1,4 +1,4 @@
-import 'package:digital_asset_flutter/features/auth/presentation/homepage.dart';
+import 'package:digital_asset_flutter/features/auth/presentation/general_info.dart';
 import 'package:digital_asset_flutter/features/auth/presentation/login_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +11,7 @@ class CustomRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case Routes.home:
-        return MaterialPageRoute(builder: (_) => HomePage());
+        return MaterialPageRoute(builder: (_) => GeneralInfo());
       case Routes.auth:
         return MaterialPageRoute(builder: (_) => LoginScreen());
       default:

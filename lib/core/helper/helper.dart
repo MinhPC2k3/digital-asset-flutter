@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:digital_asset_flutter/features/transaction/domain/entities/transaction.dart';
 import 'package:digital_asset_flutter/features/wallet/domain/entities/wallet.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../features/auth/domain/entities/user.dart';
 import '../../features/transaction/domain/usecases/transaction_usecases.dart';
@@ -33,7 +36,7 @@ BigInt covertStringToBigInt(String hexString) {
   return value;
 }
 
-String cleanDecimal(double value) {
+String cleanFloatDecimal(double value) {
   String fixed = value.toStringAsFixed(6);
   return fixed.replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), "");
 }
@@ -60,4 +63,29 @@ Transaction addTransactionType(Transaction tx) {
       break;
   }
   return tx;
+}
+
+String getTimeAgo(DateTime countAt) {
+  final now = DateTime.now();
+  final diff = now.difference(countAt);
+
+  if (diff.inSeconds < 60) return '${diff.inSeconds}s ago';
+  if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+  if (diff.inHours < 24) return '${diff.inHours}h ago';
+  return '${diff.inDays}d ago';
+}
+
+DateTime timeUnixToDatetime(int timeUnix) {
+  return DateTime.fromMillisecondsSinceEpoch(timeUnix * 1000);
+}
+
+double convertWithDecimal(double value, int decimal) {
+  return value / pow(10, decimal);
+}
+
+launchURL(String urlStr) async {
+  final Uri _url = Uri.parse(urlStr);
+  if (!await launchUrl(_url, mode: LaunchMode.externalApplication,)) {
+    throw Exception('Could not launch $_url');
+  }
 }

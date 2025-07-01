@@ -11,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
+import '../../auth/presentation/provider/user_provider.dart';
+
 class TransactionReviewScreen extends StatelessWidget {
   final String amount;
   final String receiverAddress;

@@ -65,8 +65,17 @@ class WalletProvider with ChangeNotifier {
 
   Wallet? get wallet => _wallet;
 
+  int _walletIndex = 0;
+
+  int get walletIndex => _walletIndex;
+
   void setWallet(Wallet wallet) {
     _wallet = wallet;
+    notifyListeners();
+  }
+
+  void setWalletIndexValue(int index) {
+    _walletIndex = index;
     notifyListeners();
   }
 
