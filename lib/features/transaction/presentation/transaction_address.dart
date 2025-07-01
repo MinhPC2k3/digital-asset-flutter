@@ -99,7 +99,7 @@ class _SendAddressScreenState extends State<SendAddressScreen> {
                           ),
                         ),
                         Text(
-                          'Balance: ${cleanDecimal(weiToEth(widget.wallet.assetBalances![widget.assetId].assetBalance))} ${widget.wallet.assetBalances![widget.assetId].assetSymbol}',
+                          'Balance: ${cleanFloatDecimal(weiToEth(widget.wallet.assetBalances![widget.assetId].assetBalance))} ${widget.wallet.assetBalances![widget.assetId].assetSymbol}',
                           style: TextStyle(color: Colors.grey[400], fontSize: 12),
                         ),
                       ],
@@ -202,7 +202,7 @@ class _SendAddressScreenState extends State<SendAddressScreen> {
                         const SizedBox(width: 8),
                         TextButton(
                           onPressed: () {
-                            _amountController.text = cleanDecimal(weiToEth(widget.wallet.assetBalances![widget.assetId].assetBalance));
+                            _amountController.text = cleanFloatDecimal(weiToEth(widget.wallet.assetBalances![widget.assetId].assetBalance));
                           },
                           child: const Text(
                             'MAX',

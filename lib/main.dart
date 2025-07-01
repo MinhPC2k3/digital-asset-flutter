@@ -1,15 +1,13 @@
-import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:digital_asset_flutter/core/constants/route.dart';
 import 'package:digital_asset_flutter/features/asset/domain/entities/entities.dart';
-import 'package:digital_asset_flutter/features/auth/domain/entities/user.dart';
+import 'package:digital_asset_flutter/features/transaction/presentation/provider/transaction_provider.dart';
 import 'package:digital_asset_flutter/features/wallet/domain/entities/wallet.dart';
-import 'package:flutter/material.dart';
-
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import 'features/auth/presentation/login_screen.dart';
+import 'features/auth/presentation/provider/user_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,6 +18,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => WalletProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => AssetProvider()),
+        ChangeNotifierProvider(create: (_) => TransactionProvider()),
       ],
       child: MyApp(),
     ),
@@ -37,11 +36,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       onGenerateRoute: CustomRouter.generateRoute,
       initialRoute: Routes.auth,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
       home: LoginScreen(),
-
     );
   }
 }

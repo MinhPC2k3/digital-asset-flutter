@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../component/asset_type_selector.dart';
-import '../../auth/presentation/homepage.dart';
+import '../../auth/presentation/general_info.dart';
 import '../../wallet/domain/entities/wallet.dart';
 import '../../wallet/domain/usecases/wallet_usecase.dart';
 

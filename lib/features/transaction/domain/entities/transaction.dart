@@ -1,3 +1,5 @@
+import 'package:digital_asset_flutter/core/helper/helper.dart';
+
 enum TransactionType { TX_TYPE_NATIVE_TRANSFER, TX_TYPE_ERC20_TRANSFER, TX_TYPE_ERC20_APPROVE }
 
 enum BlockchainType { BLOCKCHAIN_TYPE_ETHEREUM }
@@ -140,4 +142,80 @@ class Signature {
   String v;
 
   Signature({required this.r, required this.s, required this.v});
+}
+
+class TransactionHistoryData {
+  final String txHash;
+  final String blockNumber;
+  final String from;
+  final String to;
+  double value;
+  final String tokenType;
+  final String tokenSymbol;
+  double fee;
+  final String status;
+  final DateTime? timestamp;
+  final String direction;
+  final String explorerUrl;
+  final int tokenDecimal;
+  String timeAgo;
+
+  TransactionHistoryData({
+    required this.txHash,
+    required this.blockNumber,
+    required this.from,
+    required this.to,
+    required this.value,
+    required this.tokenType,
+    required this.tokenSymbol,
+    required this.fee,
+    required this.status,
+    required this.timestamp,
+    required this.direction,
+    required this.explorerUrl,
+    required this.tokenDecimal,
+    required this.timeAgo,
+  });
+
+  factory TransactionHistoryData.fromJson(Map<String, dynamic> json) {
+    print("Doing parse json");
+    return TransactionHistoryData(
+      txHash: json['txHash'] ?? '',
+      blockNumber: json['blockNumber'] ?? '',
+      from: json['from'] ?? '',
+      to: json['to'] ?? '',
+      value: double.tryParse(json['value']?.toString() ?? '0') ?? 0,
+      tokenType: json['tokenType'] ?? '',
+      tokenSymbol: json['tokenSymbol'] ?? '',
+      fee: double.tryParse(json['fee']?.toString() ?? '0') ?? 0,
+      status: json['status'] ?? '',
+      timestamp: json['timestamp'] != null
+          ? timeUnixToDatetime(int.tryParse(json['timestamp'].toString()) ?? 0)
+          : null,
+      direction: json['direction'] ?? '',
+      explorerUrl: json['explorerUrl'] ?? '',
+      tokenDecimal: json['tokenDecimal'] ?? 0,
+      timeAgo: "",
+    );
+  }
+
+  // factory TransactionHistoryData.fromJson(Map<String, dynamic> json) {
+  //   print("Doing parse json");
+  //   return TransactionHistoryData(
+  //     txHash: json['txHash'] ?? '',
+  //     blockNumber: json['blockNumber'] ?? '',
+  //     from: json['from'] ?? '',
+  //     to: json['to'] ?? '',
+  //     value: double.parse(json['value']),
+  //     tokenType: json['tokenType'] ?? '',
+  //     tokenSymbol: json['tokenSymbol'] ?? '',
+  //     fee: double.parse(json['fee']),
+  //     status: json['status'] ?? '',
+  //     timestamp: json['timestamp'] != null ? timeUnixToDatetime(json['timestamp']) : null,
+  //     direction: json['direction'] ?? '',
+  //     explorerUrl: json['explorerUrl'] ?? '',
+  //     tokenDecimal: json['tokenDecimal'] ?? 0,
+  //     timeAgo: "",
+  //   );
+  // }
 }

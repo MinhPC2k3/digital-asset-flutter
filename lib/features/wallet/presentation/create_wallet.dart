@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../auth/domain/entities/user.dart';
+import '../../auth/presentation/provider/user_provider.dart';
 
 class CreateWalletScreen extends StatefulWidget {
   const CreateWalletScreen({Key? key, required this.wallerUsecases}) : super(key: key);

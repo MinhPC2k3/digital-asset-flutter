@@ -80,7 +80,7 @@ class AssetCard extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                '${cleanDecimal(assetBalance)}${assetSymbol}',
+                '${cleanFloatDecimal(assetBalance)}${assetSymbol}',
                 style: TextStyle(color: Colors.grey, fontSize: 14),
               ),
             ],

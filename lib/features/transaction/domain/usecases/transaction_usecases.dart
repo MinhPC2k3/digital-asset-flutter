@@ -178,6 +178,28 @@ class TransactionUsecase {
     var sendAssetRes = await _transactionRepository.sendNative(signInfo, transaction);
     return sendAssetRes;
   }
+
+  Future<Result<List<transaction_model.TransactionHistoryData>>> getTxHistory(
+    String walletAddress,
+  ) async {
+    var res = await _transactionRepository.getHistory(walletAddress);
+    print("Doing 123");
+    if (res.isSuccess) {
+      print("Doing from tx history usecase");
+      for (int i = 0; i < res.data!.length; i++) {
+        res.data![i].value = convertWithDecimal(res.data![i].value, res.data![i].tokenDecimal);
+        res.data![i].fee = convertWithDecimal(res.data![i].fee, res.data![i].tokenDecimal);
+        if (res.data![i].tokenType == "COIN" && res.data![i].tokenSymbol == "ETH"){
+          res.data![i].value = convertWithDecimal(res.data![i].value, 18);
+          res.data![i].fee = convertWithDecimal(res.data![i].fee, 18);
+        }
+        if (res.data![i].timestamp != null) {
+          res.data![i].timeAgo = getTimeAgo(res.data![i].timestamp!);
+        }
+      }
+    }
+    return res;
+  }
 }
 
 /// Converts a base-10 BigInt string to a byte array (Uint8List)

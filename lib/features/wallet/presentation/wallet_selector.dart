@@ -1,3 +1,4 @@
+import 'package:digital_asset_flutter/core/constants/route.dart';
 import 'package:digital_asset_flutter/core/network/result.dart';
 import 'package:digital_asset_flutter/features/auth/domain/entities/user.dart';
 import 'package:digital_asset_flutter/features/wallet/domain/entities/wallet.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
+import '../../auth/presentation/provider/user_provider.dart';
 import 'create_wallet.dart';
 import '../data/network/wallet_datasources.dart';
 import '../domain/usecases/wallet_usecase.dart';
@@ -22,7 +24,7 @@ class WalletSelectorModal extends StatefulWidget {
 class WalletSelectorModalState extends State<WalletSelectorModal> {
   late Future<Result<List<Wallet>>> _fetchData;
   bool _errorHandled = false;
-  int _selectedWalletIndex = 0;
+
 
   @override
   void initState() {
@@ -303,14 +305,21 @@ class WalletSelectorModalState extends State<WalletSelectorModal> {
   }
 
   Widget _buildWalletItem(Wallet wallet, int index) {
-    final isSelected = _selectedWalletIndex == index;
+    final isSelected = Provider.of<WalletProvider>(context, listen: true).walletIndex == index;
 
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
+        var walletRepo = WalletRepositoryImpl(http.Client());
+        var assetBalanceResult = await WallerUsecases(walletRepository: walletRepo).getWalletAssetBalances(wallet);
+        if (assetBalanceResult.isSuccess){
+          wallet.assetBalances = assetBalanceResult.data!.assetBalances;
+        }
         setState(() {
-          _selectedWalletIndex = index;
-          Provider.of<WalletProvider>(context,listen: false).setWallet(wallet);
+          Provider.of<WalletProvider>(context, listen: false).setWalletIndexValue(index);
+          Provider.of<WalletProvider>(context, listen: false).setWallet(wallet);
+          print("After select wallet asset balance length ${wallet.assetBalances?.isEmpty}");
         });
+        Navigator.pop(context);
       },
       child: Container(
         // margin: index != 1 ? EdgeInsets.only(top: 0) : EdgeInsets.only(top: 12),
