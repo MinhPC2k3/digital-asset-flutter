@@ -1,13 +1,14 @@
+import 'package:digital_asset_flutter/features/wallet/domain/entities/wallet.dart';
 import 'package:flutter/material.dart';
 
-class AssetTypeSelector extends StatelessWidget {
+class TokenAssetSelector extends StatelessWidget {
   final String assetName;
   final String assetSymbol;
   final String assetBalance;
   final String balance;
   final Icon? assetIcon;
 
-  const AssetTypeSelector({
+  const TokenAssetSelector({
     super.key,
     required this.assetName,
     required this.assetSymbol,
@@ -45,7 +46,11 @@ class AssetTypeSelector extends StatelessWidget {
                     softWrap: true, // Allows text to wrap
                     overflow: TextOverflow.ellipsis, // Or ellipsis/fade
                     maxLines: 1,
-                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -58,7 +63,7 @@ class AssetTypeSelector extends StatelessWidget {
                     maxLines: 1,
                     style: TextStyle(color: Colors.grey, fontSize: 14),
                   ),
-                )
+                ),
               ],
             ),
           ),
@@ -88,11 +93,73 @@ class AssetTypeSelector extends StatelessWidget {
                       maxLines: 1,
                       style: TextStyle(color: Colors.grey, fontSize: 14),
                     ),
-                  )
+                  ),
                 ],
-              )
-
+              ),
             ],
+          ),
+          const SizedBox(width: 12),
+          Icon(Icons.chevron_right, color: Colors.grey, size: 24),
+        ],
+      ),
+    );
+  }
+}
+
+class NftAssetSelector extends StatelessWidget {
+  final NftItem nftItem;
+
+  const NftAssetSelector({super.key, required this.nftItem});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(color: Colors.grey[800], borderRadius: BorderRadius.circular(12)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // Ethereum Icon
+          Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(25)),
+            child: Icon(Icons.token),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: 120,
+                  child: Text(
+                    nftItem.name,
+                    softWrap: true, // Allows text to wrap
+                    overflow: TextOverflow.ellipsis, // Or ellipsis/fade
+                    maxLines: 1,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                SizedBox(
+                  width: 50,
+                  child: Text(
+                    nftItem.symbol,
+                    softWrap: true, // Allows text to wrap
+                    overflow: TextOverflow.ellipsis, // Or ellipsis/fade
+                    maxLines: 1,
+                    style: TextStyle(color: Colors.grey, fontSize: 14),
+                  ),
+                ),
+              ],
+            ),
           ),
           const SizedBox(width: 12),
           Icon(Icons.chevron_right, color: Colors.grey, size: 24),

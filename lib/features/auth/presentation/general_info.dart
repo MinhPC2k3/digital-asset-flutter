@@ -18,13 +18,13 @@ class GeneralInfo extends StatefulWidget {
     repo = UserRepositoryImpl(http.Client());
     userUsecase = UserUsecases(userRepository: repo);
     walletRepo = WalletRepositoryImpl(http.Client());
-    walletUsecase = WallerUsecases(walletRepository: walletRepo);
+    walletUsecase = WalletUsecases(walletRepository: walletRepo);
   }
 
   late final UserRepositoryImpl repo;
   late final UserUsecases userUsecase;
   late final WalletRepositoryImpl walletRepo;
-  late final WallerUsecases walletUsecase;
+  late final WalletUsecases walletUsecase;
   int selectedWallet = 0;
 
   void _showWalletSelector(BuildContext context) {
@@ -116,6 +116,7 @@ class GeneralInfo extends StatefulWidget {
 
 class _GeneralInfoState extends State<GeneralInfo> {
   int _currentIndex = 0;
+
   @override
   void initState() {
     super.initState();
@@ -134,6 +135,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<WalletProvider>(context);
     final walletWithoutListenChange = Provider.of<WalletProvider>(context, listen: false).wallet;
 
     List<AssetBalance> assetBalancesNotListenChange =
@@ -492,20 +494,63 @@ class _GeneralInfoState extends State<GeneralInfo> {
                           ],
                         ),
                         const SizedBox(height: 30),
-                        ListView.builder(
-                          itemCount: assetBalancesListenChange.length,
-                          physics: NeverScrollableScrollPhysics(), // disable inner scrolling
-                          shrinkWrap: true,
-                          itemBuilder: (context, index) {
-                            return AssetCard(
-                              assetSymbol: assetBalancesListenChange[index].assetSymbol,
-                              balance: assetBalancesListenChange[index].balance,
-                              assetBalance: weiToEth(assetBalancesListenChange[index].assetBalance),
-                              lastChange: assetBalancesListenChange[index].last24hChange,
-                            );
-                          },
+                        DefaultTabController(
+                          length: 2,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TabBar(
+                                labelColor: Colors.blue,
+                                unselectedLabelColor: Colors.grey,
+                                indicatorColor: Colors.blue,
+                                tabs: [Tab(text: "Tokens"), Tab(text: "NFTs")],
+                              ),
+                              SizedBox(
+                                height: 200,
+                                child: TabBarView(
+                                  children: [
+                                    ListView.builder(
+                                      itemCount: provider.getAssetByType("TOKEN").length,
+                                      // physics: NeverScrollableScrollPhysics(), // disable inner scrolling
+                                      // shrinkWrap: true,
+                                      itemBuilder: (context, index) {
+                                        return AssetCard(
+                                          assetSymbol:
+                                              provider.getAssetByType("TOKEN")[index].assetSymbol,
+                                          balance: provider.getAssetByType("TOKEN")[index].balance,
+                                          assetBalance: weiToEth(
+                                            provider.getAssetByType("TOKEN")[index].assetBalance,
+                                          ),
+                                          lastChange:
+                                              provider.getAssetByType("TOKEN")[index].last24hChange,
+                                        );
+                                      },
+                                    ),
+                                    ListView.builder(
+                                      itemCount: provider.getAssetByType("NFT").length,
+                                      // physics: NeverScrollableScrollPhysics(), // disable inner scrolling
+                                      // shrinkWrap: true,
+                                      itemBuilder: (context, index) {
+                                        return AssetCard(
+                                          assetSymbol:
+                                              provider.getAssetByType("NFT")[index].assetSymbol,
+                                          balance: provider.getAssetByType("NFT")[index].balance,
+                                          assetBalance: weiToEth(
+                                            provider.getAssetByType("NFT")[index].assetBalance,
+                                          ),
+                                          lastChange:
+                                              provider.getAssetByType("NFT")[index].last24hChange,
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 100),
+
+                        const SizedBox(height: 10),
                       ],
                     ),
                   ),

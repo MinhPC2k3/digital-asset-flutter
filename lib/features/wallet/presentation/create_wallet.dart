@@ -10,7 +10,7 @@ import '../../auth/presentation/provider/user_provider.dart';
 class CreateWalletScreen extends StatefulWidget {
   const CreateWalletScreen({Key? key, required this.wallerUsecases}) : super(key: key);
 
-  final WallerUsecases wallerUsecases;
+  final WalletUsecases wallerUsecases;
 
   @override
   _CreateWalletScreenState createState() => _CreateWalletScreenState();

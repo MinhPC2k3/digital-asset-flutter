@@ -1,8 +1,16 @@
 import 'package:digital_asset_flutter/core/constants/route.dart';
+import 'package:digital_asset_flutter/features/auth/data/source/network/user_datasources.dart';
+import 'package:digital_asset_flutter/features/auth/domain/usecases/user_usecase.dart';
+import 'package:digital_asset_flutter/features/auth/presentation/provider/user_provider.dart';
+import 'package:digital_asset_flutter/features/wallet/data/network/wallet_datasources.dart';
+import 'package:digital_asset_flutter/features/wallet/domain/usecases/wallet_usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:web3dart/web3dart.dart';
 
+import '../../wallet/domain/entities/wallet.dart';
 import '../domain/entities/transaction.dart';
 import '../domain/repositories/transaction_repository.dart';
 import '../domain/usecases/transaction_usecases.dart';
@@ -64,7 +72,11 @@ class _PinKeyboardModalState extends State<PinKeyboardModal> {
       widget.signInfo,
       _pinController.text,
     );
-
+    var _walletRepo = WalletRepositoryImpl(http.Client());
+    var _walletUsecase = WalletUsecases(walletRepository: _walletRepo);
+    await _walletUsecase.getWalletAssetBalances(
+      Provider.of<WalletProvider>(context, listen: false).wallet!,
+    );
     setState(() {
       isLoading = false;
     });

@@ -32,6 +32,9 @@ class TransactionRepositoryImpl implements TransactionRepository {
         "asset_id": transaction.assetId,
         "network_name": transaction.networkName,
         "tx_type": transaction.transactionType.toString().split('.').last,
+        "extra_fields":{
+          "tokenId": transaction.tokenId
+        }
       },
     };
     http.Response res = await client.post(

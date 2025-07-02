@@ -21,6 +21,7 @@ class Wallet {
   String version; // Version of account key
   String walletName; // User-given name for the wallet
   List<AssetBalance>? assetBalances;
+  List<NftItem>? nftItems;
 
   Wallet({
     required this.id,
@@ -79,11 +80,26 @@ class WalletProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void updateValuation(WallerUsecases walletUsecsae) {
+  void updateValuation(WalletUsecases walletUsecsae) {
     Timer.periodic(Duration(seconds: 5), (_) async {
       await walletUsecsae.updateValuation(_wallet!);
       notifyListeners();
     });
+  }
+
+  List<AssetBalance> getAssetByType(String assetType) {
+    List<AssetBalance> res = [];
+    for (int i = 0; i < _wallet!.assetBalances!.length; i++) {
+      if (assetType == "TOKEN") {
+        if (_wallet!.assetBalances![i].assetType == "COIN" ||
+            _wallet!.assetBalances![i].assetType == "TOKEN") {
+          res.add(_wallet!.assetBalances![i]);
+        }
+      } else if (_wallet!.assetBalances![i].assetType == assetType) {
+        res.add(_wallet!.assetBalances![i]);
+      }
+    }
+    return res;
   }
 }
 
@@ -146,4 +162,68 @@ AssetBalance defaultAssetBalance() {
     updatedAt: null,
     last24hChange: 0.0,
   );
+}
+
+class NftItem {
+  final String tokenId;
+  final String contractAddress;
+  final String name;
+  final String symbol;
+  final String owner;
+  final String imageUrl;
+  final String description;
+  final String networkName;
+  final NftAttributes attributes;
+
+  NftItem({
+    required this.tokenId,
+    required this.contractAddress,
+    required this.name,
+    required this.symbol,
+    required this.owner,
+    required this.imageUrl,
+    required this.description,
+    required this.networkName,
+    required this.attributes,
+  });
+
+  factory NftItem.fromJson(Map<String, dynamic> json) {
+    return NftItem(
+      tokenId: json['tokenId'],
+      contractAddress: json['contractAddress'],
+      name: json['name'],
+      symbol: json['symbol'],
+      owner: json['owner'],
+      imageUrl: json['imageUrl'],
+      description: json['description'],
+      networkName: json['networkName'],
+      attributes: NftAttributes.fromJson(json['attributes']),
+    );
+  }
+}
+
+class NftAttributes {
+  final String donationAmount;
+  final String projectId;
+  final String projectName;
+  final String projectOwner;
+  final String rarity;
+
+  NftAttributes({
+    required this.donationAmount,
+    required this.projectId,
+    required this.projectName,
+    required this.projectOwner,
+    required this.rarity,
+  });
+
+  factory NftAttributes.fromJson(Map<String, dynamic> json) {
+    return NftAttributes(
+      donationAmount: json['donationAmount'],
+      projectId: json['projectId'],
+      projectName: json['projectName'],
+      projectOwner: json['projectOwner'],
+      rarity: json['rarity'],
+    );
+  }
 }

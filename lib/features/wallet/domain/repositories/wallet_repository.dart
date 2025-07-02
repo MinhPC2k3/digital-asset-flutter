@@ -12,4 +12,6 @@ abstract class WalletRepository {
   Future<Result<List<AssetBalance>>> getAssetBalances(String walletId);
 
   Future<Result<AssetBalance>> getAssetValuation(String walletId, AssetBalance assetBalances);
+
+  Future<Result<List<NftItem>>> getWalletNft(String walletId, String assetId, String networkName);
 }
