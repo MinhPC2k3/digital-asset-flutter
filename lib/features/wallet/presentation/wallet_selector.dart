@@ -15,7 +15,7 @@ import '../domain/usecases/wallet_usecase.dart';
 class WalletSelectorModal extends StatefulWidget {
   const WalletSelectorModal({super.key, required this.walletUsecases});
 
-  final WallerUsecases walletUsecases;
+  final WalletUsecases walletUsecases;
 
   @override
   WalletSelectorModalState createState() => WalletSelectorModalState();
@@ -310,7 +310,7 @@ class WalletSelectorModalState extends State<WalletSelectorModal> {
     return GestureDetector(
       onTap: () async {
         var walletRepo = WalletRepositoryImpl(http.Client());
-        var assetBalanceResult = await WallerUsecases(walletRepository: walletRepo).getWalletAssetBalances(wallet);
+        var assetBalanceResult = await WalletUsecases(walletRepository: walletRepo).getWalletAssetBalances(wallet);
         if (assetBalanceResult.isSuccess){
           wallet.assetBalances = assetBalanceResult.data!.assetBalances;
         }

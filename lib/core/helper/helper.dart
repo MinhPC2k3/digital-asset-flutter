@@ -59,7 +59,7 @@ Transaction addTransactionType(Transaction tx) {
       break;
     case 'asset-nft-token-lcp-0001':
       tx.blockchainType = BlockchainType.BLOCKCHAIN_TYPE_ETHEREUM;
-      tx.transactionType = TransactionType.TX_TYPE_ERC20_TRANSFER;
+      tx.transactionType = TransactionType.TX_TYPE_ERC721_TRANSFER;
       break;
   }
   return tx;
@@ -85,7 +85,7 @@ double convertWithDecimal(double value, int decimal) {
 
 launchURL(String urlStr) async {
   final Uri _url = Uri.parse(urlStr);
-  if (!await launchUrl(_url, mode: LaunchMode.externalApplication,)) {
+  if (!await launchUrl(_url, mode: LaunchMode.externalApplication)) {
     throw Exception('Could not launch $_url');
   }
 }

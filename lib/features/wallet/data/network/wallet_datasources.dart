@@ -148,7 +148,7 @@ class WalletRepositoryImpl implements WalletRepository {
       final dynamic dataList = decoded['data'];
       if (dataList['balances'] != null) {
         final List<dynamic> listAssetBalances = dataList['balances'];
-        print("List: $listAssetBalances");
+        print("List asset balances: $listAssetBalances");
         final assetBalances =
             listAssetBalances.map((item) => AssetBalanceDTO.fromJson(item).toDomain()).toList();
         return Result.success(assetBalances);
@@ -182,6 +182,56 @@ class WalletRepositoryImpl implements WalletRepository {
       }
       return Result.failure(ApiError(statusCode: 400, message: "Empty asset valutaion"));
       ;
+    } else {
+      final json = jsonDecode(res.body);
+      final state = json['state'] ?? {};
+      return Result.failure(
+        ApiError(statusCode: res.statusCode, message: state['message'] ?? 'Lỗi không xác định'),
+      );
+    }
+  }
+
+  @override
+  Future<Result<List<NftItem>>> getWalletNft(
+    String walletId,
+    String assetId,
+    String networkName,
+  ) async {
+    String url = ApiEndpoints.nftList;
+    Map<String, String> headers = {"Content-type": "application/json"};
+    final Map<String, dynamic> reqBody = {
+      "metadata": {
+        "request_id": Uuid().v4(),
+        "request_time": DateTime.now().millisecondsSinceEpoch ~/ 1000,
+        "client_id": "mobile-app",
+        "signature": {
+          "sa_type": "SIGNATURE",
+          "s": "optional-signature-string",
+          "b": "c2lnbmF0dXJlLWJ5dGVz", // base64 of signature bytes
+        },
+        "version": 1,
+      },
+      "data": {"wallet_id": walletId, "asset_id": assetId, "network_name": networkName},
+    };
+    http.Response res = await client.post(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(reqBody),
+    );
+    // print("Get valuation response ${res.body}");
+    if (res.statusCode == 200) {
+      final Map<String, dynamic> decoded = json.decode(res.body);
+
+      final dynamic data = decoded['data'];
+      if (data != null) {
+        if (data['nfts'] != null) {
+          final List<dynamic> listNfts = data['nfts'];
+          print("List nfts: $listNfts");
+          final nftItems = listNfts.map((item) => NftItem.fromJson(item)).toList();
+          return Result.success(nftItems);
+        }
+      }
+      return Result.success([]);
     } else {
       final json = jsonDecode(res.body);
       final state = json['state'] ?? {};

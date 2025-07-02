@@ -8,8 +8,8 @@ import 'package:digital_asset_flutter/features/wallet/domain/entities/wallet.dar
 import 'package:digital_asset_flutter/features/wallet/domain/repositories/wallet_repository.dart';
 import 'package:uuid/uuid.dart';
 
-class WallerUsecases {
-  WallerUsecases({required WalletRepository walletRepository})
+class WalletUsecases {
+  WalletUsecases({required WalletRepository walletRepository})
     : _walletRepository = walletRepository;
   final WalletRepository _walletRepository;
 
@@ -102,6 +102,16 @@ class WallerUsecases {
         wallet.assetBalances![i].balance = (weiToEth(wallet.assetBalances![i].assetBalance) *
                 wallet.assetBalances![i].price)
             .toStringAsFixed(2);
+      }
+      if (wallet.assetBalances![i].assetType == "NFT") {
+        Result<List<NftItem>> nftItems = await _walletRepository.getWalletNft(
+          wallet.id,
+          wallet.assetBalances![i].assetId,
+          wallet.networkName,
+        );
+        if (nftItems.isSuccess) {
+          wallet.nftItems = nftItems.data!;
+        }
       }
       print("AssetBalance from usecase: ${wallet.assetBalances![i].toString()}");
     }

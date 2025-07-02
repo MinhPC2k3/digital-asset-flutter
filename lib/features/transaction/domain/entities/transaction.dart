@@ -1,6 +1,11 @@
 import 'package:digital_asset_flutter/core/helper/helper.dart';
 
-enum TransactionType { TX_TYPE_NATIVE_TRANSFER, TX_TYPE_ERC20_TRANSFER, TX_TYPE_ERC20_APPROVE }
+enum TransactionType {
+  TX_TYPE_NATIVE_TRANSFER,
+  TX_TYPE_ERC20_TRANSFER,
+  TX_TYPE_ERC20_APPROVE,
+  TX_TYPE_ERC721_TRANSFER,
+}
 
 enum BlockchainType { BLOCKCHAIN_TYPE_ETHEREUM }
 
@@ -17,6 +22,7 @@ class Transaction {
   Map<String, dynamic>? metadata;
   RawEthereumTransaction rawEthereumTransaction;
   TransactionType? transactionType;
+  String tokenId;
 
   Transaction({
     required this.userId,
@@ -27,6 +33,7 @@ class Transaction {
     required this.blockchainType,
     required this.networkName,
     required this.transactionType,
+    required this.tokenId,
   }) : rawEthereumTransaction = RawEthereumTransaction(
          blockchainType: BlockchainType.BLOCKCHAIN_TYPE_ETHEREUM,
          networkName: '',
@@ -189,9 +196,10 @@ class TransactionHistoryData {
       tokenSymbol: json['tokenSymbol'] ?? '',
       fee: double.tryParse(json['fee']?.toString() ?? '0') ?? 0,
       status: json['status'] ?? '',
-      timestamp: json['timestamp'] != null
-          ? timeUnixToDatetime(int.tryParse(json['timestamp'].toString()) ?? 0)
-          : null,
+      timestamp:
+          json['timestamp'] != null
+              ? timeUnixToDatetime(int.tryParse(json['timestamp'].toString()) ?? 0)
+              : null,
       direction: json['direction'] ?? '',
       explorerUrl: json['explorerUrl'] ?? '',
       tokenDecimal: json['tokenDecimal'] ?? 0,

@@ -8,8 +8,14 @@ import '../../../core/helper/helper.dart';
 class SendAddressScreen extends StatefulWidget {
   final Wallet wallet;
   final int assetId;
+  final NftItem? nftItem;
 
-  const SendAddressScreen({super.key, required this.wallet, required this.assetId});
+  const SendAddressScreen({
+    super.key,
+    required this.wallet,
+    required this.assetId,
+    required this.nftItem,
+  });
 
   @override
   State<SendAddressScreen> createState() => _SendAddressScreenState();
@@ -38,6 +44,14 @@ class _SendAddressScreenState extends State<SendAddressScreen> {
         throw FormatException('Invalid amount format: "$amountInput"');
       }
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.wallet.assetBalances![widget.assetId].assetType == "NFT") {
+      _isValidAmount = true;
+    }
   }
 
   @override
@@ -172,53 +186,64 @@ class _SendAddressScreenState extends State<SendAddressScreen> {
             const SizedBox(height: 24),
 
             // Amount section
-            const Text(
-              'Amount',
-              style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
-            ),
+            widget.wallet.assetBalances![widget.assetId].assetType != "NFT"
+                ? const Text(
+                  'Amount',
+                  style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+                )
+                : Container(),
             const SizedBox(height: 12),
 
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[800],
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: TextField(
-                controller: _amountController,
-                onChanged: _proceedToReview,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                style: const TextStyle(color: Colors.white, fontSize: 18),
-                decoration: InputDecoration(
-                  hintText: '0.00',
-                  hintStyle: TextStyle(color: Colors.grey[400]),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.all(16),
-                  suffixIcon: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(widget.wallet.assetBalances![widget.assetId].assetSymbol, style: TextStyle(color: Colors.grey[400], fontSize: 16)),
-                        const SizedBox(width: 8),
-                        TextButton(
-                          onPressed: () {
-                            _amountController.text = cleanFloatDecimal(weiToEth(widget.wallet.assetBalances![widget.assetId].assetBalance));
-                          },
-                          child: const Text(
-                            'MAX',
-                            style: TextStyle(
-                              color: Color(0xFFFF6B35),
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
+            widget.wallet.assetBalances![widget.assetId].assetType != "NFT"
+                ? Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[800],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: TextField(
+                    controller: _amountController,
+                    onChanged: _proceedToReview,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    style: const TextStyle(color: Colors.white, fontSize: 18),
+                    decoration: InputDecoration(
+                      hintText: '0.00',
+                      hintStyle: TextStyle(color: Colors.grey[400]),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.all(16),
+                      suffixIcon: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              widget.wallet.assetBalances![widget.assetId].assetSymbol,
+                              style: TextStyle(color: Colors.grey[400], fontSize: 16),
                             ),
-                          ),
+                            const SizedBox(width: 8),
+                            TextButton(
+                              onPressed: () {
+                                _amountController.text = cleanFloatDecimal(
+                                  weiToEth(
+                                    widget.wallet.assetBalances![widget.assetId].assetBalance,
+                                  ),
+                                );
+                              },
+                              child: const Text(
+                                'MAX',
+                                style: TextStyle(
+                                  color: Color(0xFFFF6B35),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
-                ),
-              ),
-            ),
+                )
+                : Container(),
 
             const SizedBox(height: 40),
 
@@ -233,7 +258,12 @@ class _SendAddressScreenState extends State<SendAddressScreen> {
                             context,
                             MaterialPageRoute(
                               builder:
-                                  (context) => TransactionReviewScreen(amount: _amountController.text, receiverAddress: _addressController.text, assetBalance: widget.wallet.assetBalances![widget.assetId],),
+                                  (context) => TransactionReviewScreen(
+                                    amount: _amountController.text,
+                                    receiverAddress: _addressController.text,
+                                    assetBalance: widget.wallet.assetBalances![widget.assetId],
+                                    nftItem: widget.nftItem,
+                                  ),
                               fullscreenDialog: true,
                             ),
                           );

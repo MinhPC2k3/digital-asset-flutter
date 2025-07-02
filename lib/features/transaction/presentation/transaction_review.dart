@@ -17,6 +17,7 @@ class TransactionReviewScreen extends StatelessWidget {
   final String amount;
   final String receiverAddress;
   final AssetBalance assetBalance;
+  final NftItem? nftItem;
   late final TransactionUsecase transactionUsecase;
   late final TransactionRepository transactionRepository;
 
@@ -25,6 +26,7 @@ class TransactionReviewScreen extends StatelessWidget {
     required this.amount,
     required this.receiverAddress,
     required this.assetBalance,
+    required this.nftItem,
   }) {
     transactionRepository = TransactionRepositoryImpl(http.Client());
     transactionUsecase = TransactionUsecase(transactionRepository: transactionRepository);
@@ -318,12 +320,27 @@ class TransactionReviewScreen extends StatelessWidget {
                               walletId:
                                   Provider.of<WalletProvider>(context, listen: false).wallet!.id,
                               assetId: assetBalance.assetId,
-                              amount: amount,
+                              amount:
+                                  Provider.of<AssetProvider>(
+                                            context,
+                                            listen: false,
+                                          ).assetInfos![assetBalance.assetId]!.assetType ==
+                                          "NFT"
+                                      ? "0"
+                                      : amount,
                               receiverAddress: receiverAddress,
                               blockchainType: null,
-                              networkName: Provider.of<AssetProvider>(context,listen: false).assetInfos![assetBalance.assetId]!.networkName,
+                              networkName:
+                                  Provider.of<AssetProvider>(
+                                    context,
+                                    listen: false,
+                                  ).assetInfos![assetBalance.assetId]!.networkName,
                               transactionType: null,
+                              tokenId: '',
                             );
+                            if (nftItem != null) {
+                              transaction.tokenId = nftItem!.tokenId;
+                            }
                             transaction = addTransactionType(transaction);
                             var signResponse = await transactionUsecase.prepareSign(transaction);
 

@@ -24,13 +24,13 @@ class UserProvider extends ChangeNotifier {
   late UserRepositoryImpl _userRepo;
   late UserUsecases _userUsecase;
   late WalletRepositoryImpl _walletRepo;
-  late WallerUsecases _walletUsecase;
+  late WalletUsecases _walletUsecase;
 
   UserProvider() {
     _userRepo = UserRepositoryImpl(http.Client());
     _userUsecase = UserUsecases(userRepository: _userRepo);
     _walletRepo = WalletRepositoryImpl(http.Client());
-    _walletUsecase = WallerUsecases(walletRepository: _walletRepo);
+    _walletUsecase = WalletUsecases(walletRepository: _walletRepo);
   }
 
   Future<Result<List<Wallet>>> getWallet(String userID) async {
