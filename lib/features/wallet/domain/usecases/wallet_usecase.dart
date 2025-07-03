@@ -90,6 +90,9 @@ class WalletUsecases {
     }
     wallet.assetBalances = assetBalances.data!;
     for (int i = 0; i < wallet.assetBalances!.length; i++) {
+      if(wallet.assetBalances![i].assetType == "COIN" && wallet.assetBalances![i].assetSymbol == "ETH"){
+        wallet.assetBalances![i].decimals = 18;
+      }
       Result<AssetBalance> valuation = await _walletRepository.getAssetValuation(
         wallet.id,
         wallet.assetBalances![i],

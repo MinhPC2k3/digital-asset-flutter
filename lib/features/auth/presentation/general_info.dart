@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 
 import '../../transaction/presentation/send_transaction_overview.dart';
 import '../../wallet/domain/entities/wallet.dart';
-import '../../wallet/presentation/swap.dart';
+import '../../transaction/presentation/transaction_swap.dart';
 import '../../wallet/presentation/wallet_selector.dart';
 
 class GeneralInfo extends StatefulWidget {
@@ -60,9 +60,19 @@ class GeneralInfo extends StatefulWidget {
   }
 
   void _showSwapScreen(BuildContext context) {
+    var listWallets = Provider.of<WalletProvider>(context,listen: false).listWallet;
+    if (listWallets.length<2){
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("You have to create other wallet first")));
+      return;
+    }
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const SwapScreen(), fullscreenDialog: true),
+      MaterialPageRoute(
+        builder: (context) => SimpleSwapInterface(userWallets: listWallets, currentWallet: Provider.of<WalletProvider>(context).wallet!),
+        fullscreenDialog: true,
+      ),
     );
   }
 

@@ -91,6 +91,8 @@ class _CreateWalletScreenState extends State<CreateWalletScreen> {
               _buildNetworkOption('Bitcoin', 'BTC Network', Icons.currency_bitcoin, Colors.amber),
               const SizedBox(height: 8),
               _buildNetworkOption('Ethereum', 'ETH Network', Icons.currency_exchange, Colors.white),
+              const SizedBox(height: 8),
+              _buildNetworkOption('Binance', 'BNB Network', Icons.currency_franc, Colors.amber),
               const SizedBox(height: 24),
               const Text(
                 'Security PIN (6 digits)',

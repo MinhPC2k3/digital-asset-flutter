@@ -189,7 +189,7 @@ class TransactionUsecase {
       for (int i = 0; i < res.data!.length; i++) {
         res.data![i].value = convertWithDecimal(res.data![i].value, res.data![i].tokenDecimal);
         res.data![i].fee = convertWithDecimal(res.data![i].fee, res.data![i].tokenDecimal);
-        if (res.data![i].tokenType == "COIN" && res.data![i].tokenSymbol == "ETH"){
+        if (res.data![i].tokenType == "COIN" && res.data![i].tokenSymbol == "ETH") {
           res.data![i].value = convertWithDecimal(res.data![i].value, 18);
           res.data![i].fee = convertWithDecimal(res.data![i].fee, 18);
         }
@@ -197,6 +197,22 @@ class TransactionUsecase {
           res.data![i].timeAgo = getTimeAgo(res.data![i].timestamp!);
         }
       }
+    }
+    return res;
+  }
+
+  Future<Result<transaction_model.TransactionSwap>> getQuote(
+    transaction_model.TransactionSwap txSwap,
+  ) async {
+    var res = await _transactionRepository.getQuote(txSwap);
+    if (res.isSuccess) {
+      txSwap.toAmount = convertWithDecimal(double.parse(res.data!.toAmount), txSwap.toAsset!.decimals).toString();
+      txSwap.estimatedFee = res.data!.estimatedFee;
+      txSwap.rate = res.data!.rate;
+      txSwap.expirationTimestamp = res.data!.expirationTimestamp;
+      txSwap.expirationTimestamp = res.data!.expirationTimestamp;
+      txSwap.depositAddress = res.data!.depositAddress;
+      return Result.success(txSwap);
     }
     return res;
   }

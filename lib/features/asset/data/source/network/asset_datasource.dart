@@ -21,7 +21,8 @@ class AssetRepositoriesImpl implements AssetRepository {
       Map<String, AssetInfo> result = {};
       if (data != null) {
         final List<dynamic> listAssetInfos = data['assets'];
-        List<AssetInfo> listAssetInfo = listAssetInfos.map((asset) => AssetInfo.fromJson(asset)).toList();
+        List<AssetInfo> listAssetInfo =
+            listAssetInfos.map((asset) => AssetInfo.fromJson(asset)).toList();
         for (var assetInfo in listAssetInfo) {
           result[assetInfo.assetId] = assetInfo;
         }
@@ -32,6 +33,30 @@ class AssetRepositoriesImpl implements AssetRepository {
       final json = jsonDecode(res.body);
       final state = json['state'] ?? {};
       return null;
+    }
+  }
+
+  @override
+  Future<Result<List<AssetInfo>>> getListAssets() async {
+    String url = ApiEndpoints.listAllAssets;
+    Map<String, String> headers = {"Content-type": "application/json"};
+    http.Response res = await http.Client().get(Uri.parse(url), headers: headers);
+    // print("Get valuation response ${res.body}");
+    if (res.statusCode == 200) {
+      final Map<String, dynamic> decoded = json.decode(res.body);
+
+      final dynamic data = decoded['data'];
+      if (data != null) {
+        final List<dynamic> listAssetInfos = data['assets'];
+        List<AssetInfo> listAssetInfo =
+            listAssetInfos.map((asset) => AssetInfo.fromJson(asset)).toList();
+        return Result.success(listAssetInfo);
+      }
+      return Result.success([]);
+    } else {
+      final json = jsonDecode(res.body);
+      final state = json['state'] ?? {};
+      return Result.failure(ApiError(statusCode: res.statusCode, message: state['message']));
     }
   }
 }

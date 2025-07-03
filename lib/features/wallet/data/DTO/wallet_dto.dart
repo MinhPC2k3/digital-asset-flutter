@@ -50,7 +50,7 @@ class WalletDto {
       accountKey: walletKey,
       version: version,
       walletName: walletName,
-      assetBalances: null
+      assetBalances: null,
     );
   }
 }
@@ -62,6 +62,7 @@ class AssetBalanceDTO {
   String walletId;
   String balance;
   String assetType;
+  int decimals;
 
   AssetBalanceDTO({
     required this.id,
@@ -70,6 +71,7 @@ class AssetBalanceDTO {
     required this.walletId,
     required this.balance,
     required this.assetType,
+    required this.decimals,
   });
 
   factory AssetBalanceDTO.fromJson(Map<String, dynamic> json) {
@@ -80,6 +82,7 @@ class AssetBalanceDTO {
       walletId: json['walletId'] ?? '',
       balance: json['balance'] ?? '',
       assetType: json['assetType'] ?? '',
+      decimals: json['decimals'] ?? 0,
     );
   }
 
@@ -96,6 +99,7 @@ class AssetBalanceDTO {
       last24hChange: 0,
       price: 0,
       assetBalance: balance,
+      decimals: decimals,
     );
   }
 }

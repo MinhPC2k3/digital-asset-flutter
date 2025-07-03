@@ -41,10 +41,15 @@ class UserProvider extends ChangeNotifier {
   void _loginSuccess(BuildContext context, Result<user_model.User> user) async {
     setUser(user.data!);
     var listWallets = await getWallet(user.data!.id);
+    print("Number of user 's wallet: ${listWallets.data!.length}");
+    for (int i = 0; i < listWallets.data!.length; i++) {
+      print("Wallet network ${listWallets.data![i].networkName}");
+    }
     if (!context.mounted) return;
     var userWallet = listWallets.data!.isEmpty ? null : listWallets.data![0];
     if (userWallet != null) {
       Provider.of<WalletProvider>(context, listen: false).setWallet(userWallet);
+      Provider.of<WalletProvider>(context, listen: false).setListWallets(listWallets.data!);
       await _walletUsecase.getWalletAssetBalances(userWallet);
     }
     if (!context.mounted) return;
@@ -62,6 +67,10 @@ class UserProvider extends ChangeNotifier {
     var assetRepo = AssetRepositoriesImpl();
     var assetInfoMap = await assetRepo.getListAssetByNetwork('ethereum');
     Provider.of<AssetProvider>(context, listen: false).setAssetInfo(assetInfoMap!);
+    var listAsset = await assetRepo.getListAssets();
+    if (listAsset.isSuccess) {
+      Provider.of<AssetProvider>(context, listen: false).setListAssetInfo(listAsset.data!);
+    }
   }
 
   Future<void> userLogin(BuildContext context) async {

@@ -63,8 +63,11 @@ class ShareKeyData {
 
 class WalletProvider with ChangeNotifier {
   Wallet? _wallet;
+  List<Wallet> _listWallet = [];
 
   Wallet? get wallet => _wallet;
+
+  List<Wallet> get listWallet => _listWallet;
 
   int _walletIndex = 0;
 
@@ -77,6 +80,11 @@ class WalletProvider with ChangeNotifier {
 
   void setWalletIndexValue(int index) {
     _walletIndex = index;
+    notifyListeners();
+  }
+
+  void setListWallets(List<Wallet> listWallet) {
+    _listWallet = listWallet;
     notifyListeners();
   }
 
@@ -115,6 +123,7 @@ class AssetBalance {
   String currency;
   DateTime? updatedAt;
   double last24hChange;
+  int decimals;
 
   AssetBalance({
     required this.id,
@@ -128,6 +137,7 @@ class AssetBalance {
     required this.last24hChange,
     required this.price,
     required this.assetBalance,
+    required this.decimals,
   });
 
   @override
@@ -161,6 +171,7 @@ AssetBalance defaultAssetBalance() {
     currency: '',
     updatedAt: null,
     last24hChange: 0.0,
+    decimals: 0,
   );
 }
 

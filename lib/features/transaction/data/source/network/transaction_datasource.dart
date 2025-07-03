@@ -298,4 +298,53 @@ class TransactionRepositoryImpl implements TransactionRepository {
       );
     }
   }
+
+  @override
+  Future<Result<TransactionSwap>> getQuote(TransactionSwap txSwap) async{
+    String url = ApiEndpoints.getQuote;
+
+    Map<String, String> headers = {"Content-type": "application/json"};
+    final Map<String, dynamic> reqBody = {
+      "metadata": {
+        "request_id": Uuid().v4(),
+        "request_time": DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      },
+      "data": {
+        "from_asset_id": txSwap.fromAsset!.assetId,
+        "to_asset_id": txSwap.toAsset!.assetId,
+        "from_network": txSwap.fromAsset!.networkName,
+        "to_network": txSwap.toAsset!.networkName,
+        "amount": ethToWeiString(txSwap.fromAmount),
+        "from_wallet_id": txSwap.fromWallet!.id,
+        "to_wallet_id": txSwap.toWallet!.id
+      },
+    };
+    print("Request: ${jsonEncode(reqBody)}");
+    http.Response res = await client.post(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(reqBody),
+    );
+
+    print("Response: ${res.body}");
+    if (res.statusCode == 200) {
+      final Map<String, dynamic> decoded = json.decode(res.body);
+      print("combine body response: $decoded");
+      final dynamic resMessage = decoded["state"];
+      if (resMessage["code"] != null) {
+        return Result.failure(
+          ApiError(message: resMessage['message'] ?? 'Lỗi không xác định', statusCode: 400),
+        );
+      }
+      final dynamic data = decoded["data"];
+      var quoteJson = data["quote"];
+      return Result.success(TransactionSwap.fromJson(quoteJson));
+    } else {
+      final json = jsonDecode(res.body);
+      print("Error when create wallet: $json");
+      return Result.failure(
+        ApiError(statusCode: res.statusCode, message: json['message'] ?? 'Lỗi không xác định'),
+      );
+    }
+  }
 }

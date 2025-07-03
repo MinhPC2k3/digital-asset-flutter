@@ -13,4 +13,6 @@ abstract class TransactionRepository {
   Future<Result<String>> sendNative(SignInfo signInfo, Transaction transaction);
 
   Future<Result<List<TransactionHistoryData>>> getHistory(String walletAddress);
+
+  Future<Result<TransactionSwap>> getQuote (TransactionSwap txSwap);
 }
