@@ -14,4 +14,6 @@ class ApiEndpoints {
   static const String combineSignature = '$walletCoreBaseUrl/sign/combine';
   static const String sendAsset = '$walletCoreBaseUrl/transaction/send-asset';
   static const String nftList = '$walletCoreBaseUrl/nft/list';
+  static const String listAllAssets = '$walletCoreBaseUrl/all/assets';
+  static const String getQuote = '$walletCoreBaseUrl/swap/quote';
 }

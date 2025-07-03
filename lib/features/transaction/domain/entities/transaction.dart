@@ -1,4 +1,6 @@
 import 'package:digital_asset_flutter/core/helper/helper.dart';
+import 'package:digital_asset_flutter/features/asset/domain/entities/entities.dart';
+import 'package:digital_asset_flutter/features/wallet/domain/entities/wallet.dart';
 
 enum TransactionType {
   TX_TYPE_NATIVE_TRANSFER,
@@ -206,24 +208,48 @@ class TransactionHistoryData {
       timeAgo: "",
     );
   }
+}
 
-  // factory TransactionHistoryData.fromJson(Map<String, dynamic> json) {
-  //   print("Doing parse json");
-  //   return TransactionHistoryData(
-  //     txHash: json['txHash'] ?? '',
-  //     blockNumber: json['blockNumber'] ?? '',
-  //     from: json['from'] ?? '',
-  //     to: json['to'] ?? '',
-  //     value: double.parse(json['value']),
-  //     tokenType: json['tokenType'] ?? '',
-  //     tokenSymbol: json['tokenSymbol'] ?? '',
-  //     fee: double.parse(json['fee']),
-  //     status: json['status'] ?? '',
-  //     timestamp: json['timestamp'] != null ? timeUnixToDatetime(json['timestamp']) : null,
-  //     direction: json['direction'] ?? '',
-  //     explorerUrl: json['explorerUrl'] ?? '',
-  //     tokenDecimal: json['tokenDecimal'] ?? 0,
-  //     timeAgo: "",
-  //   );
-  // }
+class TransactionSwap {
+  AssetInfo? fromAsset;
+  AssetInfo? toAsset;
+  Wallet? fromWallet;
+  Wallet? toWallet;
+  String fromAmount;
+  String toAmount;
+  String rate;
+  DateTime? expirationTimestamp;
+  String depositAddress;
+  String estimatedFee;
+
+  TransactionSwap({
+    required this.fromAsset,
+    required this.toAsset,
+    required this.fromWallet,
+    required this.toWallet,
+    required this.fromAmount,
+    required this.toAmount,
+    required this.rate,
+    required this.expirationTimestamp,
+    required this.depositAddress,
+    required this.estimatedFee,
+  });
+
+  factory TransactionSwap.fromJson(Map<String, dynamic> json) {
+    print("Doing parse json");
+    return TransactionSwap(
+      fromAmount: json['fromAmount'] ?? '',
+      toAmount: json['toAmount'] ?? '',
+      expirationTimestamp: DateTime.fromMillisecondsSinceEpoch(
+        int.parse(json['expirationTimestamp']) * 1000,
+      ),
+      estimatedFee: json['estimatedFee'] ?? '',
+      rate: json['rate'] ?? '',
+      depositAddress: json['depositAddress'] ?? '',
+      fromAsset: null,
+      toAsset: null,
+      fromWallet: null,
+      toWallet: null,
+    );
+  }
 }

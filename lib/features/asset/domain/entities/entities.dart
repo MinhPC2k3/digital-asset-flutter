@@ -30,12 +30,20 @@ class AssetInfo {
 }
 
 class AssetProvider extends ChangeNotifier {
-  Map<String,AssetInfo>? _assetInfo;
+  Map<String, AssetInfo>? _assetInfo;
+  List<AssetInfo> _listAssetInfo = [];
 
-  Map<String,AssetInfo>? get assetInfos => _assetInfo;
+  Map<String, AssetInfo>? get assetInfos => _assetInfo;
 
-  void setAssetInfo(Map<String,AssetInfo> assetInfo) {
+  List<AssetInfo> get listAssetInfo => _listAssetInfo;
+
+  void setAssetInfo(Map<String, AssetInfo> assetInfo) {
     _assetInfo = assetInfo;
+    notifyListeners();
+  }
+
+  void setListAssetInfo(List<AssetInfo> assetInfo) {
+    _listAssetInfo = assetInfo;
     notifyListeners();
   }
 }

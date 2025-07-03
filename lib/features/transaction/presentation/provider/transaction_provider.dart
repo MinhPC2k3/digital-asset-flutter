@@ -1,7 +1,9 @@
 import 'package:digital_asset_flutter/core/network/result.dart';
+import 'package:digital_asset_flutter/features/asset/domain/entities/entities.dart';
 import 'package:digital_asset_flutter/features/transaction/data/source/network/transaction_datasource.dart';
 import 'package:digital_asset_flutter/features/transaction/domain/entities/transaction.dart';
 import 'package:digital_asset_flutter/features/transaction/domain/usecases/transaction_usecases.dart';
+import 'package:digital_asset_flutter/features/wallet/domain/entities/wallet.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
@@ -32,4 +34,25 @@ class TransactionProvider extends ChangeNotifier {
     return res;
   }
 
+  Future<Result<TransactionSwap>> loadQuote(
+    Wallet fromWallet,
+    Wallet toWallet,
+    AssetInfo fromAsset,
+    AssetInfo toAsset,
+    String amount,
+  ) async {
+    var req = TransactionSwap(
+      fromAsset: fromAsset,
+      toAsset: toAsset,
+      fromWallet: fromWallet,
+      toWallet: toWallet,
+      fromAmount: amount,
+      toAmount: '',
+      rate: '',
+      expirationTimestamp: null,
+      depositAddress: '',
+      estimatedFee: '',
+    );
+    return await _txUsecase.getQuote(req);
+  }
 }
