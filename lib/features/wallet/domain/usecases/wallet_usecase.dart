@@ -114,6 +114,7 @@ class WalletUsecases {
         );
         if (nftItems.isSuccess) {
           wallet.nftItems = nftItems.data!;
+          print("Number of nft in usecase ${wallet.nftItems!.length}");
         }
       }
       print("AssetBalance from usecase: ${wallet.assetBalances![i].toString()}");

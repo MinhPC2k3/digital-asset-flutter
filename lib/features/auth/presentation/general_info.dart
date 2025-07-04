@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
+import '../../../core/constants/route.dart';
 import '../../transaction/presentation/send_transaction_overview.dart';
 import '../../wallet/domain/entities/wallet.dart';
 import '../../transaction/presentation/transaction_swap.dart';
@@ -60,8 +61,8 @@ class GeneralInfo extends StatefulWidget {
   }
 
   void _showSwapScreen(BuildContext context) {
-    var listWallets = Provider.of<WalletProvider>(context,listen: false).listWallet;
-    if (listWallets.length<2){
+    var listWallets = Provider.of<WalletProvider>(context, listen: false).listWallet;
+    if (listWallets.length < 2) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("You have to create other wallet first")));
@@ -70,7 +71,11 @@ class GeneralInfo extends StatefulWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SimpleSwapInterface(userWallets: listWallets, currentWallet: Provider.of<WalletProvider>(context).wallet!),
+        builder:
+            (context) => SimpleSwapInterface(
+              userWallets: listWallets,
+              currentWallet: Provider.of<WalletProvider>(context).wallet!,
+            ),
         fullscreenDialog: true,
       ),
     );
@@ -232,7 +237,7 @@ class _GeneralInfoState extends State<GeneralInfo> {
                                     ),
                                     onTap: () async {
                                       widget.userUsecase.signOut();
-                                      Navigator.pop(context);
+                                      CustomRouter.navigateTo(context, Routes.auth);
                                     },
                                   ),
                                 ],
@@ -521,8 +526,6 @@ class _GeneralInfoState extends State<GeneralInfo> {
                                   children: [
                                     ListView.builder(
                                       itemCount: provider.getAssetByType("TOKEN").length,
-                                      // physics: NeverScrollableScrollPhysics(), // disable inner scrolling
-                                      // shrinkWrap: true,
                                       itemBuilder: (context, index) {
                                         return AssetCard(
                                           assetSymbol:
@@ -536,23 +539,24 @@ class _GeneralInfoState extends State<GeneralInfo> {
                                         );
                                       },
                                     ),
-                                    ListView.builder(
-                                      itemCount: provider.getAssetByType("NFT").length,
+                                    provider.getNftItem() != null ? ListView.builder(
+                                      itemCount: provider.getNftItem()!.length,
                                       // physics: NeverScrollableScrollPhysics(), // disable inner scrolling
                                       // shrinkWrap: true,
                                       itemBuilder: (context, index) {
-                                        return AssetCard(
-                                          assetSymbol:
-                                              provider.getAssetByType("NFT")[index].assetSymbol,
-                                          balance: provider.getAssetByType("NFT")[index].balance,
-                                          assetBalance: weiToEth(
-                                            provider.getAssetByType("NFT")[index].assetBalance,
-                                          ),
-                                          lastChange:
-                                              provider.getAssetByType("NFT")[index].last24hChange,
+                                        return NftCard(
+                                          nftName: provider.getNftItem()![index].name,
+                                          type: 'NFT',
+                                          id: provider.getNftItem()![index].tokenId,
+                                          nftType: '',
+                                          // assetSymbol:provider.getNftItem()![index].name,
+                                          // balance: provider.getNftItem()![index].symbol,
+                                          // assetBalance: 0,
+                                          // lastChange:
+                                          //     0,
                                         );
                                       },
-                                    ),
+                                    ): Container(),
                                   ],
                                 ),
                               ),

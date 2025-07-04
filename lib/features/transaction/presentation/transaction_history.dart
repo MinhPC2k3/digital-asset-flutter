@@ -194,7 +194,7 @@ class TransactionTableState extends State<TransactionTable> {
       future: txProvider.loadTransactionHistory(walletProvider.wallet!.address),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator(); // While loading
+          return Center(child: CircularProgressIndicator(),); // While loading
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else {
