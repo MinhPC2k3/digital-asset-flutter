@@ -17,16 +17,12 @@ class CustomRouter {
       default:
         return MaterialPageRoute(
           builder:
-              (_) => Scaffold(
-                body: Center(
-                  child: Text('No route defined for ${settings.name}'),
-                ),
-              ),
+              (_) => Scaffold(body: Center(child: Text('No route defined for ${settings.name}'))),
         );
     }
   }
 
   static void navigateTo(BuildContext context, String routeName) {
-    Navigator.pushNamed(context, routeName);
+    Navigator.pushNamedAndRemoveUntil(context, routeName, (Route<dynamic> route) => false);
   }
 }

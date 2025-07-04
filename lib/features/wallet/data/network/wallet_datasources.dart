@@ -227,6 +227,7 @@ class WalletRepositoryImpl implements WalletRepository {
         if (data['nfts'] != null) {
           final List<dynamic> listNfts = data['nfts'];
           print("List nfts: $listNfts");
+          print("List nfts length: ${listNfts.length}");
           final nftItems = listNfts.map((item) => NftItem.fromJson(item)).toList();
           return Result.success(nftItems);
         }

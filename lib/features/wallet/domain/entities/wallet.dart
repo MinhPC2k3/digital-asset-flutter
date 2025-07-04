@@ -109,6 +109,10 @@ class WalletProvider with ChangeNotifier {
     }
     return res;
   }
+
+  List<NftItem>? getNftItem() {
+    return _wallet!.nftItems;
+  }
 }
 
 class AssetBalance {
