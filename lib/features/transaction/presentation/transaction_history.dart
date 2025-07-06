@@ -1,8 +1,6 @@
 import 'package:digital_asset_flutter/core/helper/helper.dart';
-import 'package:digital_asset_flutter/features/auth/presentation/provider/user_provider.dart';
 import 'package:digital_asset_flutter/features/transaction/presentation/provider/transaction_provider.dart';
 import 'package:digital_asset_flutter/features/wallet/domain/entities/wallet.dart';
-import 'package:digital_asset_flutter/features/wallet/domain/usecases/wallet_usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -172,10 +170,13 @@ class TransactionTableState extends State<TransactionTable> {
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Shrinks hit area
               ),
               onPressed: () => launchURL(value),
-              child: Text('View detail',style: TextStyle(
-                decoration: TextDecoration.underline, // Adds underline
-                color: Colors.blue, // Optional: change text color
-              ),),
+              child: Text(
+                'View detail',
+                style: TextStyle(
+                  decoration: TextDecoration.underline, // Adds underline
+                  color: Colors.blue, // Optional: change text color
+                ),
+              ),
             ),
           ),
         ],
@@ -194,7 +195,7 @@ class TransactionTableState extends State<TransactionTable> {
       future: txProvider.loadTransactionHistory(walletProvider.wallet!.address),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator(),); // While loading
+          return Center(child: CircularProgressIndicator()); // While loading
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else {

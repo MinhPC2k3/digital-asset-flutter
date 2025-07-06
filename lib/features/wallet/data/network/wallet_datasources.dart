@@ -6,7 +6,6 @@ import 'package:digital_asset_flutter/features/wallet/data/DTO/wallet_dto.dart';
 import 'package:digital_asset_flutter/features/wallet/domain/entities/wallet.dart';
 import 'package:digital_asset_flutter/features/wallet/domain/repositories/wallet_repository.dart';
 import 'package:http/http.dart' as http;
-import 'dart:typed_data';
 import 'package:uuid/uuid.dart';
 
 class WalletRepositoryImpl implements WalletRepository {
@@ -37,13 +36,13 @@ class WalletRepositoryImpl implements WalletRepository {
         "wallet_name": wallet.walletName,
       },
     };
-    print("Request body: $reqBody");
+
     http.Response res = await client.post(
       Uri.parse(url),
       headers: headers,
       body: jsonEncode(reqBody),
     );
-
+    print("Create wallet response: ${res.body}");
     if (res.statusCode == 200) {
       final Map<String, dynamic> decoded = json.decode(res.body);
 

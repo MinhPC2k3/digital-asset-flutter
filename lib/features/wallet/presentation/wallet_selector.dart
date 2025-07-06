@@ -1,15 +1,13 @@
-import 'package:digital_asset_flutter/core/constants/route.dart';
 import 'package:digital_asset_flutter/core/network/result.dart';
-import 'package:digital_asset_flutter/features/auth/domain/entities/user.dart';
 import 'package:digital_asset_flutter/features/wallet/domain/entities/wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 import '../../auth/presentation/provider/user_provider.dart';
-import 'create_wallet.dart';
 import '../data/network/wallet_datasources.dart';
 import '../domain/usecases/wallet_usecase.dart';
+import 'create_wallet.dart';
 
 // Wallet Selector Modal
 class WalletSelectorModal extends StatefulWidget {

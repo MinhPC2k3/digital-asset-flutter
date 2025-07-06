@@ -7,7 +7,6 @@ import 'package:digital_asset_flutter/features/wallet/domain/entities/wallet.dar
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:url_launcher/url_launcher.dart';
 
 class TransactionProvider extends ChangeNotifier {
   List<TransactionHistoryData>? _transactionHistoryData;

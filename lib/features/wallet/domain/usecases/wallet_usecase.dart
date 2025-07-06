@@ -1,9 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:digital_asset_flutter/core/network/result.dart';
 import 'package:digital_asset_flutter/core/helper/dart_ffi.dart';
-import 'package:digital_asset_flutter/features/auth/domain/entities/user.dart';
+import 'package:digital_asset_flutter/core/network/result.dart';
 import 'package:digital_asset_flutter/features/wallet/domain/entities/wallet.dart';
 import 'package:digital_asset_flutter/features/wallet/domain/repositories/wallet_repository.dart';
 import 'package:uuid/uuid.dart';

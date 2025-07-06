@@ -1,6 +1,5 @@
 import 'package:digital_asset_flutter/core/helper/helper.dart';
 import 'package:digital_asset_flutter/features/asset/domain/entities/entities.dart';
-import 'package:digital_asset_flutter/features/auth/domain/entities/user.dart';
 import 'package:digital_asset_flutter/features/transaction/data/source/network/transaction_datasource.dart';
 import 'package:digital_asset_flutter/features/transaction/domain/entities/transaction.dart';
 import 'package:digital_asset_flutter/features/transaction/domain/repositories/transaction_repository.dart';

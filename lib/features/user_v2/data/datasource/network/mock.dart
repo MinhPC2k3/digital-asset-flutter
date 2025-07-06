@@ -1,4 +1,5 @@
-var DashboardResponse = '{
+var homepageResponse = '''
+{
   "wallets": [
     {
       "walletId": "wallet_001",
@@ -29,9 +30,11 @@ var DashboardResponse = '{
           "name": "CryptoPunk #123",
           "imageUrl": "https://example.com/images/cryptopunk123.png",
           "collection": "CryptoPunks",
-          "estimatedValueUsd": 80000.00
+          "estimatedValueUsd": 80000.00,
+          "asset_id: "asset-nft-token-lcp-0001"
         }
-      ]
+      ],
+      "totalValueUsd": 88900.23
     },
     {
       "walletId": "wallet_002",
@@ -48,8 +51,31 @@ var DashboardResponse = '{
           "last24hChange": -1.87
         }
       ],
-      "nfts": []
+      "nfts": [],
+      "totalValueUsd": 1050.00
     }
-  ],
-  "totalValueUsd": 93950.23
-}'
+  ]
+}
+''';
+
+var createdWalletResponse = '''
+{
+  "wallet": {
+    "walletId": "5ea4c9af-72b6-410d-a938-d4ba6b16fb46",
+    "networkName": "Ethereum",
+    "walletName": "New wallet",
+    "address": "0xXYZABCDEF1234567890",
+    "assets": [
+      {
+        "assetId": "eth_1",
+        "symbol": "ETH",
+        "balance": "0",
+        "decimals": 18,
+        "valuationUsd": 0,
+        "last24hChange": 2.15
+      }
+    ],
+    "totalValueUsd": 0
+  }
+}
+''';
