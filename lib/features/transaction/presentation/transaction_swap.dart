@@ -1,18 +1,11 @@
 import 'package:digital_asset_flutter/features/asset/domain/entities/entities.dart';
-import 'package:digital_asset_flutter/features/auth/presentation/provider/user_provider.dart';
 import 'package:digital_asset_flutter/features/wallet/domain/entities/wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
-import '../../../core/constants/route.dart';
 import '../../../core/helper/helper.dart';
-import '../../wallet/data/network/wallet_datasources.dart';
-import '../../wallet/domain/usecases/wallet_usecase.dart';
 import '../../wallet/presentation/swap_review.dart';
-import '../domain/entities/transaction.dart';
-import '../domain/usecases/transaction_usecases.dart';
 
 class SimpleSwapInterface extends StatefulWidget {
   const SimpleSwapInterface({super.key, required this.userWallets, required this.currentWallet});

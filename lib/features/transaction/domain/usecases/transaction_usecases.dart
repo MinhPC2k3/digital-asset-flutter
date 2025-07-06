@@ -1,17 +1,16 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
-import 'package:digital_asset_flutter/core/network/result.dart';
 import 'package:digital_asset_flutter/core/helper/dart_ffi.dart';
+import 'package:digital_asset_flutter/core/helper/helper.dart';
+import 'package:digital_asset_flutter/core/network/result.dart';
 import 'package:digital_asset_flutter/features/transaction/domain/entities/transaction.dart'
     as transaction_model;
 import 'package:digital_asset_flutter/features/transaction/domain/repositories/transaction_repository.dart';
-import 'package:digital_asset_flutter/core/helper/helper.dart';
-import 'package:uuid/uuid.dart';
-import 'dart:typed_data';
-import 'package:web3dart/web3dart.dart';
-import 'package:web3dart/crypto.dart';
-import 'package:convert/convert.dart';
 import 'package:rlp/rlp.dart';
+import 'package:uuid/uuid.dart';
+import 'package:web3dart/crypto.dart';
+import 'package:web3dart/web3dart.dart';
 
 Future<String> createTransactionFingerprint({
   required int chainId,

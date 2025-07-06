@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
+import '../../../../core/constants/route.dart';
 import '../../../../core/network/result.dart';
 import '../../../asset/data/source/network/asset_datasource.dart';
 import '../../../asset/domain/entities/entities.dart';
+import '../../../user_v2/presentation/pages/homepage.dart';
 import '../../../wallet/data/network/wallet_datasources.dart';
 import '../../../wallet/domain/entities/wallet.dart';
 import '../../../wallet/domain/usecases/wallet_usecase.dart';
@@ -56,7 +58,8 @@ class UserProvider extends ChangeNotifier {
     changeLoadingStatus(false);
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => MyHomePage()),
+      MaterialPageRoute(builder: (context) => MyHomeRefactoredPage()),
+      // MaterialPageRoute(builder: (context) => MyHomePage()),
       // MaterialPageRoute(
       //   builder:
       //       (context) =>
@@ -112,5 +115,10 @@ class UserProvider extends ChangeNotifier {
   void setUser(User user) {
     _user = user;
     notifyListeners();
+  }
+
+  void logout(BuildContext context) {
+    _userUsecase.signOut();
+    CustomRouter.navigateTo(context, Routes.auth);
   }
 }
