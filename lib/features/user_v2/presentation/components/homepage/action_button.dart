@@ -1,10 +1,9 @@
 import 'package:digital_asset_flutter/features/transaction_send_asset_v2/presentation/pages/choose_asset.dart';
+import 'package:digital_asset_flutter/features/transaction_swap_v2/presentation/pages/choose_asset_and_amount.dart';
+import 'package:digital_asset_flutter/features/transaction_swap_v2/presentation/providers/swap_provider.dart';
 import 'package:digital_asset_flutter/features/user_v2/presentation/provider/homepage_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../../../../transaction/presentation/transaction_swap.dart';
-import '../../../../wallet/domain/entities/wallet.dart';
 
 class ActionButton extends StatelessWidget {
   const ActionButton({super.key});
@@ -134,22 +133,20 @@ void _showSendScreen(BuildContext context) async {
 }
 
 void _showSwapScreen(BuildContext context) {
-  var listWallets = Provider.of<WalletProvider>(context, listen: false).listWallet;
+  var listWallets = Provider.of<HomepageProvider>(context, listen: false).getWallets;
   if (listWallets.length < 2) {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text("You have to create other wallet first")));
     return;
   }
+
+  var swapProvider = Provider.of<SwapProvider>(context, listen: false);
+  swapProvider.currentWallet = Provider.of<HomepageProvider>(context, listen: false).currentWallet;
+  swapProvider.userWallets = Provider.of<HomepageProvider>(context, listen: false).getWallets;
+
   Navigator.push(
     context,
-    MaterialPageRoute(
-      builder:
-          (context) => SimpleSwapInterface(
-            userWallets: listWallets,
-            currentWallet: Provider.of<WalletProvider>(context).wallet!,
-          ),
-      fullscreenDialog: true,
-    ),
+    MaterialPageRoute(builder: (context) => SimpleSwapInterface(), fullscreenDialog: true),
   );
 }

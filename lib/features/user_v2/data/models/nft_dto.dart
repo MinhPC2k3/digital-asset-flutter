@@ -7,6 +7,7 @@ class NftDTO {
   final String collection;
   final double estimatedValueUsd;
   final String assetId;
+  final String networkName;
 
   NftDTO({
     required this.tokenId,
@@ -15,6 +16,7 @@ class NftDTO {
     required this.collection,
     required this.estimatedValueUsd,
     required this.assetId,
+    required this.networkName,
   });
 
   factory NftDTO.fromJson(Map<String, dynamic> json) {
@@ -25,6 +27,7 @@ class NftDTO {
       collection: json['collection'],
       estimatedValueUsd: (json['estimatedValueUsd'] as num).toDouble(),
       assetId: json['assetId'] ?? '',
+      networkName: json['networkName'] ?? '',
     );
   }
 
@@ -36,6 +39,7 @@ class NftDTO {
       collection: collection,
       estimatedValueUsd: estimatedValueUsd,
       assetId: assetId,
+      networkName: networkName,
     );
   }
 }
