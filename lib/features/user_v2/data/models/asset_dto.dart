@@ -7,6 +7,7 @@ class AssetDTO {
   final int decimals;
   final double valuationUsd;
   final double last24hChange;
+  final String networkName;
 
   AssetDTO({
     required this.assetId,
@@ -15,6 +16,7 @@ class AssetDTO {
     required this.decimals,
     required this.valuationUsd,
     required this.last24hChange,
+    required this.networkName,
   });
 
   factory AssetDTO.fromJson(Map<String, dynamic> json) {
@@ -25,6 +27,7 @@ class AssetDTO {
       decimals: json['decimals'],
       valuationUsd: (json['valuationUsd'] as num).toDouble(),
       last24hChange: (json['last24hChange'] as num).toDouble(),
+      networkName: json['networkName'] ?? '',
     );
   }
 
@@ -36,6 +39,7 @@ class AssetDTO {
       decimals: decimals,
       valuationUsd: valuationUsd,
       last24hChange: last24hChange,
+      networkName: networkName,
     );
   }
 }

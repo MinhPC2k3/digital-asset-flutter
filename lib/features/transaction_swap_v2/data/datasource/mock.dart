@@ -1,4 +1,4 @@
-var homepageResponse = '''
+var getUserWallet = '''
 {
   "wallets": [
     {
@@ -38,13 +38,13 @@ var homepageResponse = '''
     },
     {
       "walletId": "wallet_002",
-      "walletName": "Polygon Hot Wallet",
+      "walletName": "Binance Hot Wallet",
       "address": "0x9876FEDCBA123456",
-      "networkName": "Polygon",
+      "networkName": "Binance",
       "assets": [
         {
-          "assetId": "matic_1",
-          "symbol": "MATIC",
+          "assetId": "bnb_01",
+          "symbol": "BNB",
           "balance": "1500.00",
           "decimals": 18,
           "valuationUsd": 1050.00,
@@ -57,25 +57,60 @@ var homepageResponse = '''
   ]
 }
 ''';
-
-var createdWalletResponse = '''
+var getSwapQuote = '''
 {
-  "wallet": {
-    "walletId": "5ea4c9af-72b6-410d-a938-d4ba6b16fb46",
-    "networkName": "Ethereum",
-    "walletName": "New wallet",
-    "address": "0xXYZABCDEF1234567890",
-    "assets": [
-      {
-        "assetId": "eth_1",
-        "symbol": "ETH",
-        "balance": "0",
-        "decimals": 18,
-        "valuationUsd": 0,
-        "last24hChange": 2.15
-      }
-    ],
-    "totalValueUsd": 0
+  "quote": {
+    "quote_id": "quote_abc123",
+    "deposit_address": "0xabc123def456...",
+    "estimated_fee": "0.00",
+    "rate": 2998.75,
+    "status": "quote_generated",
+    "expiration_time": 1720359200,
+    "send_amount": "1.5",
+    "receive_amount": "4498.125"
   }
+}
+''';
+
+var getListAssetResponse = '''
+{
+  "assets": [
+    {
+      "assetId": "eth_1",
+      "symbol": "ETH",
+      "balance": "0",
+      "decimals": 18,
+      "valuationUsd": 0,
+      "last24hChange": 0,
+      "networkName": "ethereum"
+    },
+    {
+      "assetId": "usdc_1",
+      "symbol": "USDC",
+      "balance": "0",
+      "decimals": 6,
+      "valuationUsd": 0,
+      "last24hChange": 0,
+      "networkName": "ethereum"
+    },
+    {
+      "assetId": "bnb_1",
+      "symbol": "BNB",
+      "balance": "0",
+      "decimals": 18,
+      "valuationUsd": 0,
+      "last24hChange": 0,
+      "networkName": "binance"
+    },
+    {
+      "assetId": "matic_1",
+      "symbol": "MATIC",
+      "balance": "0",
+      "decimals": 18,
+      "valuationUsd": 0,
+      "last24hChange": 0,
+      "networkName": "polygon"
+    }
+  ]
 }
 ''';
