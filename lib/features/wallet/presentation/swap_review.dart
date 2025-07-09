@@ -67,6 +67,16 @@ class SwapReviewScreenState extends State<SwapReviewScreen> {
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else if (snapshot.hasData) {
+          if (!snapshot.data!.isSuccess) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Error when get quote ${snapshot.data!.error!.message}')),
+              );
+              if (Navigator.canPop(context)) {
+                Navigator.pop(context);
+              }
+            });
+          }
           return Scaffold(
             backgroundColor: const Color(0xFF2A2A2A),
             body: SafeArea(
@@ -88,11 +98,21 @@ class SwapReviewScreenState extends State<SwapReviewScreen> {
                             children: [
                               Text('Swap', style: bigTextStyle.copyWith(fontSize: 24)),
                               const SizedBox(height: 10),
-                              _buildSwapDetails(bigTextStyle, normalTextStyle, smallTextStyle, snapshot.data!.data!),
+                              _buildSwapDetails(
+                                bigTextStyle,
+                                normalTextStyle,
+                                smallTextStyle,
+                                snapshot.data!.data!,
+                              ),
                               const SizedBox(height: 20),
                               Text('Fees', style: bigTextStyle.copyWith(fontSize: 24)),
                               const SizedBox(height: 10),
-                              _buildFeesSection(bigTextStyle, normalTextStyle, smallTextStyle,snapshot.data!.data!.estimatedFee),
+                              _buildFeesSection(
+                                bigTextStyle,
+                                normalTextStyle,
+                                smallTextStyle,
+                                snapshot.data!.data!.estimatedFee,
+                              ),
                               const SizedBox(height: 10),
                               _buildInfoMessage(normalTextStyle),
                               const SizedBox(height: 20),
@@ -100,7 +120,10 @@ class SwapReviewScreenState extends State<SwapReviewScreen> {
                               const SizedBox(height: 10),
                               _buildNetworkSection(bigTextStyle, normalTextStyle, smallTextStyle),
                               const SizedBox(height: 10),
-                              QuoteReadyWidget(initialDuration: snapshot.data!.data!.expirationTimestamp!.difference(DateTime.now()),),
+                              QuoteReadyWidget(
+                                initialDuration: snapshot.data!.data!.expirationTimestamp!
+                                    .difference(DateTime.now()),
+                              ),
                             ],
                           ),
                         ),
@@ -115,10 +138,9 @@ class SwapReviewScreenState extends State<SwapReviewScreen> {
               ),
             ),
           );
-        }  else {
+        } else {
           return Text('No data');
         }
-
       },
     );
   }
@@ -149,7 +171,7 @@ class SwapReviewScreenState extends State<SwapReviewScreen> {
     TextStyle bigTextStyle,
     TextStyle normalTextStyle,
     TextStyle smallTextStyle,
-      TransactionSwap txSwap,
+    TransactionSwap txSwap,
   ) {
     return Container(
       padding: const EdgeInsets.all(10.0),
@@ -250,7 +272,7 @@ class SwapReviewScreenState extends State<SwapReviewScreen> {
     TextStyle bigTextStyle,
     TextStyle normalTextStyle,
     TextStyle smallTextStyle,
-      String fee,
+    String fee,
   ) {
     return Container(
       padding: const EdgeInsets.all(10.0),
@@ -270,9 +292,7 @@ class SwapReviewScreenState extends State<SwapReviewScreen> {
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(fee, style: normalTextStyle),
-            ],
+            children: [Text(fee, style: normalTextStyle)],
           ),
         ],
       ),
@@ -347,13 +367,12 @@ class SwapReviewScreenState extends State<SwapReviewScreen> {
           var transactionUsecase = TransactionUsecase(transactionRepository: txRepo);
           var transaction = Transaction(
             userId: Provider.of<UserProvider>(context, listen: false).user!.id,
-            walletId:
-            Provider.of<WalletProvider>(context, listen: false).wallet!.id,
+            walletId: Provider.of<WalletProvider>(context, listen: false).wallet!.id,
             assetId: widget.fromAsset.assetId,
             amount: widget.amount,
             receiverAddress: depositAddress,
             blockchainType: null,
-            networkName:widget.fromAsset.networkName,
+            networkName: widget.fromAsset.networkName,
             transactionType: null,
             tokenId: '',
           );
@@ -364,9 +383,7 @@ class SwapReviewScreenState extends State<SwapReviewScreen> {
           if (!signResponse.isSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(
-                  'Error when create transaction: ${signResponse.error!.message}',
-                ),
+                content: Text('Error when create transaction: ${signResponse.error!.message}'),
                 backgroundColor: Colors.red,
               ),
             );
@@ -399,10 +416,10 @@ class SwapReviewScreenState extends State<SwapReviewScreen> {
       enableDrag: false,
       builder:
           (context) => SwapPinKeyboardModal(
-        transactionUsecase: transactionUsecase,
-        signInfo: signInfo,
-        transaction: transaction,
-      ),
+            transactionUsecase: transactionUsecase,
+            signInfo: signInfo,
+            transaction: transaction,
+          ),
     );
 
     if (result == true) {
@@ -425,7 +442,7 @@ class QuoteReadyWidget extends StatefulWidget {
 
   const QuoteReadyWidget({
     super.key,
-    required this.initialDuration ,
+    required this.initialDuration,
     this.onTimerExpired,
     this.title = 'Quote Ready',
     this.subtitle = 'Rate locked for',
@@ -482,10 +499,7 @@ class _QuoteReadyWidgetState extends State<QuoteReadyWidget> {
       decoration: BoxDecoration(
         color: const Color(0xFF2A3B3A),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isExpired ? Colors.red : const Color(0xFF10B981),
-          width: 1.5,
-        ),
+        border: Border.all(color: isExpired ? Colors.red : const Color(0xFF10B981), width: 1.5),
       ),
       child: Row(
         children: [
@@ -518,10 +532,7 @@ class _QuoteReadyWidgetState extends State<QuoteReadyWidget> {
                   isExpired
                       ? 'Rate has expired'
                       : '${widget.subtitle} ${_formatTime(remainingTime)}',
-                  style: const TextStyle(
-                    color: Color(0xFF9CA3AF),
-                    fontSize: 14,
-                  ),
+                  style: const TextStyle(color: Color(0xFF9CA3AF), fontSize: 14),
                 ),
               ],
             ),
@@ -549,10 +560,7 @@ class _QuoteReadyExampleState extends State<QuoteReadyExample> {
       backgroundColor: const Color(0xFF1A1B23),
       appBar: AppBar(
         backgroundColor: const Color(0xFF1A1B23),
-        title: const Text(
-          'Quote Timer Demo',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text('Quote Timer Demo', style: TextStyle(color: Colors.white)),
         elevation: 0,
       ),
       body: Column(
@@ -563,10 +571,7 @@ class _QuoteReadyExampleState extends State<QuoteReadyExample> {
               onTimerExpired: () {
                 // Handle timer expiration
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Quote has expired!'),
-                    backgroundColor: Colors.red,
-                  ),
+                  const SnackBar(content: Text('Quote has expired!'), backgroundColor: Colors.red),
                 );
               },
             ),
@@ -590,13 +595,8 @@ class _QuoteReadyExampleState extends State<QuoteReadyExample> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF10B981),
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 12,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
                   child: const Text('Reset Timer'),
                 ),
@@ -615,13 +615,8 @@ class _QuoteReadyExampleState extends State<QuoteReadyExample> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF3A3B45),
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 12,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
                   child: const Text('Start New Quote'),
                 ),
@@ -633,11 +628,7 @@ class _QuoteReadyExampleState extends State<QuoteReadyExample> {
             padding: EdgeInsets.all(16),
             child: Text(
               'Different Timer Examples:',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
           QuoteReadyWidget(
@@ -685,8 +676,7 @@ class AdvancedQuoteWidget extends StatefulWidget {
   State<AdvancedQuoteWidget> createState() => _AdvancedQuoteWidgetState();
 }
 
-class _AdvancedQuoteWidgetState extends State<AdvancedQuoteWidget>
-    with TickerProviderStateMixin {
+class _AdvancedQuoteWidgetState extends State<AdvancedQuoteWidget> with TickerProviderStateMixin {
   late Duration remainingTime;
   late Duration totalTime;
   Timer? _timer;
@@ -700,17 +690,11 @@ class _AdvancedQuoteWidgetState extends State<AdvancedQuoteWidget>
     remainingTime = widget.initialDuration;
     totalTime = widget.initialDuration;
 
-    _pulseController = AnimationController(
-      duration: const Duration(seconds: 1),
-      vsync: this,
-    );
+    _pulseController = AnimationController(duration: const Duration(seconds: 1), vsync: this);
     _pulseAnimation = Tween<double>(
       begin: 1.0,
       end: 1.2,
-    ).animate(CurvedAnimation(
-      parent: _pulseController,
-      curve: Curves.easeInOut,
-    ));
+    ).animate(CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut));
 
     _startTimer();
   }
@@ -762,28 +746,24 @@ class _AdvancedQuoteWidgetState extends State<AdvancedQuoteWidget>
       animation: _pulseAnimation,
       builder: (context, child) {
         return Transform.scale(
-          scale: remainingTime.inSeconds <= 30 && !isExpired
-              ? _pulseAnimation.value
-              : 1.0,
+          scale: remainingTime.inSeconds <= 30 && !isExpired ? _pulseAnimation.value : 1.0,
           child: Container(
             margin: const EdgeInsets.all(16),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: const Color(0xFF2A3B3A),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: currentColor,
-                width: 1.5,
-              ),
-              boxShadow: remainingTime.inSeconds <= 30 && !isExpired
-                  ? [
-                BoxShadow(
-                  color: currentColor.withOpacity(0.3),
-                  blurRadius: 8,
-                  spreadRadius: 2,
-                ),
-              ]
-                  : null,
+              border: Border.all(color: currentColor, width: 1.5),
+              boxShadow:
+                  remainingTime.inSeconds <= 30 && !isExpired
+                      ? [
+                        BoxShadow(
+                          color: currentColor.withOpacity(0.3),
+                          blurRadius: 8,
+                          spreadRadius: 2,
+                        ),
+                      ]
+                      : null,
             ),
             child: Column(
               children: [
@@ -793,10 +773,7 @@ class _AdvancedQuoteWidgetState extends State<AdvancedQuoteWidget>
                     Container(
                       width: 12,
                       height: 12,
-                      decoration: BoxDecoration(
-                        color: currentColor,
-                        shape: BoxShape.circle,
-                      ),
+                      decoration: BoxDecoration(color: currentColor, shape: BoxShape.circle),
                     ),
                     const SizedBox(width: 12),
                     // Text content
@@ -819,13 +796,15 @@ class _AdvancedQuoteWidgetState extends State<AdvancedQuoteWidget>
                                 ? 'Rate has expired'
                                 : '${widget.subtitle} ${_formatTime(remainingTime)}',
                             style: TextStyle(
-                              color: remainingTime.inSeconds <= 30 && !isExpired
-                                  ? Colors.orange
-                                  : const Color(0xFF9CA3AF),
+                              color:
+                                  remainingTime.inSeconds <= 30 && !isExpired
+                                      ? Colors.orange
+                                      : const Color(0xFF9CA3AF),
                               fontSize: 14,
-                              fontWeight: remainingTime.inSeconds <= 30 && !isExpired
-                                  ? FontWeight.w500
-                                  : FontWeight.normal,
+                              fontWeight:
+                                  remainingTime.inSeconds <= 30 && !isExpired
+                                      ? FontWeight.w500
+                                      : FontWeight.normal,
                             ),
                           ),
                         ],
@@ -901,24 +880,40 @@ class _SwapPinKeyboardModalState extends State<SwapPinKeyboardModal> {
       isLoading = true;
     });
 
-    await widget.transactionUsecase.sendAsset(
+    var res = await widget.transactionUsecase.sendAsset(
       widget.transaction,
       widget.signInfo,
       _pinController.text,
     );
-    var _walletRepo = WalletRepositoryImpl(http.Client());
-    var _walletUsecase = WalletUsecases(walletRepository: _walletRepo);
-    await _walletUsecase.getWalletAssetBalances(
-      Provider.of<WalletProvider>(context, listen: false).wallet!,
-    );
-    setState(() {
-      isLoading = false;
-    });
+    if (res.isSuccess) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Transaction sent asset successfully!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      var _walletRepo = WalletRepositoryImpl(http.Client());
+      var _walletUsecase = WalletUsecases(walletRepository: _walletRepo);
+      await _walletUsecase.getWalletAssetBalances(
+        Provider.of<WalletProvider>(context, listen: false).wallet!,
+      );
+      setState(() {
+        isLoading = false;
+      });
+      print("Doing after success");
 
-    // Handle PIN verification result
-    if (mounted) {
-      CustomRouter.navigateTo(context, Routes.home); // Return success
+      // Handle PIN verification result
+      if (mounted) {
+        CustomRouter.navigateTo(context, Routes.home); // Return success
+      }
     }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Transaction sent asset fail with error: ${res.error!.message}'),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
 
   @override
@@ -979,9 +974,9 @@ class _SwapPinKeyboardModalState extends State<SwapPinKeyboardModal> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color:
-                        index < _pinController.text.length
-                            ? const Color(0xFFFF6B35)
-                            : const Color(0xFF3A3B4A),
+                            index < _pinController.text.length
+                                ? const Color(0xFFFF6B35)
+                                : const Color(0xFF3A3B4A),
                       ),
                     );
                   }),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/constants/route.dart';
 import '../../auth/presentation/provider/user_provider.dart';
 
 class CreateWalletScreen extends StatefulWidget {
@@ -107,25 +108,28 @@ class _CreateWalletScreenState extends State<CreateWalletScreen> {
                       _isFormValid
                           ? () async {
                             // Handle wallet creation
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Wallet created successfully!'),
-                                backgroundColor: Colors.green,
-                              ),
-                            );
                             var createdWallet = await widget.wallerUsecases.createWallet(
                               Provider.of<UserProvider>(context, listen: false).user!.id,
                               _walletNameController.text,
                               _selectedNetwork.toLowerCase(),
                               _pinController.text,
                             );
-                            if (!createdWallet.isSuccess){
-                              ScaffoldMessenger.of(
+                            if (!createdWallet.isSuccess) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Error: ${createdWallet.error!.message}')),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Wallet created successfully!'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                              Provider.of<WalletProvider>(
                                 context,
-                              ).showSnackBar(SnackBar(content: Text('Error: ${createdWallet.error!.message}')));
-                            }else {
-                              Provider.of<WalletProvider>(context,listen: false).setWallet(createdWallet.data!);
-                              Navigator.pop(context);
+                                listen: false,
+                              ).setWallet(createdWallet.data!);
+                              CustomRouter.navigateTo(context, Routes.home);
                             }
                           }
                           : null,

@@ -62,24 +62,41 @@ class _PinKeyboardModalState extends State<PinKeyboardModal> {
       isLoading = true;
     });
 
-    await widget.transactionUsecase.sendAsset(
+    var res = await widget.transactionUsecase.sendAsset(
       widget.transaction,
       widget.signInfo,
       _pinController.text,
     );
-    var _walletRepo = WalletRepositoryImpl(http.Client());
-    var _walletUsecase = WalletUsecases(walletRepository: _walletRepo);
-    await _walletUsecase.getWalletAssetBalances(
-      Provider.of<WalletProvider>(context, listen: false).wallet!,
-    );
-    setState(() {
-      isLoading = false;
-    });
 
-    // Handle PIN verification result
-    if (mounted) {
-      CustomRouter.navigateTo(context, Routes.home); // Return success
+    if (res.isSuccess) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Transaction sent asset successfully!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      var _walletRepo = WalletRepositoryImpl(http.Client());
+      var _walletUsecase = WalletUsecases(walletRepository: _walletRepo);
+      await _walletUsecase.getWalletAssetBalances(
+        Provider.of<WalletProvider>(context, listen: false).wallet!,
+      );
+      setState(() {
+        isLoading = false;
+      });
+      print("Doing after success");
+
+      // Handle PIN verification result
+      if (mounted) {
+        CustomRouter.navigateTo(context, Routes.home); // Return success
+      }
     }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Transaction sent asset fail with error: ${res.error!.message}'),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
 
   @override

@@ -198,12 +198,18 @@ class _GeneralInfoState extends State<GeneralInfo> {
                                 },
                                 child: Row(
                                   children: [
-                                    Text(
-                                      walletProvider.wallet!.walletName,
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w600,
+                                    SizedBox(
+                                      width: 120,
+                                      child: Center(
+                                        child: Text(
+                                          walletProvider.wallet!.walletName,
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w600,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                     const SizedBox(width: 8),
@@ -539,24 +545,26 @@ class _GeneralInfoState extends State<GeneralInfo> {
                                         );
                                       },
                                     ),
-                                    provider.getNftItem() != null ? ListView.builder(
-                                      itemCount: provider.getNftItem()!.length,
-                                      // physics: NeverScrollableScrollPhysics(), // disable inner scrolling
-                                      // shrinkWrap: true,
-                                      itemBuilder: (context, index) {
-                                        return NftCard(
-                                          nftName: provider.getNftItem()![index].name,
-                                          type: 'NFT',
-                                          id: provider.getNftItem()![index].tokenId,
-                                          nftType: '',
-                                          // assetSymbol:provider.getNftItem()![index].name,
-                                          // balance: provider.getNftItem()![index].symbol,
-                                          // assetBalance: 0,
-                                          // lastChange:
-                                          //     0,
-                                        );
-                                      },
-                                    ): Container(),
+                                    provider.getNftItem() != null
+                                        ? ListView.builder(
+                                          itemCount: provider.getNftItem()!.length,
+                                          // physics: NeverScrollableScrollPhysics(), // disable inner scrolling
+                                          // shrinkWrap: true,
+                                          itemBuilder: (context, index) {
+                                            return NftCard(
+                                              nftName: provider.getNftItem()![index].name,
+                                              type: 'NFT',
+                                              id: provider.getNftItem()![index].tokenId,
+                                              nftType: '',
+                                              // assetSymbol:provider.getNftItem()![index].name,
+                                              // balance: provider.getNftItem()![index].symbol,
+                                              // assetBalance: 0,
+                                              // lastChange:
+                                              //     0,
+                                            );
+                                          },
+                                        )
+                                        : Container(),
                                   ],
                                 ),
                               ),

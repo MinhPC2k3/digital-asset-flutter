@@ -49,7 +49,7 @@ class _SendAddressScreenState extends State<SendAddressScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.wallet.assetBalances![widget.assetId].assetType == "NFT") {
+    if (widget.nftItem != null) {
       _isValidAmount = true;
     }
   }
@@ -104,18 +104,29 @@ class _SendAddressScreenState extends State<SendAddressScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          widget.wallet.assetBalances![widget.assetId].assetSymbol,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Text(
-                          'Balance: ${cleanFloatDecimal(weiToEth(widget.wallet.assetBalances![widget.assetId].assetBalance))} ${widget.wallet.assetBalances![widget.assetId].assetSymbol}',
-                          style: TextStyle(color: Colors.grey[400], fontSize: 12),
-                        ),
+                        widget.nftItem == null
+                            ? Text(
+                              widget.wallet.assetBalances![widget.assetId].assetSymbol,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            )
+                            : Text(
+                              widget.nftItem!.name,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                        widget.nftItem == null
+                            ? Text(
+                              'Balance: ${cleanFloatDecimal(weiToEth(widget.wallet.assetBalances![widget.assetId].assetBalance))} ${widget.wallet.assetBalances![widget.assetId].assetSymbol}',
+                              style: TextStyle(color: Colors.grey[400], fontSize: 12),
+                            )
+                            : Text('NFT', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
                       ],
                     ),
                   ),
@@ -151,19 +162,6 @@ class _SendAddressScreenState extends State<SendAddressScreen> {
                   hintStyle: TextStyle(color: Colors.grey[400]),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.all(16),
-                  // suffixIcon: Row(
-                  //   mainAxisSize: MainAxisSize.min,
-                  //   children: [
-                  //     IconButton(
-                  //       icon: Icon(Icons.qr_code_scanner, color: Colors.grey[400]),
-                  //       onPressed: _scanQRCode,
-                  //     ),
-                  //     IconButton(
-                  //       icon: Icon(Icons.paste, color: Colors.grey[400]),
-                  //       onPressed: _pasteFromClipboard,
-                  //     ),
-                  //   ],
-                  // ),
                 ),
               ),
             ),
@@ -186,7 +184,7 @@ class _SendAddressScreenState extends State<SendAddressScreen> {
             const SizedBox(height: 24),
 
             // Amount section
-            widget.wallet.assetBalances![widget.assetId].assetType != "NFT"
+            widget.nftItem == null
                 ? const Text(
                   'Amount',
                   style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
@@ -194,7 +192,7 @@ class _SendAddressScreenState extends State<SendAddressScreen> {
                 : Container(),
             const SizedBox(height: 12),
 
-            widget.wallet.assetBalances![widget.assetId].assetType != "NFT"
+            widget.nftItem == null
                 ? Container(
                   decoration: BoxDecoration(
                     color: Colors.grey[800],
@@ -254,19 +252,29 @@ class _SendAddressScreenState extends State<SendAddressScreen> {
                 onPressed:
                     _isValidAddress && _isValidAmount
                         ? () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder:
-                                  (context) => TransactionReviewScreen(
-                                    amount: _amountController.text,
-                                    receiverAddress: _addressController.text,
-                                    assetBalance: widget.wallet.assetBalances![widget.assetId],
-                                    nftItem: widget.nftItem,
-                                  ),
-                              fullscreenDialog: true,
-                            ),
-                          );
+                          if (double.parse(_amountController.text) >
+                              weiToEth(widget.wallet.assetBalances![widget.assetId].assetBalance)) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text("Balance is not enough"),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) => TransactionReviewScreen(
+                                      amount: _amountController.text,
+                                      receiverAddress: _addressController.text,
+                                      assetBalance: widget.wallet.assetBalances![widget.assetId],
+                                      nftItem: widget.nftItem,
+                                    ),
+                                fullscreenDialog: true,
+                              ),
+                            );
+                          }
                         }
                         : null,
                 style: ElevatedButton.styleFrom(

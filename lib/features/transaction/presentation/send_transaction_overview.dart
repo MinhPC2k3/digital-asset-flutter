@@ -168,138 +168,88 @@ class SendCryptoModal extends StatelessWidget {
                         itemCount: assetBalancesListenChange.length,
                         itemBuilder:
                             (context, index) =>
-                            assetBalancesListenChange[index].assetType != "NFT"
-                            ? Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                          child: GestureDetector(
-                            onTap:
-                                () => {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder:
-                                      (context) => SendAddressScreen(
-                                    wallet:
-                                    Provider.of<WalletProvider>(
-                                      context,
-                                      listen: false,
-                                    ).wallet!,
-                                    assetId: index, nftItem: null,
-                                  ),
-                                  fullscreenDialog: true,
-                                ),
-                              ),
-                            },
-                            // onTap:
-                            //     () => _showSendAmountScreen(
-                            //   context,
-                            //   "0x2a6A36dEB1593dEb03b0cFd6d1fb2Cb20BC93E2C",
-                            // ),
-                            child: TokenAssetSelector(
-                              assetName: assetBalancesNotListenChange[index].assetId,
-                              assetSymbol: assetBalancesNotListenChange[index].assetSymbol,
-                              assetBalance: weiToEth(
-                                assetBalancesNotListenChange[index].assetBalance,
-                              )
-                                  .toStringAsFixed(6)
-                                  .replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), ""),
-                              balance: assetBalancesListenChange[index].balance,
-                              assetIcon: Icon(Icons.attach_money),
-                            ),
-                          ),
-                        )
-                            : Container(),
+                                assetBalancesListenChange[index].assetType != "NFT"
+                                    ? Padding(
+                                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                                      child: GestureDetector(
+                                        onTap:
+                                            () => {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder:
+                                                      (context) => SendAddressScreen(
+                                                        wallet:
+                                                            Provider.of<WalletProvider>(
+                                                              context,
+                                                              listen: false,
+                                                            ).wallet!,
+                                                        assetId: index,
+                                                        nftItem: null,
+                                                      ),
+                                                  fullscreenDialog: true,
+                                                ),
+                                              ),
+                                            },
+                                        child: TokenAssetSelector(
+                                          assetName: assetBalancesNotListenChange[index].assetId,
+                                          assetSymbol:
+                                              assetBalancesNotListenChange[index].assetSymbol,
+                                          assetBalance: weiToEth(
+                                                assetBalancesNotListenChange[index].assetBalance,
+                                              )
+                                              .toStringAsFixed(6)
+                                              .replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), ""),
+                                          balance: assetBalancesListenChange[index].balance,
+                                          assetIcon: Icon(Icons.attach_money),
+                                        ),
+                                      ),
+                                    )
+                                    : Container(),
                       ),
-                      ListView.builder(
-                        itemCount: walletWithListenChange!.nftItems!.length,
-                        itemBuilder:
-                            (context, index) =>
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                          child: GestureDetector(
-                            onTap:
-                                () => {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder:
-                                      (context) => SendAddressScreen(
-                                    wallet:
-                                    Provider.of<WalletProvider>(
-                                      context,
-                                      listen: false,
-                                    ).wallet!,
-                                    assetId: index, nftItem: walletWithListenChange!.nftItems![index],
+                      walletWithListenChange!.nftItems != null
+                          ? ListView.builder(
+                            itemCount: walletWithListenChange!.nftItems!.length,
+                            itemBuilder:
+                                (context, index) => Padding(
+                                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                                  child: GestureDetector(
+                                    onTap:
+                                        () => {
+                                          print(
+                                            "NFT type ${walletWithListenChange.nftItems![index].symbol}",
+                                          ),
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder:
+                                                  (context) => SendAddressScreen(
+                                                    wallet:
+                                                        Provider.of<WalletProvider>(
+                                                          context,
+                                                          listen: false,
+                                                        ).wallet!,
+                                                    assetId: index,
+                                                    nftItem:
+                                                        walletWithListenChange.nftItems![index],
+                                                  ),
+                                              fullscreenDialog: true,
+                                            ),
+                                          ),
+                                        },
+                                    child: NftAssetSelector(
+                                      nftItem: walletWithListenChange.nftItems![index],
+                                    ),
                                   ),
-                                  fullscreenDialog: true,
                                 ),
-                              ),
-                            },
-                            // onTap:
-                            //     () => _showSendAmountScreen(
-                            //   context,
-                            //   "0x2a6A36dEB1593dEb03b0cFd6d1fb2Cb20BC93E2C",
-                            // ),
-                            child: NftAssetSelector(
-                                 nftItem: walletWithListenChange.nftItems![index],
-                            ),
-                          ),
-                        ),
-                      ),
+                          )
+                          : Container(),
                     ],
                   ),
                 ),
               ],
             ),
           ),
-          // Expanded(
-          //   child: ListView.builder(
-          //     itemCount: assetBalancesNotListenChange.length,
-          //     itemBuilder:
-          //         (context, index) =>
-          //     assetBalancesNotListenChange[index].assetType != "NFT"
-          //         ? Padding(
-          //       padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-          //       child: GestureDetector(
-          //         onTap:
-          //             () => {
-          //           Navigator.push(
-          //             context,
-          //             MaterialPageRoute(
-          //               builder:
-          //                   (context) => SendAddressScreen(
-          //                 wallet:
-          //                 Provider.of<WalletProvider>(
-          //                   context,
-          //                   listen: false,
-          //                 ).wallet!,
-          //                 assetId: index,
-          //               ),
-          //               fullscreenDialog: true,
-          //             ),
-          //           ),
-          //         },
-          //         // onTap:
-          //         //     () => _showSendAmountScreen(
-          //         //   context,
-          //         //   "0x2a6A36dEB1593dEb03b0cFd6d1fb2Cb20BC93E2C",
-          //         // ),
-          //         child: TokenAssetSelector(
-          //           assetName: assetBalancesNotListenChange[index].assetId,
-          //           assetSymbol: assetBalancesNotListenChange[index].assetSymbol,
-          //           assetBalance: weiToEth(
-          //             assetBalancesNotListenChange[index].assetBalance,
-          //           )
-          //               .toStringAsFixed(6)
-          //               .replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), ""),
-          //           balance: assetBalancesListenChange[index].balance,
-          //           assetIcon: Icon(Icons.attach_money),
-          //         ),
-          //       ),
-          //     )
-          //         : Container(),
-          //   ),
-          // ),
         ],
       ),
     );

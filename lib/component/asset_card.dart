@@ -32,9 +32,7 @@ class AssetCard extends StatelessWidget {
               color: Colors.grey[800],
               borderRadius: BorderRadius.circular(20),
             ),
-            child: Center(
-              child: assetIcon,
-            ),
+            child: Center(child: assetIcon),
           ),
           const SizedBox(width: 15),
           Expanded(
@@ -43,7 +41,7 @@ class AssetCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                     Text(
+                    Text(
                       assetSymbol,
                       style: TextStyle(
                         color: Colors.white,
@@ -52,7 +50,7 @@ class AssetCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                     Text(assetSymbol, style: TextStyle(color: Colors.grey, fontSize: 14)),
+                    Text(assetSymbol, style: TextStyle(color: Colors.grey, fontSize: 14)),
                   ],
                 ),
                 const SizedBox(height: 4),
@@ -122,9 +120,7 @@ class NftCard extends StatelessWidget {
               color: Colors.grey[800],
               borderRadius: BorderRadius.circular(20),
             ),
-            child: Center(
-              child: assetIcon,
-            ),
+            child: Center(child: assetIcon),
           ),
           const SizedBox(width: 15),
           Expanded(
@@ -144,8 +140,7 @@ class NftCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                    )
-
+                    ),
                   ],
                 ),
               ],
@@ -159,10 +154,7 @@ class NftCard extends StatelessWidget {
                 style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 4),
-              Text(
-                'ERC-721',
-                style: TextStyle(color: Colors.grey, fontSize: 14),
-              ),
+              Text('ERC-721', style: TextStyle(color: Colors.grey, fontSize: 14)),
             ],
           ),
         ],
