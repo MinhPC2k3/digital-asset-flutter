@@ -97,14 +97,16 @@ class WalletProvider with ChangeNotifier {
 
   List<AssetBalance> getAssetByType(String assetType) {
     List<AssetBalance> res = [];
-    for (int i = 0; i < _wallet!.assetBalances!.length; i++) {
-      if (assetType == "TOKEN") {
-        if (_wallet!.assetBalances![i].assetType == "COIN" ||
-            _wallet!.assetBalances![i].assetType == "TOKEN") {
+    if (_wallet!.assetBalances != null) {
+      for (int i = 0; i < _wallet!.assetBalances!.length; i++) {
+        if (assetType == "TOKEN") {
+          if (_wallet!.assetBalances![i].assetType == "COIN" ||
+              _wallet!.assetBalances![i].assetType == "TOKEN") {
+            res.add(_wallet!.assetBalances![i]);
+          }
+        } else if (_wallet!.assetBalances![i].assetType == assetType) {
           res.add(_wallet!.assetBalances![i]);
         }
-      } else if (_wallet!.assetBalances![i].assetType == assetType) {
-        res.add(_wallet!.assetBalances![i]);
       }
     }
     return res;

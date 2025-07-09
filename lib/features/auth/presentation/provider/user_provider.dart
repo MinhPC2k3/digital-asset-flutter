@@ -58,8 +58,8 @@ class UserProvider extends ChangeNotifier {
     changeLoadingStatus(false);
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => MyHomeRefactoredPage()),
-      // MaterialPageRoute(builder: (context) => MyHomePage()),
+      // MaterialPageRoute(builder: (context) => MyHomeRefactoredPage()),
+      MaterialPageRoute(builder: (context) => MyHomePage()),
       // MaterialPageRoute(
       //   builder:
       //       (context) =>

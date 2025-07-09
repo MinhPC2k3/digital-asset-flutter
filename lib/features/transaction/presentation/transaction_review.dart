@@ -45,16 +45,6 @@ class TransactionReviewScreen extends StatelessWidget {
             transaction: transaction,
           ),
     );
-
-    if (result == true) {
-      // PIN verified successfully, proceed with transaction
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Transaction sent successfully!'),
-          backgroundColor: Colors.green,
-        ),
-      );
-    }
   }
 
   @override
@@ -112,14 +102,23 @@ class TransactionReviewScreen extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            '$amount ${assetBalance.assetSymbol}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          nftItem == null
+                              ? Text(
+                                '$amount ${assetBalance.assetSymbol}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              )
+                              : Text(
+                                nftItem!.name,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                           // const Text(
                           //   '0.00738922 ETH',
                           //   style: TextStyle(color: Colors.grey, fontSize: 16),
@@ -223,7 +222,7 @@ class TransactionReviewScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           const Text(
-                            'd11,837',
+                            '0',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 16,
@@ -231,10 +230,7 @@ class TransactionReviewScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 4),
-                          Text(
-                            '0.00017571 ${assetBalance.assetSymbol}',
-                            style: TextStyle(color: Colors.grey, fontSize: 14),
-                          ),
+                          Text('0', style: TextStyle(color: Colors.grey, fontSize: 14)),
                         ],
                       ),
                     ],
@@ -319,14 +315,7 @@ class TransactionReviewScreen extends StatelessWidget {
                               walletId:
                                   Provider.of<WalletProvider>(context, listen: false).wallet!.id,
                               assetId: assetBalance.assetId,
-                              amount:
-                                  Provider.of<AssetProvider>(
-                                            context,
-                                            listen: false,
-                                          ).assetInfos![assetBalance.assetId]!.assetType ==
-                                          "NFT"
-                                      ? "0"
-                                      : amount,
+                              amount: nftItem != null ? "0" : amount,
                               receiverAddress: receiverAddress,
                               blockchainType: null,
                               networkName:
