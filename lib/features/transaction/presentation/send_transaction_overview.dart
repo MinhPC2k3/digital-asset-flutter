@@ -111,44 +111,6 @@ class SendCryptoModal extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 30),
-          // Search Bar
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: Colors.grey[800],
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.search, color: Colors.grey[400], size: 20),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextField(
-                    controller: TextEditingController(),
-                    // Add controller if needed
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                    decoration: InputDecoration(
-                      hintText: 'Search',
-                      hintStyle: TextStyle(color: Colors.grey[400], fontSize: 16),
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                    onChanged: (value) {
-                      // Handle search input
-                      print('Search query: $value');
-                    },
-                    onSubmitted: (value) {
-                      // Handle when user presses enter
-                      print('Search submitted: $value');
-                      // _showSendAmountScreen(context, value);
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
           DefaultTabController(
             length: 2,
             child: Column(

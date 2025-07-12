@@ -1,4 +1,5 @@
 import 'package:digital_asset_flutter/features/auth/presentation/general_info.dart';
+import 'package:digital_asset_flutter/features/test/test.dart';
 import 'package:digital_asset_flutter/features/transaction/presentation/transaction_history.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +17,8 @@ class MyHomePageState extends State<MyHomePage> {
   final List<Widget> _pages = [
     GeneralInfo(),
     TransactionHistory(),
-    Center(child: Text('Profile Page')),
+    Center(child: Text('Coming soon', style: TextStyle(color: Colors.white),)),
+    // TestScreen(),
   ];
 
   @override

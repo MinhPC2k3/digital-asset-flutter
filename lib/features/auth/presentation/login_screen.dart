@@ -119,31 +119,31 @@ class LoginScreenState extends State<LoginScreen> {
                           const SizedBox(height: 24),
 
                           // Sign up text
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text(
-                                "Don't have a BLC Wallet account? ",
-                                style: TextStyle(color: Color(0xFF8B8B8B), fontSize: 14),
-                              ),
-                              GestureDetector(
-                                onTap: () async {
-                                  Provider.of<user_model.UserProvider>(
-                                    context,
-                                    listen: false,
-                                  ).userRegister(context);
-                                },
-                                child: const Text(
-                                  'Sign up',
-                                  style: TextStyle(
-                                    color: Color(0xFFFF6B35),
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.center,
+                          //   children: [
+                          //     const Text(
+                          //       "Don't have a BLC Wallet account? ",
+                          //       style: TextStyle(color: Color(0xFF8B8B8B), fontSize: 14),
+                          //     ),
+                          //     GestureDetector(
+                          //       onTap: () async {
+                          //         Provider.of<user_model.UserProvider>(
+                          //           context,
+                          //           listen: false,
+                          //         ).userRegister(context);
+                          //       },
+                          //       child: const Text(
+                          //         'Sign up',
+                          //         style: TextStyle(
+                          //           color: Color(0xFFFF6B35),
+                          //           fontSize: 14,
+                          //           fontWeight: FontWeight.w500,
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
                         ],
                       ),
                       // Bottom spacer
