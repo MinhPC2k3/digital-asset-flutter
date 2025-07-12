@@ -182,7 +182,7 @@ class TransactionUsecase {
     String walletAddress,
   ) async {
     var res = await _transactionRepository.getHistory(walletAddress);
-    print("Doing 123");
+
     if (res.isSuccess) {
       print("Doing from tx history usecase");
       for (int i = 0; i < res.data!.length; i++) {

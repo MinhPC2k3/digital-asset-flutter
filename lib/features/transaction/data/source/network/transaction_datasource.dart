@@ -32,9 +32,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
         "asset_id": transaction.assetId,
         "network_name": transaction.networkName,
         "tx_type": transaction.transactionType.toString().split('.').last,
-        "extra_fields":{
-          "tokenId": transaction.tokenId
-        }
+        "extra_fields": {"tokenId": transaction.tokenId},
       },
     };
     http.Response res = await client.post(
@@ -277,6 +275,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
     String url = '${ApiEndpoints.walletCoreBaseUrl}/$walletAddress/transactions';
     Map<String, String> headers = {"Content-type": "application/json"};
     http.Response res = await client.get(Uri.parse(url), headers: headers);
+    print("Doing 123 response :${res.body}, request $walletAddress}");
     if (res.statusCode == 200) {
       final Map<String, dynamic> decoded = json.decode(res.body);
       print("Response ${decoded}");
@@ -285,22 +284,21 @@ class TransactionRepositoryImpl implements TransactionRepository {
         final List<dynamic> listTxHistoryData = dataList['histories'];
         print("List: ${listTxHistoryData.length}");
         final txHistory =
-        listTxHistoryData.map((item) => TransactionHistoryData.fromJson(item)).toList();
+            listTxHistoryData.map((item) => TransactionHistoryData.fromJson(item)).toList();
         print("Tx history length from datasource ${txHistory.length}");
         return Result.success(txHistory);
       }
       return Result.success([]);
     } else {
       final json = jsonDecode(res.body);
-      final state = json['state'] ?? {};
       return Result.failure(
-        ApiError(statusCode: res.statusCode, message: state['message'] ?? 'Lỗi không xác định'),
+        ApiError(statusCode: res.statusCode, message: json['message'] ?? 'Lỗi không xác định'),
       );
     }
   }
 
   @override
-  Future<Result<TransactionSwap>> getQuote(TransactionSwap txSwap) async{
+  Future<Result<TransactionSwap>> getQuote(TransactionSwap txSwap) async {
     String url = ApiEndpoints.getQuote;
 
     Map<String, String> headers = {"Content-type": "application/json"};
@@ -316,7 +314,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
         "to_network": txSwap.toAsset!.networkName,
         "amount": ethToWeiString(txSwap.fromAmount),
         "from_wallet_id": txSwap.fromWallet!.id,
-        "to_wallet_id": txSwap.toWallet!.id
+        "to_wallet_id": txSwap.toWallet!.id,
       },
     };
     print("Request: ${jsonEncode(reqBody)}");

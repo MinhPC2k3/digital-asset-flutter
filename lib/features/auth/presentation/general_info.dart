@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:digital_asset_flutter/component/asset_card.dart';
 import 'package:digital_asset_flutter/features/auth/data/source/network/user_datasources.dart';
 import 'package:digital_asset_flutter/features/auth/domain/usecases/user_usecase.dart';
@@ -5,6 +7,7 @@ import 'package:digital_asset_flutter/features/auth/presentation/provider/user_p
 import 'package:digital_asset_flutter/features/wallet/data/network/wallet_datasources.dart';
 import 'package:digital_asset_flutter/features/wallet/domain/usecases/wallet_usecase.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
@@ -27,6 +30,7 @@ class GeneralInfo extends StatefulWidget {
   late final WalletRepositoryImpl walletRepo;
   late final WalletUsecases walletUsecase;
   int selectedWallet = 0;
+  bool isShowBalance = false;
 
   void _showWalletSelector(BuildContext context) {
     showModalBottomSheet(
@@ -131,11 +135,14 @@ class GeneralInfo extends StatefulWidget {
 
 class _GeneralInfoState extends State<GeneralInfo> {
   int _currentIndex = 0;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    Provider.of<WalletProvider>(context, listen: false).updateValuation(widget.walletUsecase);
+    _timer = Timer.periodic(Duration(seconds: 5), (_) async {
+      Provider.of<WalletProvider>(context, listen: false).updateValuation(widget.walletUsecase);
+    });
   }
 
   double _calculateBalance(List<AssetBalance> assetBalances) {
@@ -146,6 +153,12 @@ class _GeneralInfoState extends State<GeneralInfo> {
       }
     }
     return result;
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel(); // Don't forget to cancel the timer
+    super.dispose();
   }
 
   @override
@@ -192,44 +205,59 @@ class _GeneralInfoState extends State<GeneralInfo> {
                                 style: TextStyle(color: Colors.grey, fontSize: 16),
                               ),
                               // Make Main Wallet clickable
-                              GestureDetector(
-                                onTap: () async {
-                                  widget._showWalletSelector(context);
-                                },
-                                child: Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 120,
-                                      child: Center(
-                                        child: Text(
-                                          walletProvider.wallet!.walletName,
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w600,
+                              Flexible(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                                  child: GestureDetector(
+                                    onTap: () async {
+                                      widget._showWalletSelector(context);
+                                    },
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Flexible(
+                                          child: Text(
+                                            walletProvider.wallet!.walletName,
                                             overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w600,
+                                            ),
                                           ),
                                         ),
-                                      ),
+                                        Icon(Icons.keyboard_arrow_down, color: Colors.white),
+                                      ],
                                     ),
-                                    const SizedBox(width: 8),
-                                    Icon(Icons.keyboard_arrow_down, color: Colors.white),
-                                  ],
+                                  ),
                                 ),
                               ),
+
                               Row(
                                 children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: Colors.orange.withOpacity(0.2),
-                                      borderRadius: BorderRadius.circular(8),
+                                  GestureDetector(
+                                    child: Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.orange.withOpacity(0.2),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Icon(Icons.copy, color: Colors.orange, size: 20),
                                     ),
-                                    child: Icon(
-                                      Icons.qr_code_scanner,
-                                      color: Colors.orange,
-                                      size: 20,
-                                    ),
+                                    onTap: () {
+                                      Clipboard.setData(
+                                        ClipboardData(text: walletProvider.wallet!.address),
+                                      );
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            'Wallet\'s address has been copied to the clipboard',
+                                          ),
+                                          backgroundColor: Colors.green,
+                                        ),
+                                      );
+                                    },
                                   ),
                                   const SizedBox(width: 12),
                                   GestureDetector(
@@ -247,81 +275,6 @@ class _GeneralInfoState extends State<GeneralInfo> {
                                     },
                                   ),
                                 ],
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        // Security Level
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Icon(Icons.security, color: Colors.black, size: 16),
-                              ),
-                              const SizedBox(width: 12),
-                              const Text(
-                                'Security Level: 2 of 9',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              const Spacer(),
-                              const Text(
-                                'Boost security',
-                                style: TextStyle(
-                                  color: Colors.orange,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        // Security Progress Bar
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                          child: LinearProgressIndicator(
-                            value: 2 / 9,
-                            backgroundColor: Colors.grey[800],
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
-                            minHeight: 4,
-                          ),
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        // FaceLock Warning
-                        Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 20),
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.brown.withOpacity(0.3),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.orange.withOpacity(0.3)),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.warning, color: Colors.orange, size: 20),
-                              const SizedBox(width: 12),
-                              const Expanded(
-                                child: Text(
-                                  'Add 3D FaceLock to protect your account',
-                                  style: TextStyle(
-                                    color: Colors.orange,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
                               ),
                             ],
                           ),
@@ -364,24 +317,79 @@ class _GeneralInfoState extends State<GeneralInfo> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text(
-                                      'My Balance',
-                                      style: TextStyle(color: Colors.white70, fontSize: 16),
+                                    Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.all(8),
+                                          decoration: BoxDecoration(
+                                            color: Colors.orange.withOpacity(0.2),
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                          child: Icon(
+                                            Icons.account_balance_wallet_rounded,
+                                            color: Colors.orange,
+                                            size: 20,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        const Text(
+                                          'Total Portfolio Value',
+                                          style: TextStyle(color: Colors.white70, fontSize: 16),
+                                        ),
+                                      ],
                                     ),
+
                                     const SizedBox(height: 8),
                                     Row(
                                       children: [
-                                        Text(
-                                          '\$${totalBalance.toStringAsFixed(2)}',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 36,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
+                                        widget.isShowBalance
+                                            ? Text(
+                                              '\$${totalBalance.toStringAsFixed(2)}',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 36,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            )
+                                            : Text(
+                                              '•' * 8,
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 36,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
                                         const Spacer(),
-                                        Icon(Icons.visibility_off, color: Colors.white70, size: 20),
+                                        widget.isShowBalance
+                                            ? GestureDetector(
+                                              child: Icon(
+                                                Icons.visibility,
+                                                color: Colors.white70,
+                                                size: 20,
+                                              ),
+                                              onTap: () {
+                                                setState(() {
+                                                  widget.isShowBalance = !widget.isShowBalance;
+                                                });
+                                              },
+                                            )
+                                            : GestureDetector(
+                                              child: Icon(
+                                                Icons.visibility_off,
+                                                color: Colors.white70,
+                                                size: 20,
+                                              ),
+                                              onTap: () {
+                                                setState(() {
+                                                  widget.isShowBalance = !widget.isShowBalance;
+                                                });
+                                              },
+                                            ),
                                       ],
+                                    ),
+                                    const Text(
+                                      'Real-time pricing',
+                                      style: TextStyle(color: Colors.white70, fontSize: 12),
                                     ),
                                   ],
                                 ),
@@ -417,103 +425,6 @@ class _GeneralInfoState extends State<GeneralInfo> {
                           ),
                         ),
 
-                        const SizedBox(height: 30),
-
-                        // Zengo Pro Card
-                        Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 20),
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[900],
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[800],
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Icon(Icons.credit_card, color: Colors.white, size: 24),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      'Buy crypto with up to 50% less fees\nwith Zengo Pro',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      children: [
-                                        const Text(
-                                          'Try Pro Now',
-                                          style: TextStyle(
-                                            color: Colors.orange,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Icon(
-                                          Icons.arrow_forward_ios,
-                                          color: Colors.orange,
-                                          size: 12,
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              IconButton(
-                                onPressed: () {},
-                                icon: Icon(Icons.close, color: Colors.grey, size: 20),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        // Page Indicators
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: BoxDecoration(
-                                color: Colors.grey,
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: BoxDecoration(
-                                color: Colors.grey,
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                            ),
-                          ],
-                        ),
                         const SizedBox(height: 30),
                         DefaultTabController(
                           length: 2,

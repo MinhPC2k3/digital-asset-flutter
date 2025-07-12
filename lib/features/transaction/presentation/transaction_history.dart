@@ -100,6 +100,15 @@ class TransactionTableState extends State<TransactionTable> {
     );
   }
 
+  Color getStatusBackground(String status) {
+    if (status == "FAILED") {
+      return Colors.red;
+    } else if (status == "CONFIRMED") {
+      return Color(0xFF10B981);
+    }
+    return Colors.yellowAccent;
+  }
+
   Widget _buildDetailRow(
     String label,
     String value, {
@@ -200,9 +209,12 @@ class TransactionTableState extends State<TransactionTable> {
           return Text('Error: ${snapshot.error}');
         } else {
           if (!snapshot.data!.isSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(snapshot.data!.error!.message), backgroundColor: Colors.red),
-            );
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(snapshot.data!.error!.message), backgroundColor: Colors.red),
+              );
+            });
+
             return Text('Error: ${snapshot.data!.error!.message}');
           } else {
             return SingleChildScrollView(
@@ -267,7 +279,7 @@ class TransactionTableState extends State<TransactionTable> {
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFF10B981),
+                                    color: getStatusBackground(transaction.status),
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                   child: Text(

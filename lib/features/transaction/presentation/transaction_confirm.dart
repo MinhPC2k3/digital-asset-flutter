@@ -89,14 +89,14 @@ class _PinKeyboardModalState extends State<PinKeyboardModal> {
       if (mounted) {
         CustomRouter.navigateTo(context, Routes.home); // Return success
       }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Transaction sent asset fail with error: ${res.error!.message}'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Transaction sent asset fail with error: ${res.error!.message}'),
-        backgroundColor: Colors.red,
-      ),
-    );
   }
 
   @override

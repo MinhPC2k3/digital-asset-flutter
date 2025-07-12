@@ -88,11 +88,12 @@ class WalletProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void updateValuation(WalletUsecases walletUsecsae) {
-    Timer.periodic(Duration(seconds: 5), (_) async {
-      await walletUsecsae.updateValuation(_wallet!);
-      notifyListeners();
-    });
+  Future<void> updateValuation(WalletUsecases walletUsecsae) async{
+    await walletUsecsae.updateValuation(_wallet!);
+    notifyListeners();
+    // Timer.periodic(Duration(seconds: 5), (_) async {
+    //
+    // });
   }
 
   List<AssetBalance> getAssetByType(String assetType) {

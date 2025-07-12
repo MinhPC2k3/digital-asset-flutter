@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:digital_asset_flutter/features/wallet/domain/entities/wallet.dart';
 import 'package:digital_asset_flutter/features/wallet/domain/usecases/wallet_usecase.dart';
 import 'package:flutter/material.dart';
@@ -18,10 +20,14 @@ class CreateWalletScreen extends StatefulWidget {
 
 class _CreateWalletScreenState extends State<CreateWalletScreen> {
   final TextEditingController _walletNameController = TextEditingController();
-  final TextEditingController _pinController = TextEditingController();
   String _selectedNetwork = 'Ethereum';
+  final TextEditingController _pinController = TextEditingController();
   final FocusNode _pinFocusNode = FocusNode();
   final List<bool> _pinFilledStatus = List.generate(6, (_) => false);
+
+  final TextEditingController _confirmPinController = TextEditingController();
+  final FocusNode _confirmPinFocusNode = FocusNode();
+  final List<bool> _confirmPinFilledStatus = List.generate(6, (_) => false);
 
   @override
   void dispose() {
@@ -36,6 +42,15 @@ class _CreateWalletScreenState extends State<CreateWalletScreen> {
     setState(() {
       for (int i = 0; i < 6; i++) {
         _pinFilledStatus[i] = i < pin.length;
+      }
+    });
+  }
+
+  void _updateConfirmPinFilledStatus() {
+    final pin = _confirmPinController.text;
+    setState(() {
+      for (int i = 0; i < 6; i++) {
+        _confirmPinFilledStatus[i] = i < pin.length;
       }
     });
   }
@@ -88,8 +103,6 @@ class _CreateWalletScreenState extends State<CreateWalletScreen> {
                 style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              _buildNetworkOption('Bitcoin', 'BTC Network', Icons.currency_bitcoin, Colors.amber),
-              const SizedBox(height: 8),
               _buildNetworkOption('Ethereum', 'ETH Network', Icons.currency_exchange, Colors.white),
               const SizedBox(height: 8),
               _buildNetworkOption('Binance', 'BNB Network', Icons.currency_franc, Colors.amber),
@@ -98,8 +111,30 @@ class _CreateWalletScreenState extends State<CreateWalletScreen> {
                 'Security PIN (6 digits)',
                 style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
               ),
+              const Text(
+                'Enter a 6-digit PIN to secure your wallet',
+                style: TextStyle(color: Colors.grey, fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 8),
-              _buildPinInput(),
+              _buildPinInput(
+                _pinController,
+                _pinFocusNode,
+                _pinFilledStatus,
+                _updatePinFilledStatus,
+              ),
+              const Text(
+                'Repeat pin',
+                style: TextStyle(color: Colors.grey, fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              _buildPinInput(
+                _confirmPinController,
+                _confirmPinFocusNode,
+                _confirmPinFilledStatus,
+                _updateConfirmPinFilledStatus,
+              ),
               const SizedBox(height: 32),
               SizedBox(
                 width: double.infinity,
@@ -107,6 +142,15 @@ class _CreateWalletScreenState extends State<CreateWalletScreen> {
                   onPressed:
                       _isFormValid
                           ? () async {
+                            if (_pinController.text != _confirmPinController.text) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Repeat pin mismatch'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                              return;
+                            }
                             // Handle wallet creation
                             var createdWallet = await widget.wallerUsecases.createWallet(
                               Provider.of<UserProvider>(context, listen: false).user!.id,
@@ -201,29 +245,42 @@ class _CreateWalletScreenState extends State<CreateWalletScreen> {
     );
   }
 
-  Widget _buildPinInput() {
-    return Column(
+  // final TextEditingController _confirmPinController = TextEditingController();
+  // final FocusNode _confirmPinFocusNode = FocusNode();
+  // final List<bool>
+  Widget _buildPinInput(
+    TextEditingController textController,
+    FocusNode focusNode,
+    List<bool> isFilled,
+    void Function() updateFunction,
+  ) {
+    return Stack(
       children: [
         // Hidden text field for actual input
-        Opacity(
-          opacity: 0,
-          child: TextField(
-            controller: _pinController,
-            focusNode: _pinFocusNode,
-            keyboardType: TextInputType.number,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(6),
-            ],
-            onChanged: (value) {
-              _updatePinFilledStatus();
-              setState(() {});
-            },
+        Positioned(
+          left: -999,
+          top: 0,
+          child: SizedBox(
+            width: 1,
+            height: 1,
+            child: TextField(
+              controller: textController,
+              focusNode: focusNode,
+              keyboardType: TextInputType.number,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+                LengthLimitingTextInputFormatter(6),
+              ],
+              onChanged: (value) {
+                updateFunction();
+                setState(() {});
+              },
+            ),
           ),
         ),
         // PIN display dots
         GestureDetector(
-          onTap: () => _pinFocusNode.requestFocus(),
+          onTap: () => focusNode.requestFocus(),
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 16),
             decoration: BoxDecoration(
@@ -240,18 +297,12 @@ class _CreateWalletScreenState extends State<CreateWalletScreen> {
                   margin: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: _pinFilledStatus[index] ? Colors.amber : Colors.grey.withOpacity(0.3),
+                    color: isFilled[index] ? Colors.amber : Colors.grey.withOpacity(0.3),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-        const SizedBox(height: 8),
-        const Text(
-          'Enter a 6-digit PIN to secure your wallet',
-          style: TextStyle(color: Colors.grey, fontSize: 14),
-          textAlign: TextAlign.center,
         ),
       ],
     );
