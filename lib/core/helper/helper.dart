@@ -1,12 +1,8 @@
 import 'dart:math';
 import 'dart:typed_data';
-
-import 'package:digital_asset_flutter/features/transaction/domain/entities/transaction.dart';
 import 'package:digital_asset_flutter/features/transaction_send_asset_v2/domain/entities/transaction.dart'
     as transaction_v2;
 import 'package:url_launcher/url_launcher.dart';
-
-import '../../features/transaction/domain/usecases/transaction_usecases.dart';
 
 String shortenMiddleResponsive(String text, double screenWidth) {
   // Adjust these thresholds as needed
@@ -39,30 +35,6 @@ BigInt covertStringToBigInt(String hexString) {
 String cleanFloatDecimal(double value) {
   String fixed = value.toStringAsFixed(6);
   return fixed.replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), "");
-}
-
-Transaction addTransactionType(Transaction tx) {
-  switch (tx.assetId) {
-    case 'asset-eth-0001':
-      tx.blockchainType = BlockchainType.BLOCKCHAIN_TYPE_ETHEREUM;
-      tx.transactionType = TransactionType.TX_TYPE_NATIVE_TRANSFER;
-      tx.amount = ethToWeiString(tx.amount);
-      break;
-    case 'asset-datnt14-token-0001':
-      tx.blockchainType = BlockchainType.BLOCKCHAIN_TYPE_ETHEREUM;
-      tx.transactionType = TransactionType.TX_TYPE_ERC20_TRANSFER;
-      break;
-    case 'blc-token-0001':
-      tx.blockchainType = BlockchainType.BLOCKCHAIN_TYPE_ETHEREUM;
-      tx.transactionType = TransactionType.TX_TYPE_ERC20_TRANSFER;
-      tx.amount = ethToWeiString(tx.amount);
-      break;
-    case 'asset-nft-token-lcp-0001':
-      tx.blockchainType = BlockchainType.BLOCKCHAIN_TYPE_ETHEREUM;
-      tx.transactionType = TransactionType.TX_TYPE_ERC721_TRANSFER;
-      break;
-  }
-  return tx;
 }
 
 transaction_v2.Transaction addTransactionTypeV2(transaction_v2.Transaction tx) {
@@ -175,4 +147,10 @@ BigInt bytesToBigInt(Uint8List bytes) {
 
 String convertToAmountForApi(double value, int decimal) {
   return (value * pow(10, decimal)).toString();
+}
+
+String ethToWeiString(String ethValueStr) {
+  final ethValue = double.parse(ethValueStr);
+  final wei = BigInt.from(ethValue * 1e18);
+  return wei.toString(); // return as decimal string
 }

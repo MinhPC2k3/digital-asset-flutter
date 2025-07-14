@@ -1,11 +1,12 @@
 import 'package:digital_asset_flutter/features/transaction_history_v2/presentation/components/transaction_table.dart';
 import 'package:digital_asset_flutter/features/transaction_history_v2/presentation/providers/transaction_history_provider.dart';
-import 'package:digital_asset_flutter/features/wallet/domain/entities/wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class TransactionHistoryPage extends StatefulWidget {
-  const TransactionHistoryPage({super.key});
+  final String address;
+
+  TransactionHistoryPage({super.key, required this.address});
 
   @override
   State<TransactionHistoryPage> createState() => _TransactionHistoryPageState();
@@ -16,12 +17,11 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final walletProvider = Provider.of<WalletProvider>(context, listen: false);
       final transactionHistoryProvider = Provider.of<TransactionHistoryProvider>(
         context,
         listen: false,
       );
-      transactionHistoryProvider.loadTransactionHistory(walletProvider.wallet!.address);
+      transactionHistoryProvider.loadTransactionHistory(widget.address);
     });
   }
 

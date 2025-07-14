@@ -1,9 +1,6 @@
 import 'package:digital_asset_flutter/features/user_v2/domain/entities/wallet.dart';
 import 'package:digital_asset_flutter/features/user_v2/presentation/pages/create_wallet.dart';
-import 'package:digital_asset_flutter/features/wallet/data/network/wallet_datasources.dart';
-import 'package:digital_asset_flutter/features/wallet/domain/usecases/wallet_usecase.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 import '../../provider/homepage_provider.dart';
@@ -106,32 +103,34 @@ class WalletSelectorModalState extends State<WalletSelectorModal> {
                   // Main Wallet Item
                   homepageProvider.getWallets.isEmpty
                       ? Container()
-                      : Expanded(child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.transparent,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    // height: 120,
+                      : Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
 
-                    child: Scrollbar(
-                      thumbVisibility: true,
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.vertical,
-                        // physics: NeverScrollableScrollPhysics(),
-                        itemCount: homepageProvider.getWallets.length,
-                        itemBuilder: (context, index) {
-                          final wallet = homepageProvider.getWallets[index];
-                          return Padding(
-                            padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                            child: _buildWalletItem(wallet, index),
-                          );
-                        },
+                          // height: 120,
+                          child: Scrollbar(
+                            thumbVisibility: true,
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              scrollDirection: Axis.vertical,
+                              // physics: NeverScrollableScrollPhysics(),
+                              itemCount: homepageProvider.getWallets.length,
+                              itemBuilder: (context, index) {
+                                final wallet = homepageProvider.getWallets[index];
+                                return Padding(
+                                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                                  child: _buildWalletItem(wallet, index),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  )),
 
-                  Container(height: 8,),
+                  Container(height: 8),
 
                   // Action Buttons
                   Padding(

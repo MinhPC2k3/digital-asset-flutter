@@ -1,7 +1,7 @@
+import 'package:digital_asset_flutter/features/user_v2/presentation/components/homepage/asset_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../../component/asset_card.dart';
 import '../../provider/homepage_provider.dart';
 
 class AssetDisplay extends StatelessWidget {

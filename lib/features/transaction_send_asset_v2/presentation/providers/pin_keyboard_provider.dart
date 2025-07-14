@@ -4,8 +4,6 @@ import 'package:provider/provider.dart';
 import '../../../user_v2/presentation/provider/homepage_provider.dart';
 import '../../data/datasource/network/transaction_send_asset.dart';
 import '../../domain/entities/transaction.dart';
-import '../../../wallet/domain/repositories/wallet_repository.dart';
-import '../../../wallet/domain/usecases/wallet_usecase.dart';
 import '../../domain/repositories/transaction_send_asset_repository.dart';
 import '../../domain/usecases/transaction_send_asset_usecase.dart';
 

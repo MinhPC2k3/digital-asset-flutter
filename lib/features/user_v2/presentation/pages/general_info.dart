@@ -21,10 +21,6 @@ class GeneralInfoState extends State<GeneralInfo> {
   @override
   void initState() {
     super.initState();
-
-    Future.microtask(() {
-      context.read<HomepageProvider>().loadUserWallets();
-    });
     Provider.of<HomepageProvider>(context, listen: false).updateBalanceByInterval();
   }
 
