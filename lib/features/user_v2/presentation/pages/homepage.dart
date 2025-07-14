@@ -17,14 +17,14 @@ class MyHomeRefactoredPageState extends State<MyHomeRefactoredPage> {
   final List<Widget> _pages = [
     GeneralInfo(),
     TransactionHistoryPage(),
-    Center(child: Text('Profile Page')),
+    Center(child: Text('Coming soon', style: TextStyle(color: Colors.white))),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: _pages[_currentIndex], // Show selected page
+      body: IndexedStack(index: _currentIndex, children: _pages), // Show selected page
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.grey[900],
@@ -42,7 +42,6 @@ class MyHomeRefactoredPageState extends State<MyHomeRefactoredPage> {
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),
           BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
-          BottomNavigationBarItem(icon: Icon(Icons.security), label: 'Security'),
         ],
       ),
     );

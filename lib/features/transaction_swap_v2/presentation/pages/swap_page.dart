@@ -1,14 +1,13 @@
 import 'package:digital_asset_flutter/features/transaction_swap_v2/presentation/pages/swap_review_page.dart';
 import 'package:digital_asset_flutter/features/user_v2/domain/entities/asset.dart';
-import 'package:digital_asset_flutter/features/user_v2/domain/entities/wallet.dart';
 import 'package:digital_asset_flutter/features/user_v2/presentation/provider/homepage_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/swap_provider.dart';
+import '../components/amount_input.dart';
 import '../components/token_selector.dart';
 import '../components/wallet_selector.dart';
-import '../components/amount_input.dart';
+import '../providers/swap_provider.dart';
 
 class SwapPage extends StatelessWidget {
   const SwapPage({Key? key}) : super(key: key);
@@ -39,65 +38,83 @@ class SwapPageContent extends StatelessWidget {
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else {
-          return Scaffold(
-            backgroundColor: const Color(0xFF1A1B23),
-            appBar: AppBar(
-              backgroundColor: const Color(0xFF1A1B23),
-              title: const Text(
-                'Swap',
-                style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              elevation: 0,
-              centerTitle: true,
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ),
-            body: Center(
-              child: SizedBox(
-                width: maxWidth,
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _buildTokenSelectionSection(
-                        context,
-                        isSmallScreen,
-                        listOwnedAsset,
-                        snapshot.data!.data!,
-                      ),
-                      const SizedBox(height: 16),
-                      WalletSelector(
-                        selectedWalletName: swapProvider.selectedWalletName,
-                        otherWallets: swapProvider.otherWallets,
-                        onWalletChanged: (value) => swapProvider.updateSelectedWallet(value!),
-                        isSmallScreen: isSmallScreen,
-                        selectedWallet: swapProvider.receiveSelectedWallet,
-                      ),
-                      const SizedBox(height: 16),
-                      AmountInput(
-                        amountController: swapProvider.amountController,
-                        selectedSendToken: swapProvider.sendAsset.symbol,
-                        selectedReceiveToken: swapProvider.selectedReceiveToken,
-                        receiveAmount: swapProvider.calculateReceiveAmount(
-                          swapProvider.enteredAmount,
+          return Consumer<SwapProvider>(builder: (context,swapProvider,child){
+            return Stack(
+              children: [
+                Scaffold(
+                  backgroundColor: const Color(0xFF1A1B23),
+                  appBar: AppBar(
+                    backgroundColor: const Color(0xFF1A1B23),
+                    title: const Text(
+                      'Swap',
+                      style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                    elevation: 0,
+                    centerTitle: true,
+                    leading: IconButton(
+                      icon: const Icon(Icons.arrow_back, color: Colors.white),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ),
+                  body: Center(
+                    child: SizedBox(
+                      width: maxWidth,
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _buildTokenSelectionSection(
+                              context,
+                              isSmallScreen,
+                              listOwnedAsset,
+                              snapshot.data!.data!,
+                            ),
+                            const SizedBox(height: 16),
+                            WalletSelector(
+                              selectedWalletName: swapProvider.selectedWalletName,
+                              otherWallets: swapProvider.otherWallets,
+                              onWalletChanged: (value) => swapProvider.updateSelectedWallet(value!),
+                              isSmallScreen: isSmallScreen,
+                              selectedWallet: swapProvider.receiveSelectedWallet,
+                            ),
+                            const SizedBox(height: 16),
+                            AmountInput(
+                              amountController: swapProvider.amountController,
+                              selectedSendToken: swapProvider.sendAsset.symbol,
+                              selectedReceiveToken: swapProvider.selectedReceiveToken,
+                              receiveAmount: swapProvider.calculateReceiveAmount(
+                                swapProvider.enteredAmount,
+                              ),
+                              validationError: swapProvider.validationError,
+                              availableBalance: double.parse(swapProvider.sendAsset.balance),
+                              isSmallScreen: isSmallScreen,
+                              onMinimumPressed: swapProvider.setMinimumAmount,
+                              onMaximumPressed: swapProvider.setMaximumAmount,
+                            ),
+                            const SizedBox(height: 20),
+                            _buildSwapButton(context, swapProvider),
+                          ],
                         ),
-                        validationError: swapProvider.validationError,
-                        availableBalance: double.parse(swapProvider.sendAsset.balance),
-                        isSmallScreen: isSmallScreen,
-                        onMinimumPressed: swapProvider.setMinimumAmount,
-                        onMaximumPressed: swapProvider.setMaximumAmount,
                       ),
-                      const SizedBox(height: 20),
-                      _buildSwapButton(context, swapProvider),
-                    ],
+                    ),
                   ),
                 ),
-              ),
-            ),
-          );
+                if (swapProvider.isLoading)
+                  Opacity(
+                    opacity: 0.6,
+                    child: ModalBarrier(
+                      dismissible: false,
+                      color: Colors.black,
+                    ),
+                  ),
+                if (swapProvider.isLoading)
+                  const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+              ],
+            );
+          });
         }
       },
     );
@@ -138,6 +155,9 @@ class SwapPageContent extends StatelessWidget {
     List<Asset> listAssets,
     List<Asset> ownedAssets,
   ) {
+    print(
+      "From view list asset length ${listAssets[0].symbol},${listAssets[0].assetName}, list owned ${ownedAssets[0].symbol}",
+    );
     return Column(
       children: [
         TokenSelector(
@@ -210,19 +230,34 @@ class SwapPageContent extends StatelessWidget {
       child: ElevatedButton(
         onPressed:
             provider.canSwap
-                ? () {
+                ? () async {
                   double receiveAmount = provider.calculateReceiveAmount(provider.enteredAmount);
+                  var txQuote = await provider.loadQuote(
+                    provider.currentWallet!,
+                    provider.receiveSelectedWallet,
+                    provider.sendAsset,
+                    provider.receiveAsset,
+                    provider.enteredAmount.toString(),
+                  );
+                  if (!txQuote.isSuccess){
+                    print("Doing123");
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(txQuote.error!.message), backgroundColor: Colors.red),
+                    );
+                    return;
+                  }
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder:
                           (context) => SwapReviewPage(
-                            toWallet: provider.receiveSelectedWallet,
-                            fromWallet: provider.currentWallet!,
-                            fromAsset: provider.sendAsset,
-                            toAsset: provider.receiveAsset,
-                            amount: provider.enteredAmount.toString(),
-                          ),
+                        toWallet: provider.receiveSelectedWallet,
+                        fromWallet: provider.currentWallet!,
+                        fromAsset: provider.sendAsset,
+                        toAsset: provider.receiveAsset,
+                        amount: provider.enteredAmount.toString(),
+                        txQuote: txQuote.data!,
+                      ),
                     ),
                   );
                 }

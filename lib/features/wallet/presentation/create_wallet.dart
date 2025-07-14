@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:digital_asset_flutter/features/wallet/domain/entities/wallet.dart';
 import 'package:digital_asset_flutter/features/wallet/domain/usecases/wallet_usecase.dart';
 import 'package:flutter/material.dart';

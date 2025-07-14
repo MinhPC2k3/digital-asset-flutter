@@ -8,8 +8,8 @@ class TransactionHistoryUsecase {
 
   TransactionHistoryUsecase({required this.repository});
 
-  Future<Result<List<TransactionHistory>?>> getTransactionHistory(String walletId) async {
-    var res = await repository.getTransactionHistory(walletId);
+  Future<Result<List<TransactionHistory>?>> getTransactionHistory(String walletAddress) async {
+    var res = await repository.getTransactionHistory(walletAddress);
     if (res.isSuccess) {
       if (res.data!.isNotEmpty) {
         for (int i = 0; i < res.data!.length; i++) {

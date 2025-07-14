@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -23,6 +25,7 @@ class GeneralInfoState extends State<GeneralInfo> {
     Future.microtask(() {
       context.read<HomepageProvider>().loadUserWallets();
     });
+    Provider.of<HomepageProvider>(context, listen: false).updateBalanceByInterval();
   }
 
   @override
@@ -42,9 +45,6 @@ class GeneralInfoState extends State<GeneralInfo> {
                           children: [
                             // Header
                             HomepageHeader(),
-
-                            // Security Level
-                            SecurityLevel(),
 
                             const SizedBox(height: 30),
 

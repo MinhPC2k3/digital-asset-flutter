@@ -44,20 +44,40 @@ class BalanceSection extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('My Balance', style: TextStyle(color: Colors.white70, fontSize: 16)),
+                    const Text(
+                      'Total Portfolio Value',
+                      style: TextStyle(color: Colors.white70, fontSize: 16),
+                    ),
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        Text(
-                          '\$${homepageProvider.currentWallet.totalValue.toStringAsFixed(2)}',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        homepageProvider.isShowBalance
+                            ? Text(
+                              '\$${homepageProvider.currentWallet.totalValue.toStringAsFixed(2)}',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )
+                            : Text(
+                              '•' * 8,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 36,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                         const Spacer(),
-                        Icon(Icons.visibility_off, color: Colors.white70, size: 20),
+                        homepageProvider.isShowBalance
+                            ? GestureDetector(
+                              onTap: homepageProvider.changeShowBalance,
+                              child: Icon(Icons.visibility, color: Colors.white70, size: 20),
+                            )
+                            : GestureDetector(
+                              onTap: homepageProvider.changeShowBalance,
+                              child: Icon(Icons.visibility_off, color: Colors.white70, size: 20),
+                            ),
                       ],
                     ),
                   ],

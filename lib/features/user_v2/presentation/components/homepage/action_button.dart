@@ -35,62 +35,6 @@ class ActionButton extends StatelessWidget {
             ],
           ),
         ),
-
-        const SizedBox(height: 30),
-
-        // Zengo Pro Card
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 20),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.grey[900],
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.grey[800],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(Icons.credit_card, color: Colors.white, size: 24),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Buy crypto with up to 50% less fees\nwith Zengo Pro',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        const Text(
-                          'Try Pro Now',
-                          style: TextStyle(
-                            color: Colors.orange,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        Icon(Icons.arrow_forward_ios, color: Colors.orange, size: 12),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              IconButton(onPressed: () {}, icon: Icon(Icons.close, color: Colors.grey, size: 20)),
-            ],
-          ),
-        ),
       ],
     );
   }

@@ -8,6 +8,7 @@ class AssetDTO {
   final double valuationUsd;
   final double last24hChange;
   final String networkName;
+  final String assetName;
 
   AssetDTO({
     required this.assetId,
@@ -17,17 +18,25 @@ class AssetDTO {
     required this.valuationUsd,
     required this.last24hChange,
     required this.networkName,
+    required this.assetName,
   });
 
   factory AssetDTO.fromJson(Map<String, dynamic> json) {
+    var symbol = '';
+    if (json['assetSymbol'] != null){
+      symbol = json['assetSymbol'];
+    }else if (json['symbol'] != null){
+      symbol = json['symbol'];
+    }
     return AssetDTO(
-      assetId: json['assetId'],
-      symbol: json['symbol'],
-      balance: json['balance'],
-      decimals: json['decimals'],
-      valuationUsd: (json['valuationUsd'] as num).toDouble(),
-      last24hChange: (json['last24hChange'] as num).toDouble(),
+      assetId: json['assetId'] ?? '',
+      symbol: symbol,
+      balance: json['balance'] ?? '0',
+      decimals: json['decimals'] ?? 0,
+      valuationUsd: (json['valuationUsd'] ?? 0 as num).toDouble(),
+      last24hChange: (json['last24hChange'] ?? 0 as num).toDouble(),
       networkName: json['networkName'] ?? '',
+      assetName: json['assetName'] ?? '',
     );
   }
 
@@ -40,6 +49,7 @@ class AssetDTO {
       valuationUsd: valuationUsd,
       last24hChange: last24hChange,
       networkName: networkName,
+      assetName: assetName,
     );
   }
 }

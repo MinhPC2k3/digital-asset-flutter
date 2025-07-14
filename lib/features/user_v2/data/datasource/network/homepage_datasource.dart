@@ -1,7 +1,7 @@
 import 'dart:convert';
 
+import 'package:digital_asset_flutter/core/constants/api_constans.dart';
 import 'package:digital_asset_flutter/core/network/result.dart';
-import 'package:digital_asset_flutter/features/user_v2/data/datasource/network/mock.dart';
 import 'package:digital_asset_flutter/features/user_v2/domain/entities/wallet.dart';
 import 'package:http/http.dart' as http;
 
@@ -14,13 +14,29 @@ class HomepageRepositoriesImpl implements HomepageRepository {
   HomepageRepositoriesImpl({required this.client});
 
   @override
-  Future<Result<List<Wallet>>> getWallets() async {
-    await Future.delayed(Duration(seconds: 2));
-    var res = json.decode(homepageResponse);
-    var walletData = res['wallets'] as List<dynamic>;
+  Future<Result<List<Wallet>>> getWallets(String userId) async {
+    Map<String, String> queryParams = {'userId': userId};
 
-    final wallets = walletData.map((wallet) => WalletDTO.fromJson(wallet).toEntity()).toList();
+    Map<String, String> headers = {"Content-type": "application/json"};
 
-    return Result.success(wallets);
+    var uri = Uri.parse(ApiEndpointsV2.getUserWalletUrl);
+    final requestUri = uri.replace(queryParameters: queryParams);
+    http.Response res = await client.get(
+      // Uri.http(uri.host, uri.path, queryParams),
+      requestUri,
+      headers: headers,
+    );
+    if (res.statusCode == 200) {
+      final Map<String, dynamic> decoded = json.decode(res.body);
+      final List<dynamic> dataList = decoded['wallets'];
+      final userWallet = dataList.map((item) => WalletDTO.fromJson(item).toEntity()).toList();
+
+      return Result.success(userWallet);
+    } else {
+      final json = jsonDecode(res.body);
+      return Result.failure(
+        ApiError(statusCode: res.statusCode, message: json['message'] ?? "Unexpected error"),
+      );
+    }
   }
 }

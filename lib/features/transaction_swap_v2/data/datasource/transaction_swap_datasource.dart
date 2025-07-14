@@ -21,20 +21,53 @@ class TransactionSwapRepositoryImpl implements TransactionSwapRepository {
 
   @override
   Future<Result<TransactionQuote>> getQuote(TransactionQuote txQuote) async {
-    await Future.delayed(Duration(seconds: 2));
-    var res = json.decode(getSwapQuote);
-    var quoteData = res['quote'];
-    return Result.success(TransactionQuoteDTO.fromJson(quoteData).fillEntityField(txQuote));
+    var uri = Uri.parse(ApiEndpointsV2.getSwapQuote);
+    Map<String, String> headers = {"Content-type": "application/json"};
+    final Map<String, dynamic> reqBody = {
+      "fromAssetId": txQuote.fromAsset.assetId,
+      "toAssetId": txQuote.toAsset.assetId,
+      "amount": txQuote.amountSwap,
+      "fromWallet": txQuote.fromWallet.walletId,
+      "toWallet": txQuote.toWallet.walletId,
+    };
+    print("Transaction v2 getQuote request: $reqBody");
+    http.Response res = await client.post(uri, headers: headers, body: jsonEncode(reqBody));
+    if (res.statusCode == 200) {
+      var resData = json.decode(res.body);
+      print("Transaction v2 getQuote response: ${res.body}");
+      var quoteData = resData['quote'];
+      return Result.success(TransactionQuoteDTO.fromJson(quoteData).fillEntityField(txQuote));
+    } else {
+      final json = jsonDecode(res.body);
+      return Result.failure(
+        ApiError(statusCode: res.statusCode, message: json['message'] ?? "Unexpected error"),
+      );
+    }
   }
 
   @override
   Future<Result<List<Asset>>> getListAsset() async {
-    await Future.delayed(Duration(seconds: 2));
-    var res = json.decode(getListAssetResponse);
-    var assetData = res['assets'] as List<dynamic>;
-    final assets = assetData.map((asset) => AssetDTO.fromJson(asset).toEntity()).toList();
+    var uri = Uri.parse(ApiEndpointsV2.listAllAssets);
+    Map<String, String> headers = {"Content-type": "application/json"};
 
-    return Result.success(assets);
+    http.Response res = await client.get(uri, headers: headers);
+
+    if (res.statusCode == 200) {
+      var resJson = json.decode(res.body);
+      var resData = resJson['data'];
+      print("List asset response from v2 ${res.body}");
+      if (resData != null) {
+        final List<dynamic> listAssetsData = resData['assets'];
+        final assets = listAssetsData.map((asset) => AssetDTO.fromJson(asset).toEntity()).toList();
+        return Result.success(assets);
+      }
+      return Result.failure(ApiError(statusCode: 404, message: "List assets not found"));
+    } else {
+      final json = jsonDecode(res.body);
+      return Result.failure(
+        ApiError(statusCode: res.statusCode, message: json['message'] ?? "Unexpected error"),
+      );
+    }
   }
 
   @override

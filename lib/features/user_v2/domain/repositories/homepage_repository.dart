@@ -3,5 +3,5 @@ import 'package:digital_asset_flutter/features/user_v2/domain/entities/wallet.da
 import '../../../../core/network/result.dart';
 
 abstract class HomepageRepository {
-  Future<Result<List<Wallet>>> getWallets();
+  Future<Result<List<Wallet>>> getWallets(String userId);
 }

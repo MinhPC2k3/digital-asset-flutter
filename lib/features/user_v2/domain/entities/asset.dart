@@ -6,6 +6,7 @@ class Asset {
   final double valuationUsd;
   final double last24hChange;
   final String networkName;
+  final String assetName;
 
   Asset({
     required this.assetId,
@@ -15,7 +16,22 @@ class Asset {
     required this.valuationUsd,
     required this.last24hChange,
     required this.networkName,
+    required this.assetName,
   });
+
+  @override
+  String toString() {
+    return 'Asset('
+        'assetId: $assetId, '
+        'symbol: $symbol, '
+        'balance: $balance, '
+        'decimals: $decimals, '
+        'valuationUsd: $valuationUsd, '
+        'last24hChange: $last24hChange, '
+        'networkName: $networkName, '
+        'assetName: $assetName'
+        ')';
+  }
 }
 
 class NFT {

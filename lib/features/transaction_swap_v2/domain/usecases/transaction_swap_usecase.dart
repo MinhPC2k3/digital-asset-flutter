@@ -22,7 +22,7 @@ class TransactionSwapUsecase {
     toAsset,
     Wallet fromWallet,
     Wallet toWallet,
-    String amount,
+    double amount,
   ) {
     var swapTransaction = TransactionQuote(
       id: '',
@@ -31,8 +31,8 @@ class TransactionSwapUsecase {
       fromWallet: fromWallet,
       toWallet: toWallet,
       amountSwap: amount,
-      amountReceive: '',
-      estimatedFee: '',
+      amountReceive: 0,
+      estimatedFee: 0,
       rate: 0,
       status: '',
       expirationAt: DateTime.timestamp(),

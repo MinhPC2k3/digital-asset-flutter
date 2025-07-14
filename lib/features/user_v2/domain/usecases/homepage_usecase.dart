@@ -8,7 +8,7 @@ class HomepageUsecase {
 
   HomepageUsecase({required this.repository});
 
-  Future<Result<List<Wallet>>> getListWallet() async {
-    return await repository.getWallets();
+  Future<Result<List<Wallet>>> getListWallet(String userId) async {
+    return await repository.getWallets(userId);
   }
 }
