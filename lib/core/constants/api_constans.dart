@@ -19,16 +19,15 @@ class ApiEndpoints {
 }
 
 class ApiEndpointsV2 {
-  static const String bffHost = 'http://10.0.2.2:8080';
   static const String host = 'https://asset.openledger.vn';
 
-  static const String walletCoreBaseBffUrl = '$bffHost/v1/wallets';
-  static const String assetCoreBaseBffUrl = '$bffHost/v1/assets';
+  static const String bffBaseUrl = '$host/v1/bff';
+  static const String walletCoreBaseBffUrl = '$bffBaseUrl/wallets';
+  static const String assetCoreBaseBffUrl = '$bffBaseUrl/assets';
   static const String walletCoreBaseUrl = '$host/v1/wallets';
 
   static const String getUserWalletUrl = walletCoreBaseBffUrl;
   static const String getTransactionHistory = '$walletCoreBaseBffUrl/transactions/history';
   static const String getSwapQuote = '$assetCoreBaseBffUrl/quote';
   static const String listAllAssets = '$walletCoreBaseUrl/all/assets';
-
 }

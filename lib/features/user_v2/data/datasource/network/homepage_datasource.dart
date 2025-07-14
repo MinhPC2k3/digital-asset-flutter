@@ -30,7 +30,6 @@ class HomepageRepositoriesImpl implements HomepageRepository {
       final Map<String, dynamic> decoded = json.decode(res.body);
       final List<dynamic> dataList = decoded['wallets'];
       final userWallet = dataList.map((item) => WalletDTO.fromJson(item).toEntity()).toList();
-
       return Result.success(userWallet);
     } else {
       final json = jsonDecode(res.body);

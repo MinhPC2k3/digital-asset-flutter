@@ -127,7 +127,7 @@ class TransactionSendAssetProvider extends provider.ChangeNotifier {
     return signResponse;
   }
 
-  String getNetworkFeeInAsset() => '0.00017571 ETH';
+  String getNetworkFeeInAsset() => '0 ETH';
 
-  String getNetworkFeeInFiat() => 'd11,837';
+  String getNetworkFeeInFiat() => '0 USD';
 }

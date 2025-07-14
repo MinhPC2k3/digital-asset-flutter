@@ -1,11 +1,8 @@
-import 'dart:math';
-
 import 'package:digital_asset_flutter/core/constants/route.dart';
 import 'package:digital_asset_flutter/features/user_v2/presentation/components/create_wallet/pin_input.dart';
 import 'package:digital_asset_flutter/features/user_v2/presentation/provider/create_wallet_provider.dart';
 import 'package:digital_asset_flutter/features/user_v2/presentation/provider/homepage_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../auth/presentation/provider/user_provider.dart';
