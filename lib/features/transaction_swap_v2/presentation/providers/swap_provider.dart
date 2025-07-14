@@ -9,6 +9,10 @@ import 'package:digital_asset_flutter/features/user_v2/domain/entities/asset.dar
 import 'package:digital_asset_flutter/features/user_v2/domain/entities/wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+
+import '../../../../core/constants/route.dart';
+import '../../../user_v2/presentation/provider/homepage_provider.dart';
 
 class SwapProvider extends ChangeNotifier {
   String selectedReceiveToken = 'BNB';
@@ -52,6 +56,7 @@ class SwapProvider extends ChangeNotifier {
   }
 
   Future<Result<List<Asset>>> getListAsset() async {
+    print("Hello 12345");
     var res = await _usecase.getListAsset();
     if (res.isSuccess) {
       receiveAsset = res.data!.firstWhere((asset) => asset.symbol == 'BNB');
@@ -60,7 +65,12 @@ class SwapProvider extends ChangeNotifier {
     return res;
   }
 
+  void addAmountControllerListener() {
+    amountController.addListener(_onAmountChanged);
+  }
+
   void setOtherWallet() {
+    print("Rebuild from init state");
     otherWallets = userWallets!.where((w) => w.walletId != currentWallet!.walletId).toList();
     if (otherWallets.isNotEmpty) {
       selectedWalletName =
@@ -171,7 +181,6 @@ class SwapProvider extends ChangeNotifier {
   ) async {
     _isLoading = true;
     notifyListeners();
-    print("Provider before call api");
     var res = await _usecase.getQuote(
       fromAsset,
       toAsset,
@@ -179,13 +188,24 @@ class SwapProvider extends ChangeNotifier {
       toWallet,
       double.parse(amount),
     );
-    print("Provider after call api, time expired ${res.data!.expirationAt}");
+    if (!res.isSuccess) {
+      if (res.error!.message == "wallet not linked to asset (to_asset_id)") {
+        _isLoading = false;
+        notifyListeners();
+        return Result.failure(
+          ApiError(
+            message: "receive wallet not linked to asset ${toAsset.symbol}",
+            statusCode: 400,
+          ),
+        );
+      }
+    }
     _isLoading = false;
     notifyListeners();
     return res;
   }
 
-  Future<void> submitTransaction(String pin, Transaction transaction) async {
+  Future<void> submitTransaction(String pin, Transaction transaction, BuildContext context) async {
     try {
       _isLoading = true;
       notifyListeners();
@@ -198,7 +218,11 @@ class SwapProvider extends ChangeNotifier {
         return;
       }
 
-      await _usecase.sendAsset(transaction, signResponse.data!, pin);
+      var res = await _usecase.sendAsset(transaction, signResponse.data!, pin);
+      if (res.isSuccess) {
+        await Provider.of<HomepageProvider>(context, listen: false).loadUserWallets();
+        CustomRouter.navigateTo(context, Routes.home);
+      }
       _error = null;
     } catch (e) {
       _error = e.toString();

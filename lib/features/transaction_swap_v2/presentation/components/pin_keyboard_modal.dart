@@ -17,7 +17,6 @@ class _PinKeyboardModalState extends State<PinKeyboardModal> {
   final TextEditingController _pinController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   final int pinLength = 6;
-  bool isLoading = false;
 
   @override
   void initState() {
@@ -41,7 +40,7 @@ class _PinKeyboardModalState extends State<PinKeyboardModal> {
   @override
   Widget build(BuildContext context) {
     var provider = Provider.of<SwapProvider>(context, listen: false);
-
+    var isLoading = Provider.of<SwapProvider>(context, listen: true).isLoading;
     return Container(
       decoration: const BoxDecoration(
         color: Color(0xFF2A2A2A),
@@ -148,7 +147,9 @@ class _PinKeyboardModalState extends State<PinKeyboardModal> {
                                     provider.submitTransaction(
                                       _pinController.text,
                                       widget.transaction,
+                                      context
                                     );
+
                                   }
                                   : null,
                           style: ElevatedButton.styleFrom(

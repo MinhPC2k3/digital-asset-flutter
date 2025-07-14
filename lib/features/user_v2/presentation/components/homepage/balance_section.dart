@@ -80,6 +80,10 @@ class BalanceSection extends StatelessWidget {
                             ),
                       ],
                     ),
+                    const Text(
+                      'Real-time pricing',
+                      style: TextStyle(color: Colors.white70, fontSize: 12),
+                    ),
                   ],
                 ),
               ),

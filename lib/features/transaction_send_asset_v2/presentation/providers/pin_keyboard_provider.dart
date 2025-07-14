@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import '../../../user_v2/presentation/provider/homepage_provider.dart';
 import '../../data/datasource/network/transaction_send_asset.dart';
 import '../../domain/entities/transaction.dart';
 import '../../../wallet/domain/repositories/wallet_repository.dart';
@@ -38,6 +40,8 @@ class PinKeyboardProvider extends ChangeNotifier {
         signInfo,
         pinController.text,
       );
+
+      await Provider.of<HomepageProvider>(context, listen: false).loadUserWallets();
 
       return true;
     } catch (e) {

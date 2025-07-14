@@ -5,6 +5,7 @@ import 'package:digital_asset_flutter/features/transaction/presentation/provider
 import 'package:digital_asset_flutter/features/transaction_history_v2/presentation/providers/transaction_history_provider.dart';
 import 'package:digital_asset_flutter/features/transaction_send_asset_v2/presentation/providers/transaction_send_asset_provider.dart';
 import 'package:digital_asset_flutter/features/transaction_swap_v2/presentation/providers/swap_provider.dart';
+import 'package:digital_asset_flutter/features/user_v2/presentation/pages/homepage.dart';
 import 'package:digital_asset_flutter/features/user_v2/presentation/provider/homepage_provider.dart';
 import 'package:digital_asset_flutter/features/wallet/domain/entities/wallet.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -50,7 +51,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       onGenerateRoute: CustomRouter.generateRoute,
       initialRoute: Routes.auth,
-      routes: {'/home': (_) => MyHomePage(), '/auth': (_) => LoginScreen()},
+      routes: {'/home': (_) => MyHomeRefactoredPage(), '/auth': (_) => LoginScreen()},
     );
   }
 }

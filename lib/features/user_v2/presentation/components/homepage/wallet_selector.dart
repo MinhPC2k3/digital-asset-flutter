@@ -24,8 +24,6 @@ class WalletSelectorModalState extends State<WalletSelectorModal> {
 
   @override
   Widget build(BuildContext context) {
-    var _repo = WalletRepositoryImpl(http.Client());
-    var _usecase = WalletUsecases(walletRepository: _repo);
     return Consumer<HomepageProvider>(
       builder: (context, homepageProvider, child) {
         return Container(
@@ -108,60 +106,32 @@ class WalletSelectorModalState extends State<WalletSelectorModal> {
                   // Main Wallet Item
                   homepageProvider.getWallets.isEmpty
                       ? Container()
-                      : Container(
-                        decoration: BoxDecoration(
-                          color: Colors.transparent,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        height: 120,
+                      : Expanded(child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    // height: 120,
 
-                        child: Scrollbar(
-                          thumbVisibility: true,
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.vertical,
-                            // physics: NeverScrollableScrollPhysics(),
-                            itemCount: homepageProvider.getWallets.length,
-                            itemBuilder: (context, index) {
-                              final wallet = homepageProvider.getWallets[index];
-                              return Padding(
-                                padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                                child: _buildWalletItem(wallet, index),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-
-                  const Spacer(),
-
-                  // Pro Badge
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Container(
-                      margin: const EdgeInsets.only(left: 20, bottom: 20),
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.orange,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.lock, color: Colors.white, size: 16),
-                          const SizedBox(width: 4),
-                          const Text(
-                            'Pro',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
+                    child: Scrollbar(
+                      thumbVisibility: true,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.vertical,
+                        // physics: NeverScrollableScrollPhysics(),
+                        itemCount: homepageProvider.getWallets.length,
+                        itemBuilder: (context, index) {
+                          final wallet = homepageProvider.getWallets[index];
+                          return Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                            child: _buildWalletItem(wallet, index),
+                          );
+                        },
                       ),
                     ),
-                  ),
+                  )),
+
+                  Container(height: 8,),
 
                   // Action Buttons
                   Padding(
@@ -211,40 +181,6 @@ class WalletSelectorModalState extends State<WalletSelectorModal> {
                                 ),
                               ],
                             ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 12),
-
-                        // Create Vault
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.orange.withOpacity(0.3)),
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: Colors.orange.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Icon(Icons.security, color: Colors.orange, size: 20),
-                              ),
-                              const SizedBox(width: 16),
-                              const Text(
-                                'Create Vault',
-                                style: TextStyle(
-                                  color: Colors.orange,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
                           ),
                         ),
                       ],

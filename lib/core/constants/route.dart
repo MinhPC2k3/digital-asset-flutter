@@ -25,4 +25,8 @@ class CustomRouter {
   static void navigateTo(BuildContext context, String routeName) {
     Navigator.pushNamedAndRemoveUntil(context, routeName, (Route<dynamic> route) => false);
   }
+
+  static void navigateToAndReload(BuildContext context) {
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => GeneralInfo()));
+  }
 }
