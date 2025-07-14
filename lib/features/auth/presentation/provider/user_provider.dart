@@ -10,6 +10,7 @@ import '../../../../core/network/result.dart';
 import '../../../asset/data/source/network/asset_datasource.dart';
 import '../../../asset/domain/entities/entities.dart';
 import '../../../user_v2/presentation/pages/homepage.dart';
+import '../../../user_v2/presentation/provider/homepage_provider.dart';
 import '../../../wallet/data/network/wallet_datasources.dart';
 import '../../../wallet/domain/entities/wallet.dart';
 import '../../../wallet/domain/usecases/wallet_usecase.dart';
@@ -43,10 +44,7 @@ class UserProvider extends ChangeNotifier {
   void _loginSuccess(BuildContext context, Result<user_model.User> user) async {
     setUser(user.data!);
     var listWallets = await getWallet(user.data!.id);
-    print("Number of user 's wallet: ${listWallets.data!.length}");
-    for (int i = 0; i < listWallets.data!.length; i++) {
-      print("Wallet network ${listWallets.data![i].networkName}");
-    }
+    for (int i = 0; i < listWallets.data!.length; i++) {}
     if (!context.mounted) return;
     var userWallet = listWallets.data!.isEmpty ? null : listWallets.data![0];
     if (userWallet != null) {
@@ -56,10 +54,11 @@ class UserProvider extends ChangeNotifier {
     }
     if (!context.mounted) return;
     changeLoadingStatus(false);
+    Provider.of<HomepageProvider>(context, listen: false).setUserId(user.data!.id);
     Navigator.push(
       context,
-      // MaterialPageRoute(builder: (context) => MyHomeRefactoredPage()),
-      MaterialPageRoute(builder: (context) => MyHomePage()),
+      MaterialPageRoute(builder: (context) => MyHomeRefactoredPage()),
+      // MaterialPageRoute(builder: (context) => MyHomePage()),
       // MaterialPageRoute(
       //   builder:
       //       (context) =>
@@ -78,6 +77,7 @@ class UserProvider extends ChangeNotifier {
 
   Future<void> userLogin(BuildContext context) async {
     String tokenId = await _userUsecase.signInWithGoogle();
+    print("Doing login with google");
     if (tokenId == "") {
       print("Error google here");
       ScaffoldMessenger.of(
@@ -88,6 +88,7 @@ class UserProvider extends ChangeNotifier {
     Result<user_model.User> user = await _userUsecase.login(tokenId);
     if (!context.mounted) return;
     if (user.isSuccess) {
+      print("Doing login success");
       _loginSuccess(context, user);
     } else {
       changeLoadingStatus(false);

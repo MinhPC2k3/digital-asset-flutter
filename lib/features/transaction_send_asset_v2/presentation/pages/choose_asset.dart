@@ -23,7 +23,7 @@ class ChooseAsset extends StatelessWidget {
         ),
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SendAssetHeader(walletName: userWallet.walletName, onClose: () => Navigator.pop(context)),
 
@@ -46,8 +46,6 @@ class ChooseAsset extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 30),
-
-          AssetSearchBar(),
 
           DefaultTabController(
             length: 2,

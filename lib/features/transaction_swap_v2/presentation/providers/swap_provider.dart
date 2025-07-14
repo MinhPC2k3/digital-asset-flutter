@@ -53,8 +53,9 @@ class SwapProvider extends ChangeNotifier {
 
   Future<Result<List<Asset>>> getListAsset() async {
     var res = await _usecase.getListAsset();
-    if (res.isSuccess){
+    if (res.isSuccess) {
       receiveAsset = res.data!.firstWhere((asset) => asset.symbol == 'BNB');
+      print("Length of list asset ${res.data!.length}");
     }
     return res;
   }
@@ -168,7 +169,20 @@ class SwapProvider extends ChangeNotifier {
     Asset toAsset,
     String amount,
   ) async {
-    return await _usecase.getQuote(fromAsset, toAsset, fromWallet, toWallet, amount);
+    _isLoading = true;
+    notifyListeners();
+    print("Provider before call api");
+    var res = await _usecase.getQuote(
+      fromAsset,
+      toAsset,
+      fromWallet,
+      toWallet,
+      double.parse(amount),
+    );
+    print("Provider after call api, time expired ${res.data!.expirationAt}");
+    _isLoading = false;
+    notifyListeners();
+    return res;
   }
 
   Future<void> submitTransaction(String pin, Transaction transaction) async {

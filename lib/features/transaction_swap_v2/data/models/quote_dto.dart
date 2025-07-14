@@ -2,9 +2,9 @@ import 'package:digital_asset_flutter/features/transaction_swap_v2/domain/entiti
 
 class TransactionQuoteDTO {
   final String id;
-  final String amountSwap;
-  final String amountReceive;
-  final String estimatedFee;
+  final double amountSwap;
+  final double amountReceive;
+  final double estimatedFee;
   final double rate;
   final String status;
   final int expirationAt;
@@ -36,14 +36,14 @@ class TransactionQuoteDTO {
     }
 
     return TransactionQuoteDTO(
-      id: json['quote_id'] ?? '',
-      amountSwap: json['send_amount'] ?? '',
-      amountReceive: json['receive_amount'] ?? '',
-      estimatedFee: json['estimated_fee'] ?? '',
+      id: json['quoteId'] ?? '',
+      amountSwap: (json['sendAmount'] ?? '0' as num).toDouble(),
+      amountReceive: (json['receiveAmount'] ?? '0' as num).toDouble(),
+      estimatedFee: (json['estimatedFee'] ?? '0' as num).toDouble(),
       rate: rateParsed,
       status: json['status'] ?? '',
-      expirationAt: json['expiration_time'] ?? 0,
-      depositAddress: json['deposit_address'] ?? '',
+      expirationAt: json['expirationTime'] ?? 0,
+      depositAddress: json['depositAddress'] ?? '',
     );
   }
 

@@ -32,35 +32,48 @@ class HomepageHeader extends StatelessWidget {
             children: [
               const Text('Essentials', style: TextStyle(color: Colors.grey, fontSize: 16)),
               // Make Main Wallet clickable
-              GestureDetector(
-                onTap: () async {
-                  _showWalletSelector(context);
-                },
-                child: Row(
-                  children: [
-                    SizedBox(width: 100,child: Text(
-                      walletName,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),),
-                    const SizedBox(width: 8),
-                    Icon(Icons.keyboard_arrow_down, color: Colors.white),
-                  ],
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: GestureDetector(
+                    onTap: () async {
+                      _showWalletSelector(context);
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            walletName,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        Icon(Icons.keyboard_arrow_down, color: Colors.white),
+                      ],
+                    ),
+                  ),
                 ),
               ),
               Row(
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.orange.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(8),
+                  GestureDetector(
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(Icons.copy, color: Colors.orange, size: 20),
                     ),
-                    child: Icon(Icons.qr_code_scanner, color: Colors.orange, size: 20),
+                    onTap: () {
+                      Provider.of<HomepageProvider>(context,listen: false).copyAddress(context);
+                    },
                   ),
                   const SizedBox(width: 12),
                   GestureDetector(

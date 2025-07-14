@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:digital_asset_flutter/core/constants/route.dart';
+import 'package:digital_asset_flutter/features/user_v2/presentation/components/create_wallet/pin_input.dart';
 import 'package:digital_asset_flutter/features/user_v2/presentation/provider/create_wallet_provider.dart';
 import 'package:digital_asset_flutter/features/user_v2/presentation/provider/homepage_provider.dart';
 import 'package:flutter/material.dart';
@@ -83,14 +86,6 @@ class CreateWalletView extends StatelessWidget {
                   const SizedBox(height: 8),
                   _buildNetworkOption(
                     context,
-                    'Bitcoin',
-                    'BTC Network',
-                    Icons.currency_bitcoin,
-                    Colors.amber,
-                  ),
-                  const SizedBox(height: 8),
-                  _buildNetworkOption(
-                    context,
                     'Ethereum',
                     'ETH Network',
                     Icons.currency_exchange,
@@ -113,8 +108,30 @@ class CreateWalletView extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  const Text(
+                    'Enter a 6-digit PIN to secure your wallet',
+                    style: TextStyle(color: Colors.grey, fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
                   const SizedBox(height: 8),
-                  _buildPinInput(context),
+                  buildPinInput(
+                    provider.pinController,
+                    provider.pinFocusNode,
+                    provider.pinFilledStatus,
+                    provider.updatePinFilledStatus,
+                  ),
+                  const Text(
+                    'Repeat pin',
+                    style: TextStyle(color: Colors.grey, fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  buildPinInput(
+                    provider.confirmPinController,
+                    provider.confirmPinFocusNode,
+                    provider.confirmPinFilledStatus,
+                    provider.updateConfirmPinFilledStatus,
+                  ),
                   const SizedBox(height: 32),
                   if (provider.error != null)
                     Padding(
@@ -131,7 +148,10 @@ class CreateWalletView extends StatelessWidget {
                       onPressed:
                           provider.isFormValid
                               ? () async {
-                                final success = await provider.createWallet(userProvider.user!.id);
+                                final success = await provider.createWallet(
+                                  userProvider.user!.id,
+                                  context,
+                                );
                                 if (success) {
                                   homepageProvider.createNewWallet(provider.createdWallet!);
                                   if (!context.mounted) return;
@@ -225,61 +245,61 @@ class CreateWalletView extends StatelessWidget {
     );
   }
 
-  Widget _buildPinInput(BuildContext context) {
-    final provider = Provider.of<CreateWalletProvider>(context);
-
-    return Column(
-      children: [
-        // Hidden text field for actual input
-        Opacity(
-          opacity: 0,
-          child: TextField(
-            controller: provider.pinController,
-            focusNode: provider.pinFocusNode,
-            keyboardType: TextInputType.number,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(6),
-            ],
-            onChanged: (_) => provider.updatePinFilledStatus(),
-          ),
-        ),
-        // PIN display dots
-        GestureDetector(
-          onTap: () => provider.pinFocusNode.requestFocus(),
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            decoration: BoxDecoration(
-              color: const Color(0xFF2A2A2A),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                6,
-                (index) => Container(
-                  width: 16,
-                  height: 16,
-                  margin: const EdgeInsets.symmetric(horizontal: 12),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color:
-                        provider.pinFilledStatus[index]
-                            ? Colors.amber
-                            : Colors.grey.withOpacity(0.3),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
-        const Text(
-          'Enter a 6-digit PIN to secure your wallet',
-          style: TextStyle(color: Colors.grey, fontSize: 14),
-          textAlign: TextAlign.center,
-        ),
-      ],
-    );
-  }
+  // Widget _buildPinInput(BuildContext context) {
+  //   final provider = Provider.of<CreateWalletProvider>(context);
+  //
+  //   return Column(
+  //     children: [
+  //       // Hidden text field for actual input
+  //       Opacity(
+  //         opacity: 0,
+  //         child: TextField(
+  //           controller: provider.pinController,
+  //           focusNode: provider.pinFocusNode,
+  //           keyboardType: TextInputType.number,
+  //           inputFormatters: [
+  //             FilteringTextInputFormatter.digitsOnly,
+  //             LengthLimitingTextInputFormatter(6),
+  //           ],
+  //           onChanged: (_) => provider.updatePinFilledStatus(),
+  //         ),
+  //       ),
+  //       // PIN display dots
+  //       GestureDetector(
+  //         onTap: () => provider.pinFocusNode.requestFocus(),
+  //         child: Container(
+  //           padding: const EdgeInsets.symmetric(vertical: 16),
+  //           decoration: BoxDecoration(
+  //             color: const Color(0xFF2A2A2A),
+  //             borderRadius: BorderRadius.circular(8),
+  //           ),
+  //           child: Row(
+  //             mainAxisAlignment: MainAxisAlignment.center,
+  //             children: List.generate(
+  //               6,
+  //               (index) => Container(
+  //                 width: 16,
+  //                 height: 16,
+  //                 margin: const EdgeInsets.symmetric(horizontal: 12),
+  //                 decoration: BoxDecoration(
+  //                   shape: BoxShape.circle,
+  //                   color:
+  //                       provider.pinFilledStatus[index]
+  //                           ? Colors.amber
+  //                           : Colors.grey.withOpacity(0.3),
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //       ),
+  //       const SizedBox(height: 8),
+  //       const Text(
+  //         'Enter a 6-digit PIN to secure your wallet',
+  //         style: TextStyle(color: Colors.grey, fontSize: 14),
+  //         textAlign: TextAlign.center,
+  //       ),
+  //     ],
+  //   );
+  // }
 }

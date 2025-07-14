@@ -13,8 +13,8 @@ import 'package:provider/provider.dart';
 
 import '../../../core/constants/route.dart';
 import '../../transaction/presentation/send_transaction_overview.dart';
-import '../../wallet/domain/entities/wallet.dart';
 import '../../transaction/presentation/transaction_swap.dart';
+import '../../wallet/domain/entities/wallet.dart';
 import '../../wallet/presentation/wallet_selector.dart';
 
 class GeneralInfo extends StatefulWidget {

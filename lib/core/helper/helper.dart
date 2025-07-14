@@ -122,6 +122,18 @@ Uint8List bigIntStringToBytes(String value) {
   return Uint8List.fromList(bytes);
 }
 
+Uint8List bigIntToBytes(BigInt number) {
+  // Get bytes in big-endian order
+  final bytes = number.toRadixString(16).padLeft(64, '0'); // pad for full 32 bytes
+  final byteList = <int>[];
+
+  for (var i = 0; i < bytes.length; i += 2) {
+    byteList.add(int.parse(bytes.substring(i, i + 2), radix: 16));
+  }
+
+  return Uint8List.fromList(byteList);
+}
+
 /// Helper: Converts BigInt to bytes (unsigned big-endian)
 List<int> _encodeBigInt(BigInt number) {
   if (number == BigInt.zero) return [0];

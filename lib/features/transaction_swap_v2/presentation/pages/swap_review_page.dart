@@ -19,6 +19,7 @@ class SwapReviewPage extends StatelessWidget {
   final Asset fromAsset;
   final Asset toAsset;
   final String amount;
+  final TransactionQuote txQuote;
 
   const SwapReviewPage({
     Key? key,
@@ -27,28 +28,14 @@ class SwapReviewPage extends StatelessWidget {
     required this.fromAsset,
     required this.toAsset,
     required this.amount,
+    required this.txQuote,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => SwapProvider(),
-      child: SwapReviewContent(
-        txQuote: TransactionQuote(
-          id: '',
-          fromAsset: fromAsset,
-          toAsset: toAsset,
-          fromWallet: fromWallet,
-          toWallet: toWallet,
-          amountSwap: amount,
-          amountReceive: '',
-          estimatedFee: '',
-          rate: 0,
-          status: '',
-          expirationAt: DateTime.timestamp(),
-          depositAddress: '',
-        ),
-      ),
+      child: SwapReviewContent(txQuote: txQuote),
     );
   }
 }
@@ -77,106 +64,85 @@ class SwapReviewContent extends StatelessWidget {
       return Center(child: Text('Error: ${provider.error}'));
     }
 
-    return FutureBuilder(
-      future: provider.loadQuote(
-        txQuote.fromWallet,
-        txQuote.toWallet,
-        txQuote.fromAsset,
-        txQuote.toAsset,
-        txQuote.amountSwap,
-      ),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator()); // While waiting
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else if (snapshot.hasData) {
-          return Scaffold(
-            backgroundColor: const Color(0xFF2A2A2A),
-            body: SafeArea(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFF2A2D31),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildHeader(context),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Swap', style: bigTextStyle.copyWith(fontSize: 24)),
-                              const SizedBox(height: 10),
-                              SwapDetailsSection(
-                                quote: snapshot.data!.data!,
-                                bigTextStyle: bigTextStyle,
-                                normalTextStyle: normalTextStyle,
-                                smallTextStyle: smallTextStyle,
-                              ),
-                              const SizedBox(height: 20),
-                              Text('Fees', style: bigTextStyle.copyWith(fontSize: 24)),
-                              const SizedBox(height: 10),
-                              _buildFeesSection(
-                                snapshot.data!.data!.estimatedFee,
-                                bigTextStyle,
-                                normalTextStyle,
-                              ),
-                              const SizedBox(height: 10),
-                              _buildInfoMessage(normalTextStyle),
-                              const SizedBox(height: 20),
-                              Text('Network', style: bigTextStyle.copyWith(fontSize: 24)),
-                              const SizedBox(height: 10),
-                              _buildNetworkSection(bigTextStyle, smallTextStyle),
-                              const SizedBox(height: 10),
-                              QuoteReadyWidget(
-                                initialDuration: snapshot.data!.data!.expirationAt.difference(
-                                  DateTime.now(),
-                                ),
-                              ),
-                            ],
-                          ),
+    return Scaffold(
+      backgroundColor: const Color(0xFF2A2A2A),
+      body: SafeArea(
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF2A2D31),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(context),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Swap', style: bigTextStyle.copyWith(fontSize: 24)),
+                        const SizedBox(height: 10),
+                        SwapDetailsSection(
+                          quote: txQuote,
+                          bigTextStyle: bigTextStyle,
+                          normalTextStyle: normalTextStyle,
+                          smallTextStyle: smallTextStyle,
                         ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(10.0, 10, 10, 0),
-                      child: _buildContinueButton(
-                        context,
-                        Transaction(
-                          userId: Provider.of<UserProvider>(context, listen: false).user!.id,
-                          walletId:
-                              Provider.of<HomepageProvider>(
-                                context,
-                                listen: false,
-                              ).currentWallet.walletId,
-                          assetId: snapshot.data!.data!.fromAsset.assetId,
-                          amount: snapshot.data!.data!.amountSwap,
-                          receiverAddress: snapshot.data!.data!.depositAddress,
-                          blockchainType: null,
-                          networkName:
-                              Provider.of<HomepageProvider>(
-                                context,
-                                listen: false,
-                              ).currentWallet.networkName.toLowerCase(),
-                          transactionType: null,
-                          tokenId: '',
+                        const SizedBox(height: 20),
+                        Text('Fees', style: bigTextStyle.copyWith(fontSize: 24)),
+                        const SizedBox(height: 10),
+                        _buildFeesSection(
+                          txQuote.estimatedFee.toString(),
+                          bigTextStyle,
+                          normalTextStyle,
                         ),
-                      ),
+                        const SizedBox(height: 10),
+                        _buildInfoMessage(normalTextStyle),
+                        const SizedBox(height: 20),
+                        Text('Network', style: bigTextStyle.copyWith(fontSize: 24)),
+                        const SizedBox(height: 10),
+                        _buildNetworkSection(bigTextStyle, smallTextStyle),
+                        const SizedBox(height: 10),
+                        QuoteReadyWidget(
+                          initialDuration: txQuote.expirationAt.difference(DateTime.now()),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          );
-        } else {
-          return Text('No data');
-        }
-      },
+              Padding(
+                padding: const EdgeInsets.fromLTRB(10.0, 10, 10, 0),
+                child: _buildContinueButton(
+                  context,
+                  Transaction(
+                    userId: Provider.of<UserProvider>(context, listen: false).user!.id,
+                    walletId:
+                        Provider.of<HomepageProvider>(
+                          context,
+                          listen: false,
+                        ).currentWallet.walletId,
+                    assetId: txQuote.fromAsset.assetId,
+                    amount: txQuote.amountSwap.toString(),
+                    receiverAddress: txQuote.depositAddress,
+                    blockchainType: null,
+                    networkName:
+                        Provider.of<HomepageProvider>(
+                          context,
+                          listen: false,
+                        ).currentWallet.networkName.toLowerCase(),
+                    transactionType: null,
+                    tokenId: '',
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

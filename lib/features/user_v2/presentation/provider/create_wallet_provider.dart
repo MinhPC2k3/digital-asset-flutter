@@ -4,6 +4,8 @@ import 'package:digital_asset_flutter/features/user_v2/domain/usecases/create_wa
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../../../../core/constants/route.dart';
+
 class CreateWalletProvider extends ChangeNotifier {
   late CreateWalletRepositoryImpl _repo;
 
@@ -14,14 +16,21 @@ class CreateWalletProvider extends ChangeNotifier {
     _usecase = CreateWalletUsecase(repository: _repo);
   }
 
-  // Form controllers
   final TextEditingController walletNameController = TextEditingController();
+
+  // Pin controllers
   final TextEditingController pinController = TextEditingController();
   final FocusNode pinFocusNode = FocusNode();
+  List<bool> pinFilledStatus = List.generate(6, (_) => false);
+
+  //Confirm pin controller
+  final TextEditingController confirmPinController = TextEditingController();
+  final FocusNode confirmPinFocusNode = FocusNode();
+  List<bool> confirmPinFilledStatus = List.generate(6, (_) => false);
 
   // State variables
   String selectedNetwork = 'Ethereum';
-  List<bool> pinFilledStatus = List.generate(6, (_) => false);
+
   String? error;
   Wallet? createdWallet;
   bool isLoading = false;
@@ -36,12 +45,29 @@ class CreateWalletProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateConfirmPinFilledStatus() {
+    final pin = confirmPinController.text;
+    for (int i = 0; i < 6; i++) {
+      confirmPinFilledStatus[i] = i < pin.length;
+    }
+    notifyListeners();
+  }
+
   void setSelectedNetwork(String network) {
     selectedNetwork = network;
     notifyListeners();
   }
 
-  Future<bool> createWallet(String userId) async {
+  Future<bool> createWallet(String userId, BuildContext context) async {
+    if(pinController.text != confirmPinController.text){
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Confirm pin mismatch'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return false;
+    }
     error = null;
     isLoading = true;
     notifyListeners();
@@ -70,4 +96,23 @@ class CreateWalletProvider extends ChangeNotifier {
     pinFocusNode.dispose();
     super.dispose();
   }
+
+  // void createWallet(BuildContext context, String userId) async{
+  //   final success = await createWallet(userId);
+  //   if (success) {
+  //     homepageProvider.createNewWallet(provider.createdWallet!);
+  //     if (!context.mounted) return;
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(
+  //         content: Text('Wallet created successfully!'),
+  //         backgroundColor: Colors.green,
+  //       ),
+  //     );
+  //     Navigator.pushNamedAndRemoveUntil(
+  //       context,
+  //       Routes.home,
+  //       ModalRoute.withName(Routes.auth),
+  //     );
+  //   }
+  // }
 }

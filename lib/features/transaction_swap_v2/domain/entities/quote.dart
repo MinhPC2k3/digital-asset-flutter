@@ -7,9 +7,9 @@ class TransactionQuote {
   final Asset toAsset;
   final Wallet fromWallet;
   final Wallet toWallet;
-  final String amountSwap;
-  final String amountReceive;
-  final String estimatedFee;
+  final double amountSwap;
+  final double amountReceive;
+  final double estimatedFee;
   final double rate;
   final String status;
   final DateTime expirationAt;
@@ -36,9 +36,9 @@ class TransactionQuote {
     Asset? toAsset,
     Wallet? fromWallet,
     Wallet? toWallet,
-    String? amountSwap,
-    String? amountReceive,
-    String? estimatedFee,
+    double? amountSwap,
+    double? amountReceive,
+    double? estimatedFee,
     double? rate,
     String? status,
     DateTime? expirationAt,

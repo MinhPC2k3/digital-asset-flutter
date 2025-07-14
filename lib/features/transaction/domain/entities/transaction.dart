@@ -187,7 +187,6 @@ class TransactionHistoryData {
   });
 
   factory TransactionHistoryData.fromJson(Map<String, dynamic> json) {
-    print("Doing parse json");
     return TransactionHistoryData(
       txHash: json['txHash'] ?? '',
       blockNumber: json['blockNumber'] ?? '',

@@ -2,7 +2,7 @@ import 'package:digital_asset_flutter/features/transaction_history_v2/domain/ent
 
 class TransactionHistoryDto {
   final String txHash;
-  final int blockNumber;
+  final String blockNumber;
   final String fromAddress;
   final String toAddress;
   final double? value;
@@ -11,7 +11,7 @@ class TransactionHistoryDto {
   final String? tokenAddress;
   final double? fee;
   final String status;
-  final int timestamp;
+  final String timestamp;
   final String direction;
   final String explorerUrl;
 
@@ -52,7 +52,7 @@ class TransactionHistoryDto {
   TransactionHistory toDomain() {
     return TransactionHistory(
       txHash: txHash,
-      blockNumber: blockNumber,
+      blockNumber: int.parse(blockNumber),
       fromAddress: fromAddress,
       toAddress: toAddress,
       value: value ?? 0,
@@ -62,7 +62,7 @@ class TransactionHistoryDto {
       status: status,
       direction: direction,
       explorerUrl: explorerUrl,
-      timestamp: DateTime.fromMillisecondsSinceEpoch(timestamp * 1000),
+      timestamp: DateTime.fromMillisecondsSinceEpoch(int.parse(timestamp) * 1000),
       timeAgo: '',
     );
   }

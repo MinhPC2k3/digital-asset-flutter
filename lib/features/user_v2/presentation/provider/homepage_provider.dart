@@ -1,5 +1,10 @@
+import 'dart:async';
+
 import 'package:digital_asset_flutter/features/user_v2/domain/entities/wallet.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 import '../../data/datasource/network/homepage_datasource.dart';
@@ -14,6 +19,7 @@ class HomepageProvider extends ChangeNotifier {
     _usecase = HomepageUsecase(repository: _repo);
   }
 
+  String _userId = '';
   List<Wallet> _wallets = [];
   bool _isLoading = false;
   Wallet _selectedWallet = Wallet(
@@ -24,8 +30,12 @@ class HomepageProvider extends ChangeNotifier {
     assets: [],
     nfts: [],
     totalValue: 0,
+    userId: '',
+    walletKey: '',
+    version: '',
   );
   String? _error;
+  bool isShowBalance = false;
 
   List<Wallet> get getWallets => _wallets;
 
@@ -33,15 +43,24 @@ class HomepageProvider extends ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
+  String get userId => _userId;
+
   String? get error => _error;
+
+  Timer? _timer;
+
+  Timer? get timer => _timer;
+
+  void setUserId(String userId) {
+    _userId = userId;
+  }
 
   Future<void> loadUserWallets() async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
-    print("Doing loadUserWallets");
-    var res = await _usecase.getListWallet();
+    var res = await _usecase.getListWallet(_userId);
     if (!res.isSuccess) {
       _error = res.error!.message;
       _isLoading = false;
@@ -50,7 +69,6 @@ class HomepageProvider extends ChangeNotifier {
     }
 
     _wallets = res.data!;
-    print("HomepageProvider User wallet length ${_wallets.length}");
     if (_wallets.isNotEmpty) {
       _selectedWallet = _wallets[0];
     }
@@ -67,5 +85,39 @@ class HomepageProvider extends ChangeNotifier {
     _wallets.add(wallet);
     _selectedWallet = _wallets[_wallets.length - 1];
     notifyListeners();
+  }
+
+  void updateBalanceByInterval() {
+    _timer?.cancel();
+    _timer = Timer.periodic(Duration(seconds: 15), (_) async {
+      var res = await _usecase.getListWallet(_userId);
+      if (res.isSuccess) {
+        _wallets = res.data!;
+        if (_wallets.isNotEmpty) {
+          _selectedWallet = _wallets[0];
+        }
+        notifyListeners();
+        return;
+      }
+    });
+  }
+
+  void stopAutoUpdate() {
+    _timer?.cancel();
+  }
+
+  void changeShowBalance() {
+    isShowBalance = !isShowBalance;
+    notifyListeners();
+  }
+
+  void copyAddress(BuildContext context) {
+    Clipboard.setData(ClipboardData(text: _selectedWallet.address));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Wallet\'s address has been copied to the clipboard'),
+        backgroundColor: Colors.green,
+      ),
+    );
   }
 }

@@ -1,5 +1,5 @@
 class ApiEndpoints {
-  static const String host = 'http://walletcore.ntkong.com:18080';
+  static const String host = 'https://asset.openledger.vn';
   static const String profileBaseUrl = '$host/v1/auth';
   static const String walletCoreBaseUrl = '$host/v1/wallets';
   static const String userBaseUrl = '$host/v1/users';
@@ -16,4 +16,19 @@ class ApiEndpoints {
   static const String nftList = '$walletCoreBaseUrl/nft/list';
   static const String listAllAssets = '$walletCoreBaseUrl/all/assets';
   static const String getQuote = '$walletCoreBaseUrl/swap/quote';
+}
+
+class ApiEndpointsV2 {
+  static const String bffHost = 'http://10.0.2.2:8080';
+  static const String host = 'https://asset.openledger.vn';
+
+  static const String walletCoreBaseBffUrl = '$bffHost/v1/wallets';
+  static const String assetCoreBaseBffUrl = '$bffHost/v1/assets';
+  static const String walletCoreBaseUrl = '$host/v1/wallets';
+
+  static const String getUserWalletUrl = walletCoreBaseBffUrl;
+  static const String getTransactionHistory = '$walletCoreBaseBffUrl/transactions/history';
+  static const String getSwapQuote = '$assetCoreBaseBffUrl/quote';
+  static const String listAllAssets = '$walletCoreBaseUrl/all/assets';
+
 }

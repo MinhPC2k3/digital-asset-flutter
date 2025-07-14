@@ -1,5 +1,5 @@
-import 'package:digital_asset_flutter/features/auth/presentation/general_info.dart';
 import 'package:digital_asset_flutter/features/auth/presentation/login_screen.dart';
+import 'package:digital_asset_flutter/features/user_v2/presentation/pages/general_info.dart';
 import 'package:flutter/material.dart';
 
 class Routes {
