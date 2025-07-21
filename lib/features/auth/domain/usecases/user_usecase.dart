@@ -1,4 +1,8 @@
+import 'dart:convert';
+
+import 'package:digital_asset_flutter/core/constants/common.dart';
 import 'package:digital_asset_flutter/core/network/result.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../repositories/user_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -57,6 +61,9 @@ class UserUsecases {
     // Sign out from Firebase.
     await _auth.signOut();
 
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(localStorageUserKey);
+
     user_model.User.empty();
   }
 
@@ -69,7 +76,23 @@ class UserUsecases {
     //   );
     // }
     Result<user_model.User> user = await _userRepository.userLogin(tokenId);
+    if (user.isSuccess) {
+      final prefs = await SharedPreferences.getInstance();
+      String encodedString = jsonEncode(user.data!.toJson());
+      prefs.setString(localStorageUserKey, encodedString);
+    }
     return user;
+  }
+
+  Future<user_model.User?> getAlreadyLogin() async {
+    final prefs = await SharedPreferences.getInstance();
+    var userString = prefs.getString(localStorageUserKey);
+    print("From local storage: $userString");
+    if (userString == null) {
+      return null;
+    }
+    Map<String, dynamic> jsonData = jsonDecode(userString);
+    return user_model.User.fromJson(jsonData);
   }
 
   Future<Result<user_model.User>> register() async {

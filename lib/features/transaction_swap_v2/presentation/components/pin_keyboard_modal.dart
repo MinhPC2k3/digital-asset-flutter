@@ -147,9 +147,9 @@ class _PinKeyboardModalState extends State<PinKeyboardModal> {
                                     provider.submitTransaction(
                                       _pinController.text,
                                       widget.transaction,
-                                      context
+                                      context,
                                     );
-
+                                    _pinController.clear();
                                   }
                                   : null,
                           style: ElevatedButton.styleFrom(

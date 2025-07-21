@@ -23,7 +23,6 @@ class MyHomeRefactoredPageState extends State<MyHomeRefactoredPage> {
       TransactionHistoryPage(
         address: Provider.of<HomepageProvider>(context, listen: true).currentWallet.address,
       ),
-      Center(child: Text('Coming soon', style: TextStyle(color: Colors.white))),
     ];
     return Scaffold(
       backgroundColor: Colors.black,
@@ -44,7 +43,6 @@ class MyHomeRefactoredPageState extends State<MyHomeRefactoredPage> {
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
         ],
       ),
     );

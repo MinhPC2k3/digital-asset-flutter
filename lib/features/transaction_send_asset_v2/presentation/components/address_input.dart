@@ -8,8 +8,8 @@ class AddressInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<TransactionSendAssetProvider>(context);
-    
+    final provider = Provider.of<TransactionSendAssetProvider>(context, listen: true);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -48,14 +48,11 @@ class AddressInput extends StatelessWidget {
               children: [
                 Icon(Icons.check_circle, color: Colors.green, size: 16),
                 SizedBox(width: 4),
-                Text(
-                  'Valid Ethereum address',
-                  style: TextStyle(color: Colors.green, fontSize: 12),
-                ),
+                Text('Valid Ethereum address', style: TextStyle(color: Colors.green, fontSize: 12)),
               ],
             ),
           ),
       ],
     );
   }
-} 
+}

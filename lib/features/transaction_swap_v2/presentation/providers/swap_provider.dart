@@ -1,5 +1,6 @@
 import 'package:digital_asset_flutter/core/helper/helper.dart';
 import 'package:digital_asset_flutter/core/network/result.dart';
+import 'package:digital_asset_flutter/features/transaction_history_v2/presentation/providers/transaction_history_provider.dart';
 import 'package:digital_asset_flutter/features/transaction_send_asset_v2/domain/entities/transaction.dart';
 import 'package:digital_asset_flutter/features/transaction_swap_v2/data/datasource/transaction_swap_datasource.dart';
 import 'package:digital_asset_flutter/features/transaction_swap_v2/domain/entities/quote.dart';
@@ -220,7 +221,15 @@ class SwapProvider extends ChangeNotifier {
 
       var res = await _usecase.sendAsset(transaction, signResponse.data!, pin);
       if (res.isSuccess) {
-        await Provider.of<HomepageProvider>(context, listen: false).loadUserWallets();
+        var homepageProvider = await Provider.of<HomepageProvider>(context, listen: false);
+        homepageProvider.loadUserWallets();
+        await Provider.of<TransactionHistoryProvider>(
+          context,
+          listen: false,
+        ).loadTransactionHistory(homepageProvider.currentWallet.address);
+        await Future.delayed(Duration(seconds: 2));
+        amountController.clear();
+        notifyListeners();
         CustomRouter.navigateTo(context, Routes.home);
       }
       _error = null;

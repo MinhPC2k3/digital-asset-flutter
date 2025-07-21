@@ -4,6 +4,7 @@ import 'package:digital_asset_flutter/features/transaction_history_v2/domain/rep
 import 'package:digital_asset_flutter/features/transaction_history_v2/domain/usecases/transaction_history_usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 class TransactionHistoryProvider extends ChangeNotifier {
   List<TransactionHistory>? _transactionHistory;
@@ -42,6 +43,15 @@ class TransactionHistoryProvider extends ChangeNotifier {
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  Future<void> openTransactionLink(String urlString) async {
+    final Uri url = Uri.parse(urlString);
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.inAppWebView);
+    } else {
+      throw 'Could not launch $urlString';
     }
   }
 }

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -7,7 +5,6 @@ import '../components/homepage/action_button.dart';
 import '../components/homepage/asset_display.dart';
 import '../components/homepage/balance_section.dart';
 import '../components/homepage/hompage_header.dart';
-import '../components/homepage/security_level.dart';
 import '../provider/homepage_provider.dart';
 
 class GeneralInfo extends StatefulWidget {

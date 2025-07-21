@@ -72,7 +72,7 @@ class HomepageHeader extends StatelessWidget {
                       child: Icon(Icons.copy, color: Colors.orange, size: 20),
                     ),
                     onTap: () {
-                      Provider.of<HomepageProvider>(context,listen: false).copyAddress(context);
+                      Provider.of<HomepageProvider>(context, listen: false).copyAddress(context);
                     },
                   ),
                   const SizedBox(width: 12),

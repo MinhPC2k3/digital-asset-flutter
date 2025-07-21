@@ -68,14 +68,15 @@ class WalletSelectorModalState extends State<WalletSelectorModal> {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        const Text(
-                          'Edit',
-                          style: TextStyle(
-                            color: Colors.orange,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                        // const Text(
+                        //   'Edit',
+                        //   style: TextStyle(
+                        //     color: Colors.orange,
+                        //     fontSize: 16,
+                        //     fontWeight: FontWeight.w500,
+                        //   ),
+                        // ),
+                        Container(),
                       ],
                     ),
                   ),

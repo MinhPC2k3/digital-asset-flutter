@@ -16,7 +16,7 @@ class UserProvider extends ChangeNotifier {
 
   User? get user => _user;
 
-  bool isLoading = false;
+  bool isLoading = true;
 
   late UserRepositoryImpl _userRepo;
   late UserUsecases _userUsecase;
@@ -89,8 +89,19 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void logout(BuildContext context) {
-    _userUsecase.signOut();
+  void logout(BuildContext context) async {
+    await _userUsecase.signOut();
     CustomRouter.navigateTo(context, Routes.auth);
+  }
+
+  Future<void> alreadyLogin(BuildContext context) async {
+    changeLoadingStatus(true);
+    var previousUser = await _userUsecase.getAlreadyLogin();
+    if (previousUser != null) {
+      print("Doing login success with already login user");
+      _loginSuccess(context, Result.success(previousUser));
+      return;
+    }
+    changeLoadingStatus(false);
   }
 }

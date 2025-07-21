@@ -18,4 +18,12 @@ class User {
   User clearData() {
     return User.empty();
   }
+
+  Map<String, dynamic> toJson() {
+    return {'id': id, 'email': email};
+  }
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(accessToken: '', id: json['id'], email: json['email'], createAt: null);
+  }
 }
